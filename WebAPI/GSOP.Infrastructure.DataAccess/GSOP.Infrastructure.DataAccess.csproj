@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentMigrator" Version="5.0.0" />
+    <PackageReference Include="FluentMigrator.Runner" Version="5.0.0" />
+    <PackageReference Include="FluentMigrator.Runner.Postgres" Version="5.0.0" />
+    <PackageReference Include="linq2db" Version="5.3.2" />
+    <PackageReference Include="Npgsql" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GSOP.Domain.Contracts\GSOP.Domain.Contracts.csproj" />
+    <ProjectReference Include="..\GSOP.Infrastructure.DataAccess.Contracts\GSOP.Infrastructure.DataAccess.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>
