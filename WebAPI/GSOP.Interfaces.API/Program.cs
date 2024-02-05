@@ -3,7 +3,7 @@ using GSOP.Interfaces.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#region Configurate services
+#region Configure services
 
 builder.Services.AddControllers();
 
@@ -16,7 +16,7 @@ builder.Services.AddDataAccessComponents();
 
 var app = builder.Build();
 
-#region Configurate app
+#region Configure app
 
 await app.MigrateDatabase();
 

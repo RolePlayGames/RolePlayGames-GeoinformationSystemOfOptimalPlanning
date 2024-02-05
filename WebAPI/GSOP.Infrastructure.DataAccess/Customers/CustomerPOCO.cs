@@ -10,6 +10,6 @@ public class CustomerPOCO
     [PrimaryKey, Identity]
     required public long ID { get; init; }
 
-    [Column, NotNull]
+    [Column]
     required public string Name { get; init; }
 }

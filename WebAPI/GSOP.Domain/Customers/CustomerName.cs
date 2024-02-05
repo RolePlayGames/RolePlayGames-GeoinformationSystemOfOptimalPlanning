@@ -3,7 +3,7 @@
 public readonly record struct CustomerName
 {
     public const int MinLength = 3;
-    public const int MaxLength = 255;
+    public const int MaxLength = 500;
 
     private readonly string _name;
 
