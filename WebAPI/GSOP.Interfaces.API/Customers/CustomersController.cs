@@ -18,31 +18,35 @@ public class CustomersController : ControllerBase
         _customerService = customerService;
     }
 
-    [HttpPost("")]
+    [HttpPost]
     public Task<long> CreateCustomer(CustomerDTO customer)
     {
         return _customerService.CreateCustomer(customer);
     }
 
-    [HttpDelete("/{id}")]
+    [HttpDelete]
+    [Route("/{id}")]
     public Task DeleteCustomer(long id)
     {
         return _customerService.DeleteCustomer(id);
     }
 
-    [HttpGet("/{id}")]
+    [HttpGet]
+    [Route("/{id}")]
     public Task<CustomerDTO> GetCustomer(long id)
     {
         return _customerService.GetCustomer(id);
     }
 
-    [HttpGet("/info")]
+    [HttpGet]
+    [Route("/info")]
     public Task<IReadOnlyCollection<CustomerInfo>> GetCustomersInfo()
     {
         return _customerService.GetCustomersInfo();
     }
 
-    [HttpPost("/{id}")]
+    [HttpPost]
+    [Route("/{id}")]
     public Task UpdateCustomer(long id, CustomerDTO customer)
     {
         return _customerService.UpdateCustomer(id, customer);
