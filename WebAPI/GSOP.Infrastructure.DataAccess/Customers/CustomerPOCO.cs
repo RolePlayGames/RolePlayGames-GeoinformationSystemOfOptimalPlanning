@@ -8,7 +8,7 @@ public class CustomerPOCO
     public const string TableName = "customers";
 
     [PrimaryKey, Identity]
-    required public long ID { get; init; }
+    public long ID { get; init; }
 
     [Column]
     required public string Name { get; init; }

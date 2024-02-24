@@ -1,4 +1,4 @@
-﻿namespace GSOP.Domain;
+﻿namespace GSOP.Domain.Contracts;
 
 public readonly record struct ID
 {

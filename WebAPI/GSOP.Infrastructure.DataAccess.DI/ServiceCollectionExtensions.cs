@@ -1,5 +1,7 @@
-﻿using GSOP.Infrastructure.DataAccess.Connections;
+﻿using GSOP.Domain.Contracts.Customers;
+using GSOP.Infrastructure.DataAccess.Connections;
 using GSOP.Infrastructure.DataAccess.Contracts.Migrations;
+using GSOP.Infrastructure.DataAccess.Customers;
 using GSOP.Infrastructure.DataAccess.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,5 +19,7 @@ public static class ServiceCollectionExtensions
         => serviceCollection
         .AddTransient<IConnectionStringProvider, ConnectionStringProvider>()
         .AddTransient<IMigrator, Migrator>()
-        .AddMigratorConnection();
+        .AddScoped<ICustomerRepository, CustomerRepository>()
+        .AddMigratorConnection()
+        .AddLinqToDbConnection();
 }
