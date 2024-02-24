@@ -1,3 +1,5 @@
+using GSOP.Application.DI;
+using GSOP.Domain.DI;
 using GSOP.Infrastructure.DataAccess.DI;
 using GSOP.Interfaces.API.Extensions;
 
@@ -10,6 +12,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDomainServices();
+builder.Services.AddApplicationServices();
 builder.Services.AddDataAccessComponents();
 
 #endregion

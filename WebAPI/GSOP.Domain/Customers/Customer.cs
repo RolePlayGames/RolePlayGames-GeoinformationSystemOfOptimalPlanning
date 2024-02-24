@@ -1,8 +1,34 @@
-﻿namespace GSOP.Domain.Customers;
+﻿using GSOP.Domain.Contracts;
+using GSOP.Domain.Contracts.Customers;
+using GSOP.Domain.Contracts.Customers.Exceptions;
+using GSOP.Domain.Contracts.Customers.Models;
 
-public class Customer
+namespace GSOP.Domain.Customers;
+
+/// <inheritdoc/>
+public class Customer : ICustomer
 {
-    required public ID ID { get; init; }
+    private readonly ICustomerRepository _customerRepository;
 
-    required public CustomerName Name { get; init; }
+    public CustomerName Name { get; protected set; }
+
+    public Customer(CustomerName name, ICustomerRepository customerRepository)
+    {
+        Name = name;
+        _customerRepository = customerRepository;
+    }
+
+    /// <inheritdoc/>
+    public async Task SetName(CustomerName name)
+    {
+        if (Name != name)
+        {
+            var isNameExists = await _customerRepository.IsCustomerNameExsits(name);
+
+            if (isNameExists)
+                throw new CustomerNameAlreadyExistsException(name);
+
+            Name = name;
+        }
+    }
 }

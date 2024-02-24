@@ -1,4 +1,4 @@
-﻿namespace GSOP.Domain.Customers;
+﻿namespace GSOP.Domain.Contracts.Customers.Models;
 
 public readonly record struct CustomerName
 {

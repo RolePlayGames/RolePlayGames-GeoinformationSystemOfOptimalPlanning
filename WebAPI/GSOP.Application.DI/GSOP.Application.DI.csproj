@@ -11,7 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GSOP.Domain\GSOP.Domain.csproj" />
+    <ProjectReference Include="..\GSOP.Application.Contracts\GSOP.Application.Contracts.csproj" />
+    <ProjectReference Include="..\GSOP.Application\GSOP.Application.csproj" />
   </ItemGroup>
 
 </Project>
