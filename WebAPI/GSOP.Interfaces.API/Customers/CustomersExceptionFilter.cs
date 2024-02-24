@@ -2,15 +2,14 @@
 using GSOP.Interfaces.API.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GSOP.Interfaces.API.Customers
+namespace GSOP.Interfaces.API.Customers;
+
+public class CustomersExceptionFilter : ExceptionFilterBase
 {
-    public class CustomersExceptionFilter : ExceptionFilterBase
+    protected override IActionResult? MapException(Exception exception) => exception switch
     {
-        protected override IActionResult? MapException(Exception exception) => exception switch
-        {
-            CustomerWasNotFoundException => new StatusCodeResult(StatusCodes.Status404NotFound),
-            CustomerNameAlreadyExistsException => new UnprocessableEntityObjectResult(nameof(CustomerNameAlreadyExistsException)),
-            _ => null,
-        };
-    }
+        CustomerWasNotFoundException => new StatusCodeResult(StatusCodes.Status404NotFound),
+        CustomerNameAlreadyExistsException => new UnprocessableEntityObjectResult(nameof(CustomerNameAlreadyExistsException)),
+        _ => null,
+    };
 }
