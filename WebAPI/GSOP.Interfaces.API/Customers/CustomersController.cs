@@ -25,28 +25,28 @@ public class CustomersController : ControllerBase
     }
 
     [HttpDelete]
-    [Route("/{id}")]
+    [Route("{id}")]
     public Task DeleteCustomer(long id)
     {
         return _customerService.DeleteCustomer(id);
     }
 
     [HttpGet]
-    [Route("/{id}")]
+    [Route("{id}")]
     public Task<CustomerDTO> GetCustomer(long id)
     {
         return _customerService.GetCustomer(id);
     }
 
     [HttpGet]
-    [Route("/info")]
+    [Route("info")]
     public Task<IReadOnlyCollection<CustomerInfo>> GetCustomersInfo()
     {
         return _customerService.GetCustomersInfo();
     }
 
     [HttpPost]
-    [Route("/{id}")]
+    [Route("{id}")]
     public Task UpdateCustomer(long id, CustomerDTO customer)
     {
         return _customerService.UpdateCustomer(id, customer);
