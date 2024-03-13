@@ -1,0 +1,1 @@
+export const white = '#f6f6fa';
