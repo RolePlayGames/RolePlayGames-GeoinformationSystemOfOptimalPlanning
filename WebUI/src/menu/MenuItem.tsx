@@ -6,6 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import styled from "@emotion/styled";
 import { white } from "../styles/colors";
+import { CUSTOMERS } from "../routes/routes";
 
 export type MenuItemData = {
   header: string,
@@ -15,9 +16,9 @@ export type MenuItemData = {
   
 export const MenuItems = [
   {
-    header: 'Customers',
+    header: 'Заказчики',
     icon: <PeopleAltOutlinedIcon sx={{ color: white }}/>,
-    path: '/customers',
+    path: CUSTOMERS,
   },
 ];
 

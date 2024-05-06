@@ -35,7 +35,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GSOP.Application.DI", "GSOP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GSOP.Domain.Test", "GSOP.Domain.Test\GSOP.Domain.Test.csproj", "{9513A31A-8487-439A-B5C7-D430F5287203}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSOP.Interfaces.API.Test.Integrations", "GSOP.Interfaces.API.Test.Integrations\GSOP.Interfaces.API.Test.Integrations.csproj", "{FB82CF11-6689-4234-8229-542E49153B02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GSOP.Interfaces.API.Test.Integrations", "GSOP.Interfaces.API.Test.Integrations\GSOP.Interfaces.API.Test.Integrations.csproj", "{FB82CF11-6689-4234-8229-542E49153B02}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FF04AD3A-922B-4B10-818A-D5DC9592598B}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

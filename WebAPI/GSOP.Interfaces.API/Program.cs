@@ -15,6 +15,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDomainServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddDataAccessComponents();
+builder.Services.AddWebApiComponents();
 
 #endregion
 
@@ -32,9 +33,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseUiStaticFiles();
+
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapFallbackToController("GetReactStaticFileHtml", "Home");
 
 #endregion
 
