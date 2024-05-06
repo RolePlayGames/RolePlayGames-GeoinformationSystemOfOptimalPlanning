@@ -62,7 +62,7 @@ const MenuDrawerContainer = styled(Box)({
   height: '100%',
 });
 
-const TopItemsContainer = styled(Box)();
+const TopItemsContainer = styled(Box)({});
 
 const OpenedMenuHeaderContainer = styled(Box)({
   padding: '8px',
@@ -205,8 +205,8 @@ export const SideMenu = () => {
             </ClosedMenuHeaderContainer>
           )}
         <MenuItemsList>
-          { MenuItems.map((item) => (
-            <MenuItem item={item} isMenuOpen={isMenuOpen}/>
+          { MenuItems.map((item, index) => (
+            <MenuItem key={item.header} item={item} isMenuOpen={isMenuOpen}/>
           ))}
         </MenuItemsList>
       </TopItemsContainer>

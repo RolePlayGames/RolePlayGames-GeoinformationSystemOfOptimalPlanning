@@ -11,7 +11,7 @@ public class _01022024020000_CustomersCreated : Migration
         Create.Table(CustomerPOCO.TableName)
             .InSchema(DBConstants.Schema)
             .WithColumn(nameof(CustomerPOCO.ID)).AsInt64().PrimaryKey().Identity()
-            .WithColumn(nameof(CustomerPOCO.Name)).AsString(500);
+            .WithColumn(nameof(CustomerPOCO.Name)).AsString(500).Unique();
     }
 
     public override void Down()
