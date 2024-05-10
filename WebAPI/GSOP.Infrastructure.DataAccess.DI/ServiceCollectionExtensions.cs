@@ -1,7 +1,9 @@
 ﻿using GSOP.Domain.Contracts.Customers;
+using GSOP.Domain.Contracts.FilmTypes;
 using GSOP.Infrastructure.DataAccess.Connections;
 using GSOP.Infrastructure.DataAccess.Contracts.Migrations;
 using GSOP.Infrastructure.DataAccess.Customers;
+using GSOP.Infrastructure.DataAccess.FilmTypes;
 using GSOP.Infrastructure.DataAccess.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,6 +22,7 @@ public static class ServiceCollectionExtensions
         .AddTransient<IConnectionStringProvider, ConnectionStringProvider>()
         .AddTransient<IMigrator, Migrator>()
         .AddScoped<ICustomerRepository, CustomerRepository>()
+        .AddScoped<IFilmTypeRepository, FilmTypeRepository>()
         .AddMigratorConnection()
         .AddLinqToDbConnection();
 }

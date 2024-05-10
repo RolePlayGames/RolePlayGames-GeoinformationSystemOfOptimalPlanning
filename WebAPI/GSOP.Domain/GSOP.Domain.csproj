@@ -10,4 +10,8 @@
     <ProjectReference Include="..\GSOP.Domain.Contracts\GSOP.Domain.Contracts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="FilmTypes\" />
+  </ItemGroup>
+
 </Project>

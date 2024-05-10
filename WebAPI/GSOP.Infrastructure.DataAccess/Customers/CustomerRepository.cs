@@ -30,20 +30,20 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyCollection<CustomerInfo>> GetCustomersInfo()
-    {
-        return await _connection.Customers
-            .Select(x => new CustomerInfo { ID = x.ID, Name = x.Name })
-            .ToListAsync();
-    }
-
-    /// <inheritdoc/>
     public Task<CustomerDTO?> GetCustomer(ID id)
     {
         return _connection.Customers
             .Where(x => x.ID == id)
             .Select(x => new CustomerDTO { Name = x.Name })
             .FirstOrDefaultAsync();
+    }
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyCollection<CustomerInfo>> GetCustomersInfo()
+    {
+        return await _connection.Customers
+            .Select(x => new CustomerInfo { ID = x.ID, Name = x.Name })
+            .ToListAsync();
     }
 
     /// <inheritdoc/>
