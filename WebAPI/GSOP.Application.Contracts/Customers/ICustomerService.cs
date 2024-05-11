@@ -8,9 +8,17 @@ namespace GSOP.Application.Contracts.Customers;
 public interface ICustomerService
 {
     /// <summary>
-    /// Returns small customers information
+    /// Creates new customer
     /// </summary>
-    Task<IReadOnlyCollection<CustomerInfo>> GetCustomersInfo();
+    /// <param name="customer">Customer data</param>
+    /// <returns>New customer ID</returns>
+    Task<long> CreateCustomer(CustomerDTO customer);
+
+    /// <summary>
+    /// Deletes customer
+    /// </summary>
+    /// <param name="id">Customer ID</param>
+    Task DeleteCustomer(long id);
 
     /// <summary>
     /// Gets customer by ID
@@ -20,11 +28,9 @@ public interface ICustomerService
     Task<CustomerDTO> GetCustomer(long id);
 
     /// <summary>
-    /// Creates new customer
+    /// Returns customers small information
     /// </summary>
-    /// <param name="customer">Customer data</param>
-    /// <returns>New customer ID</returns>
-    Task<long> CreateCustomer(CustomerDTO customer);
+    Task<IReadOnlyCollection<CustomerInfo>> GetCustomersInfo();
 
     /// <summary>
     /// Updates customer
@@ -32,10 +38,4 @@ public interface ICustomerService
     /// <param name="id">Customer ID</param>
     /// <param name="customer">Customer data</param>
     Task UpdateCustomer(long id, CustomerDTO customer);
-
-    /// <summary>
-    /// Deletes customer
-    /// </summary>
-    /// <param name="id">Customer ID</param>
-    Task DeleteCustomer(long id);
 }

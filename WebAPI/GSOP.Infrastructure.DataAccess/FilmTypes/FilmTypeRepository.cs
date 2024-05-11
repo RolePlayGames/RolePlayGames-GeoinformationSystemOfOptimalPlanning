@@ -1,7 +1,6 @@
 ﻿using GSOP.Domain.Contracts;
 using GSOP.Domain.Contracts.FilmTypes;
 using GSOP.Domain.Contracts.FilmTypes.Models;
-using GSOP.Infrastructure.DataAccess.Customers;
 using LinqToDB;
 
 namespace GSOP.Infrastructure.DataAccess.FilmTypes;
@@ -19,7 +18,7 @@ public class FilmTypeRepository : IFilmTypeRepository
     /// <inheritdoc/>
     public Task<long> Create(IFilmType filmType)
     {
-        return _connection.InsertWithInt64IdentityAsync(new CustomerPOCO() { Name = filmType.Article });
+        return _connection.InsertWithInt64IdentityAsync(new FilmTypePOCO() { Article = filmType.Article });
     }
 
     /// <inheritdoc/>

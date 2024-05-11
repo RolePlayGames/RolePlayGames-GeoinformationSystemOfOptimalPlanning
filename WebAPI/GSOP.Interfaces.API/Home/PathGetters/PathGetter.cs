@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace GSOP.Interfaces.API.Home.PathGetters;
+﻿namespace GSOP.Interfaces.API.Home.PathGetters;
 
 /// <inheritdoc/>
 public class PathGetter : IPathGetter

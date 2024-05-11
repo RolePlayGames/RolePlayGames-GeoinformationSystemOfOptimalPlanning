@@ -15,7 +15,7 @@ public interface ICustomerFactory
     Task<ICustomer> CreateCustomer(long id);
 
     /// <summary>
-    /// Creates and validates customer by customer data
+    /// Creates and validates customer by data
     /// </summary>
     /// <param name="customer">Customer data</param>
     /// <returns>Customer</returns>

@@ -1,6 +1,3 @@
-using GSOP.Application.Contracts.Customers;
-using GSOP.Domain.Contracts.Customers.Models;
-using GSOP.Interfaces.API.Customers;
 using GSOP.Interfaces.API.Home.PathGetters;
 using Microsoft.AspNetCore.Mvc;
 
