@@ -1,5 +1,4 @@
-﻿using AutoFixture;
-using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GSOP.Interfaces.API.Test.Integrations.Core;

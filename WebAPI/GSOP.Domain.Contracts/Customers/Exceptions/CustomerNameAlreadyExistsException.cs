@@ -9,7 +9,7 @@ public class CustomerNameAlreadyExistsException : Exception
 {
     public string CustomerName { get; }
 
-    public CustomerNameAlreadyExistsException(CustomerName customerName) : base($"Customer name should be unique but already exists ({customerName})")
+    public CustomerNameAlreadyExistsException(CustomerName customerName) : base($"Customer name {customerName} should be unique but already exists")
     {
         CustomerName = customerName;
     }

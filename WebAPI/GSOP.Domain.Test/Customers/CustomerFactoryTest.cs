@@ -20,7 +20,7 @@ public class CustomerFactoryTest
     }
 
     [Fact]
-    public async Task CreateCustomer_ById_CustomerExists_CreateCutomerFromRepository()
+    public async Task CreateCustomer_ById_CustomerExists_CreatesCutomerFromRepository()
     {
         // Arrange
         var id = _fixture.Create<ID>();
@@ -61,7 +61,7 @@ public class CustomerFactoryTest
     }
 
     [Fact]
-    public async Task CreateCustomer_ByDTO_CustomerNameDoesNotExist_CreateNewCutomer()
+    public async Task CreateCustomer_ByDTO_CustomerNameDoesNotExist_CreatesNewCutomer()
     {
         // Arrange
         var customerDTO = new CustomerDTO { Name = "Alexander" };

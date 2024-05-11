@@ -1,5 +1,4 @@
-﻿using GSOP.Domain.Contracts;
-using GSOP.Domain.Contracts.Customers;
+﻿using GSOP.Domain.Contracts.Customers;
 using GSOP.Domain.Contracts.Customers.Exceptions;
 using GSOP.Domain.Contracts.Customers.Models;
 
