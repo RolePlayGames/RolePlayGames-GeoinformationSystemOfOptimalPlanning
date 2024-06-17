@@ -1,5 +1,5 @@
 import { SideMenu } from './menu/SideMenu';
-import { Box, Typography, styled } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { CUSTOMERS } from './routes/routes';
@@ -30,7 +30,7 @@ const WorkspaceContainer = styled(Box)({
   flexGrow: 1,
   p: 3,
   background: '#e4e9f7',
-})
+});
 
 export const App = () => {
   return (

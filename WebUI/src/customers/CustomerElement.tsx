@@ -72,12 +72,12 @@ const validateName = (name: string) => {
 
 type CustomerElementProps = {
     id: number,
-    customer: Customer,
+    item: Customer,
+    apiPath: string,
 }
 
-export const CustomerElement = ({ id, customer }: CustomerElementProps)=> {
-
-    const [name, setName] = useState(customer.name);
+export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
+    const [name, setName] = useState(item.name);
     const [nameError, setNameError] = useState<string>();
 
     const navigate = useNavigate();
@@ -93,7 +93,7 @@ export const CustomerElement = ({ id, customer }: CustomerElementProps)=> {
     const onUpdate = async () => {
         try {
             await updateCustomer(id, { name });
-            navigate(`/customers`);
+            navigate(apiPath);
         } catch (error: unknown) {
             if ((error as IClientError).errorCode === 'CustomerNameAlreadyExistsException')
                 setNameError('Указанное имя уже используется в системе');
@@ -103,7 +103,7 @@ export const CustomerElement = ({ id, customer }: CustomerElementProps)=> {
     const onCreate = async () => {
         try {
             await createCustomer({ name });
-            navigate(`/customers`);
+            navigate(apiPath);
         } catch (error: unknown) {
             if ((error as IClientError).errorCode === 'CustomerNameAlreadyExistsException')
                 setNameError('Указанное имя уже используется в системе');
@@ -121,13 +121,13 @@ export const CustomerElement = ({ id, customer }: CustomerElementProps)=> {
     const onDelete = async () => {
         if (id > 0) {
             await deleteCustomer(id);
-            navigate(`/customers`);
+            navigate(apiPath);
         }
     };
 
     return(
         <CustomerElementContainer>
-            <HeaderLabel>Заказчик {customer.name}</HeaderLabel>
+            <HeaderLabel>Заказчик {item.name}</HeaderLabel>
             <ActionsBar>
                 <SaveButton onClick={onSave} disabled={!!nameError}/>
                 <DeleteButton onClick={onDelete} disabled={id <= 0}/>

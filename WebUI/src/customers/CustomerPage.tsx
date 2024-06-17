@@ -6,11 +6,12 @@ import { LoadingProgress } from "../common/LoadingProgress";
 
 type CustomerPageProps = {
     id: number,
+    apiPath: string,
 }
 
-export const CustomerPage = ({ id }: CustomerPageProps) => {
+export const CustomerPage = ({ id, apiPath }: CustomerPageProps) => {
 
-    const [customer, setCustomer] = useState<Customer | undefined>();
+    const [item, setItem] = useState<Customer | undefined>();
 
     const navigate = useNavigate();
     
@@ -27,22 +28,22 @@ export const CustomerPage = ({ id }: CustomerPageProps) => {
         }
         
         if (customer)
-            setCustomer(customer);
+            setItem(customer);
         else
-            navigate('/customers');
+            navigate(apiPath);
     }, [id]);
     
     useEffect(() => {
         loadCustomer();
     }, [id]);
 
-    if (customer === undefined) {
+    if (item === undefined) {
         return (
             <LoadingProgress/>
         );
     } else {
         return (
-            <CustomerElement id={id} customer={customer}/>
+            <CustomerElement id={id} item={item} apiPath={apiPath}/>
         );
     }
 }

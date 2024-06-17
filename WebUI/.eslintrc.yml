@@ -1,0 +1,35 @@
+env:
+  browser: true
+  es2021: true
+extends:
+  #- 'plugin:react/recommended'
+  #- 'airbnb'
+  - 'eslint:recommended'
+  - 'plugin:@typescript-eslint/eslint-recommended'
+  - 'plugin:@typescript-eslint/recommended'
+parserOptions:
+  ecmaFeatures:
+    jsx: true
+  ecmaVersion: 12
+  sourceType: module
+parser: '@typescript-eslint/parser'
+plugins:
+  - 'react'
+  - '@typescript-eslint'
+rules: {
+  linebreak-style: 0,
+  indent: ['error', 'tab', { SwitchCase: 1 }],
+  react/jsx-indent: ['error', 'tab'],
+  no-tabs: ['error', { allowIndentationTabs: true }],
+  arrow-body-style: ['error', 'as-needed'],
+  jsx-a11y/aria-role: 0,
+  react/jsx-props-no-spreading: 0,
+  react/jsx-filename-extension: 0,
+  import/extensions: 0,
+  no-undef: 0,
+  import/prefer-default-export: 0,
+  curly: ['error', 'multi'],
+  nonblock-statement-body-position: 0,
+  no-restricted-globals: 0,
+  no-fallthrough: 0,
+}
