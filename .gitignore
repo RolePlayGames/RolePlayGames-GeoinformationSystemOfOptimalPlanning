@@ -4,11 +4,14 @@
 
 # vs solution
 .vs/
+/WebAPI/.vscode
 
 # .NET output
 obj/
 bin/
 
-#notepad++
+# notepad++
 *.bak
-/WebAPI/.vscode
+
+# SPA page
+/wwwroot/UI
