@@ -1,29 +1,29 @@
 import { useState, useCallback, useEffect } from "react";
-import { Customer, getCustomer, } from "./customersClient";
-import { CustomerElement } from "./CustomerElement";
 import { useNavigate } from "react-router-dom";
 import { LoadingProgress } from "../common/LoadingProgress";
+import { FilmType, getFilmType } from "./filmTypesClient";
+import { FilmTypeElement } from "./FilmTypeElement";
 
-type CustomerPageProps = {
+type FilmTypePageProps = {
     id: number,
     apiPath: string,
 }
 
-export const CustomerPage = ({ id, apiPath }: CustomerPageProps) => {
+export const FilmTypePage = ({ id, apiPath }: FilmTypePageProps) => {
 
-	const [item, setItem] = useState<Customer | undefined>();
+	const [item, setItem] = useState<FilmType | undefined>();
 
 	const navigate = useNavigate();
     
 	const loadItem = useCallback(async () => {
 
-		let item: Customer | undefined;
+		let item: FilmType | undefined;
 
 		if (id > 0) 
-			item = await getCustomer(id);
+			item = await getFilmType(id);
 		else 
 			item = {
-				name: '',
+				article: '',
 			}
         
         
@@ -43,7 +43,7 @@ export const CustomerPage = ({ id, apiPath }: CustomerPageProps) => {
 		);
 	else 
 		return (
-			<CustomerElement id={id} item={item} apiPath={apiPath}/>
+			<FilmTypeElement id={id} item={item} apiPath={apiPath}/>
 		);
     
 }

@@ -2,11 +2,11 @@ import { Box, Typography, Button, styled, ButtonProps } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CommonInputField } from "../common/inputs/inputs";
-import { Customer, updateCustomer, createCustomer, deleteCustomer, IClientError } from "./customersClient";
 import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { FilmType, IClientError, createFilmType, deleteFilmType, updateFilmType } from "./filmTypesClient";
 
-const CustomerElementContainer = styled(Box)({
+const FilmTypeElementContainer = styled(Box)({
 	display: 'flex',
 	flexDirection: 'column',
 	width: 'fill-available',
@@ -60,53 +60,49 @@ const DeleteButton = (props: ButtonProps) => (
 	</Button>
 );
 
-const validateName = (name: string) => {
-	if (name.length == 0)
+const validateArticle = (article: string) => {
+	if (article.length == 0)
 		return 'Заполните название';
 
-	if (name.length > 500)
-		return 'Название не должно превышать 500 символов';
+	if (article.length > 10)
+		return 'Название не должно превышать 10 символов';
 
 	return undefined;
 }
 
-type CustomerElementProps = {
+type FilmTypeElementProps = {
     id: number,
-    item: Customer,
+    item: FilmType,
     apiPath: string,
 }
 
-export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
-	const [name, setName] = useState(item.name);
-	const [nameError, setNameError] = useState<string>();
+export const FilmTypeElement = ({ id, item, apiPath }: FilmTypeElementProps)=> {
+	const [article, setArticle] = useState(item.article);
+	const [articleError, setArticleError] = useState<string>();
 
 	const navigate = useNavigate();
     
 	useEffect(() => {
-		setNameError(validateName(name));
-	}, [name]);
-
-	const changeName = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setName(event.target.value);
-	};
+		setArticleError(validateArticle(article));
+	}, [article]);
 
 	const onUpdate = async () => {
 		try {
-			await updateCustomer(id, { name });
+			await updateFilmType(id, { article });
 			navigate(apiPath);
 		} catch (error: unknown) {
-			if ((error as IClientError).errorCode === 'CustomerNameAlreadyExistsException')
-				setNameError('Указанное имя уже используется в системе');
+			if ((error as IClientError).errorCode === 'FilmTypeArticleAlreadyExistsException')
+				setArticleError('Указанное название уже используется в системе');
 		}
 	};
 
 	const onCreate = async () => {
 		try {
-			await createCustomer({ name });
+			await createFilmType({ article });
 			navigate(apiPath);
 		} catch (error: unknown) {
-			if ((error as IClientError).errorCode === 'CustomerNameAlreadyExistsException')
-				setNameError('Указанное имя уже используется в системе');
+			if ((error as IClientError).errorCode === 'FilmTypeArticleAlreadyExistsException')
+				setArticleError('Указанное название уже используется в системе');
 		}
 	};
 
@@ -120,28 +116,32 @@ export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
 
 	const onDelete = async () => {
 		if (id > 0) {
-			await deleteCustomer(id);
+			await deleteFilmType(id);
 			navigate(apiPath);
 		}
 	};
 
+	const changeArticle = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setArticle(event.target.value);
+	};
+
 	return(
-		<CustomerElementContainer>
-			<HeaderLabel>Заказчик {item.name}</HeaderLabel>
+		<FilmTypeElementContainer>
+			<HeaderLabel>Тип пленки {item.article}</HeaderLabel>
 			<ActionsBar>
-				<SaveButton onClick={onSave} disabled={!!nameError}/>
+				<SaveButton onClick={onSave} disabled={!!articleError}/>
 				<DeleteButton onClick={onDelete} disabled={id <= 0}/>
 			</ActionsBar>
 			<CommonInputField
 				label={'Название'}
-				value={name}
-				onChange={changeName}
-				error={!!nameError}
-				helperText={nameError}
+				value={article}
+				onChange={changeArticle}
+				error={!!articleError}
+				helperText={articleError}
 				sx={{
 					marginTop: '1vw',
 					marginBottom: '1vw',
 				}}/>
-		</CustomerElementContainer>
+		</FilmTypeElementContainer>
 	);
 }
