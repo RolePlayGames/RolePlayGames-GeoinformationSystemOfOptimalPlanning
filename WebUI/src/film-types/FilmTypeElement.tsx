@@ -1,64 +1,9 @@
-import { Box, Typography, Button, styled, ButtonProps } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CommonInputField } from "../common/inputs/inputs";
-import SaveIcon from '@mui/icons-material/Save';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { FilmType, IClientError, createFilmType, deleteFilmType, updateFilmType } from "./filmTypesClient";
-
-const FilmTypeElementContainer = styled(Box)({
-	display: 'flex',
-	flexDirection: 'column',
-	width: 'fill-available',
-	marginLeft: '2vw',
-	marginRight: '2vw',
-});
-
-const HeaderLabel = styled(Typography)({
-	paddingTop: '12px',
-	paddingBottom: '12px',
-	fontSize: '1rem',
-	fontWeight: '600'
-});
-
-const ActionsBar = styled(Box)({
-	display: 'flex',
-	flexDirection: 'row',
-	justifyContent: 'space-between',
-	marginBottom: '1vw',
-});
-
-const SaveButton = (props: ButtonProps) => (
-	<Button
-		variant="contained"
-		endIcon={<SaveIcon/>}
-		sx={{
-			background: '#1d1b31',
-			'&:hover': {
-				backgroundColor: '#11101d'
-			}
-		}}
-		{...props}
-	>
-		Сохранить
-	</Button>
-);
-
-const DeleteButton = (props: ButtonProps) => (
-	<Button
-		variant="contained"
-		startIcon={<DeleteIcon/>}
-		sx={{
-			background: '#1d1b31',
-			'&:hover': {
-				backgroundColor: '#11101d'
-			}
-		}}
-		{...props}
-	>
-		Удалить
-	</Button>
-);
+import { HeaderLabel } from "../common/controls";
+import { ElementContainer, ActionsBar, SaveButton, DeleteButton } from "../common/elementControls";
 
 const validateArticle = (article: string) => {
 	if (article.length == 0)
@@ -76,7 +21,7 @@ type FilmTypeElementProps = {
     apiPath: string,
 }
 
-export const FilmTypeElement = ({ id, item, apiPath }: FilmTypeElementProps)=> {
+export const FilmTypeElement = ({ id, item, apiPath }: FilmTypeElementProps) => {
 	const [article, setArticle] = useState(item.article);
 	const [articleError, setArticleError] = useState<string>();
 
@@ -126,7 +71,7 @@ export const FilmTypeElement = ({ id, item, apiPath }: FilmTypeElementProps)=> {
 	};
 
 	return(
-		<FilmTypeElementContainer>
+		<ElementContainer>
 			<HeaderLabel>Тип пленки {item.article}</HeaderLabel>
 			<ActionsBar>
 				<SaveButton onClick={onSave} disabled={!!articleError}/>
@@ -142,6 +87,6 @@ export const FilmTypeElement = ({ id, item, apiPath }: FilmTypeElementProps)=> {
 					marginTop: '1vw',
 					marginBottom: '1vw',
 				}}/>
-		</FilmTypeElementContainer>
+		</ElementContainer>
 	);
 }

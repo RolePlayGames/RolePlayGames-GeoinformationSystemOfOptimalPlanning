@@ -1,64 +1,9 @@
-import { Box, Typography, Button, styled, ButtonProps } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CommonInputField } from "../common/inputs/inputs";
 import { Customer, updateCustomer, createCustomer, deleteCustomer, IClientError } from "./customersClient";
-import SaveIcon from '@mui/icons-material/Save';
-import DeleteIcon from '@mui/icons-material/Delete';
-
-const CustomerElementContainer = styled(Box)({
-	display: 'flex',
-	flexDirection: 'column',
-	width: 'fill-available',
-	marginLeft: '2vw',
-	marginRight: '2vw',
-});
-
-const HeaderLabel = styled(Typography)({
-	paddingTop: '12px',
-	paddingBottom: '12px',
-	fontSize: '1rem',
-	fontWeight: '600'
-});
-
-const ActionsBar = styled(Box)({
-	display: 'flex',
-	flexDirection: 'row',
-	justifyContent: 'space-between',
-	marginBottom: '1vw',
-});
-
-const SaveButton = (props: ButtonProps) => (
-	<Button
-		variant="contained"
-		endIcon={<SaveIcon/>}
-		sx={{
-			background: '#1d1b31',
-			'&:hover': {
-				backgroundColor: '#11101d'
-			}
-		}}
-		{...props}
-	>
-		Сохранить
-	</Button>
-);
-
-const DeleteButton = (props: ButtonProps) => (
-	<Button
-		variant="contained"
-		startIcon={<DeleteIcon/>}
-		sx={{
-			background: '#1d1b31',
-			'&:hover': {
-				backgroundColor: '#11101d'
-			}
-		}}
-		{...props}
-	>
-		Удалить
-	</Button>
-);
+import { HeaderLabel } from "../common/controls";
+import { ActionsBar, SaveButton, DeleteButton, ElementContainer } from "../common/elementControls";
 
 const validateName = (name: string) => {
 	if (name.length == 0)
@@ -126,7 +71,7 @@ export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
 	};
 
 	return(
-		<CustomerElementContainer>
+		<ElementContainer>
 			<HeaderLabel>Заказчик {item.name}</HeaderLabel>
 			<ActionsBar>
 				<SaveButton onClick={onSave} disabled={!!nameError}/>
@@ -142,6 +87,6 @@ export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
 					marginTop: '1vw',
 					marginBottom: '1vw',
 				}}/>
-		</CustomerElementContainer>
+		</ElementContainer>
 	);
 }
