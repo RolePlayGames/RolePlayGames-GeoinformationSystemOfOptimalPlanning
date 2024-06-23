@@ -7,8 +7,8 @@ type PagesRouteProps = {
 }
 
 export const PagesRoute = ({ path, element }: PagesRouteProps) => (
-    <Fragment>        
-        <Route path={path} element={element}/>
-        <Route path={`${path}/:id`} element={element}/>
-    </Fragment>
+	<Fragment>        
+		<Route path={path} element={element}/>
+		<Route path={`${path}/:id`} element={element}/>
+	</Fragment>
 );

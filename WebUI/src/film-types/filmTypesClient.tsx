@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { nameof } from "../utils/nameof/nameof";
 
 const API_ROOT = `${document.location.protocol}//${document.location.host}/api/`;
-const CUSTOMERS_ROOT = 'customers';
+const API_URL = 'film-types';
 
 const handleError = (methodName: string, error: AxiosError | undefined) => {
 	if (error) 
@@ -12,67 +12,67 @@ const handleError = (methodName: string, error: AxiosError | undefined) => {
     
 }
 
-export type CustomerInfo = {
+export type FilmTypeInfo = {
     id: number,
     name: string,
 }
 
-export type Customer = {
-    name: string,
+export type FilmType = {
+    article: string,
 }
 
-export const getCustomersInfo = async () => {
+export const getFilmTypesInfo = async () => {
 	try {
-		const { data } = await axios.get<CustomerInfo[]>(`${API_ROOT}${CUSTOMERS_ROOT}/info`);
+		const { data } = await axios.get<FilmTypeInfo[]>(`${API_ROOT}${API_URL}/info`);
 		return data;
 	} catch (error: unknown) {
-		handleError(nameof({getCustomersInfo}), error as AxiosError);
+		handleError(nameof({getFilmTypesInfo}), error as AxiosError);
 		return undefined;
 	}
 }
 
-export const getCustomer = async (id: number) => {
+export const getFilmType = async (id: number) => {
 	try {
-		const { data } = await axios.get<Customer>(`${API_ROOT}${CUSTOMERS_ROOT}/${id}`);
+		const { data } = await axios.get<FilmType>(`${API_ROOT}${API_URL}/${id}`);
 		return data;
 	} catch (error: unknown) {
-		handleError(nameof({getCustomer}), error as AxiosError);
+		handleError(nameof({getFilmType}), error as AxiosError);
 		return undefined;
 	}
 }
 
-export const createCustomer = async (customer: Customer) => {
+export const createFilmType = async (filmType: FilmType) => {
 	try {
-		const { data } = await axios.post<number>(`${API_ROOT}${CUSTOMERS_ROOT}`, customer);
+		const { data } = await axios.post<number>(`${API_ROOT}${API_URL}`, filmType);
 		return data;
 	} catch (error: unknown) {
-		handleError(nameof({createCustomer}), error as AxiosError);
+		handleError(nameof({createFilmType}), error as AxiosError);
 		throw new ClientError(error as AxiosError);
 	}
 }
 
-export const updateCustomer = (id: number, customer: Customer) => {
+export const updateFilmType = (id: number, filmType: FilmType) => {
 	try {
-		return axios.post(`${API_ROOT}${CUSTOMERS_ROOT}/${id}`, customer);
+		return axios.post(`${API_ROOT}${API_URL}/${id}`, filmType);
 	} catch (error: unknown) {
-		handleError(nameof({updateCustomer}), error as AxiosError);
+		handleError(nameof({updateFilmType}), error as AxiosError);
 		throw new ClientError(error as AxiosError);
 	}
 }
 
-export const deleteCustomer = async (id: number) => {
+export const deleteFilmType = async (id: number) => {
 	try {
-		await axios.delete(`${API_ROOT}${CUSTOMERS_ROOT}/${id}`);
+		await axios.delete(`${API_ROOT}${API_URL}/${id}`);
 		return true;
 	} catch (error: unknown) {
-		handleError(nameof({deleteCustomer}), error as AxiosError);
+		handleError(nameof({deleteFilmType}), error as AxiosError);
 		return false;
 	}
 }
 
 export interface IClientError {
     status: number;
-    errorCode: string;
+	errorCode: string;
 }
 
 export class ClientError extends Error implements IClientError {

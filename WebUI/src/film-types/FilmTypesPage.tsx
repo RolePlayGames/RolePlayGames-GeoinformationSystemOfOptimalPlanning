@@ -1,15 +1,15 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
-import { CustomerPage } from "./CustomerPage";
-import { getCustomersInfo } from "./customersClient";
 import { LoadingProgress } from "../common/LoadingProgress";
 import { AddItemButton, HeaderLabel, ItemsBlock, ItemsContainer, ItemsList, PageContainer } from "../common/controls";
 import { Item, ListItem } from "../common/Item";
-import { CUSTOMERS } from "../routes/routes";
+import { FilmTypePage } from "./FilmTypePage";
+import { getFilmTypesInfo } from "./filmTypesClient";
+import { FILM_TYPES } from "../routes/routes";
 
-const apiPath = CUSTOMERS;
+const apiPath = FILM_TYPES;
 
-export const CustomersPage = () => {
+export const FilmTypesPage = () => {
 
 	const { id } = useParams();
 
@@ -21,7 +21,7 @@ export const CustomersPage = () => {
 	const navigate = useNavigate();
 
 	const loadItems = useCallback(async () => {
-		const result = await getCustomersInfo();      
+		const result = await getFilmTypesInfo();      
 		setItems(result);
 	}, []);
 
@@ -46,7 +46,7 @@ export const CustomersPage = () => {
 
 	return(
 		<PageContainer>
-			<HeaderLabel>Заказчики</HeaderLabel>
+			<HeaderLabel>Типы пленки</HeaderLabel>
 			{ items === undefined ? (
 				<LoadingProgress/>
 			) : (
@@ -57,7 +57,7 @@ export const CustomersPage = () => {
 							{ items.map((item) => (<Item item={item} handleItemClick={handleItemClick}/>)) }
 						</ItemsList>
 					</ItemsBlock>
-					{ (itemId !== undefined && isVisible) && <CustomerPage id={itemId} apiPath={apiPath}/> }
+					{ (itemId !== undefined && isVisible) && <FilmTypePage id={itemId} apiPath={apiPath}/> }
 				</ItemsContainer>
 			)}
 		</PageContainer>

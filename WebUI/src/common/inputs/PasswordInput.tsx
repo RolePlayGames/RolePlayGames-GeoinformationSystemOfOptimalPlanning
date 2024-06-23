@@ -3,15 +3,15 @@ import { FormHelperText, IconButton, InputAdornment, InputLabel, OutlinedInput, 
 import { useState, Fragment } from "react";
 
 export interface PasswordInputProps extends OutlinedInputProps {
-	errorText?: string;
+    errorText?: string;
 }
 
 export const PasswordInput = (props: PasswordInputProps) => {
 	const [showIcon, setShowIcon] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
-	
+    
 	const handleClickShowPassword = () => setShowPassword((show) => !show);
-	
+    
 	const handleVisibilityIconMouseDown = (event: React.MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
 	};
