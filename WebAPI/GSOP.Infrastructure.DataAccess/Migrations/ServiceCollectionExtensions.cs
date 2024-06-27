@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
             builder
                 .AddPostgres()
                 .WithGlobalConnectionString(connectionsStringProvider.DdlConnectionString)
-                .ScanIn(typeof(_01022024013400_Initial).Assembly).For.Migrations();
+                .ScanIn(typeof(_20240201013400_Initial).Assembly).For.Migrations();
         })
         .AddLogging(lb => lb.AddFluentMigratorConsole());
 }

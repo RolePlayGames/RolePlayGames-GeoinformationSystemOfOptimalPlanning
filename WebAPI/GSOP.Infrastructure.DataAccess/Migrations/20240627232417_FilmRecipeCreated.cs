@@ -4,8 +4,8 @@ using GSOP.Infrastructure.DataAccess.FilmTypes;
 
 namespace GSOP.Infrastructure.DataAccess.Migrations;
 
-[Migration(27062024232417)]
-public class _27062024232417_FilmRecipeCreated : Migration
+[Migration(20240627232417)]
+public class _20240627232417_FilmRecipeCreated : Migration
 {
     public override void Up()
     {
