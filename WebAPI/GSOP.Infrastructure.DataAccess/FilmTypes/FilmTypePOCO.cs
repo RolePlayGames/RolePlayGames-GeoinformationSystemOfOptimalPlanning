@@ -11,5 +11,5 @@ public class FilmTypePOCO
     public long ID { get; init; }
 
     [Column]
-    required public string Article { get; init; }
+    public required string Article { get; init; }
 }
