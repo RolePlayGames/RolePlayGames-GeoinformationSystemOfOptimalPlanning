@@ -2,6 +2,9 @@
 
 namespace GSOP.Domain.Contracts.FilmTypes;
 
+/// <summary>
+/// Manages film type domain model creation
+/// </summary>
 public interface IFilmTypeFactory
 {
     /// <summary>
