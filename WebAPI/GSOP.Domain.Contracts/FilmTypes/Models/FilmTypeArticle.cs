@@ -1,6 +1,6 @@
 ﻿namespace GSOP.Domain.Contracts.FilmTypes.Models;
 
-public readonly record struct FilmTypeArticle
+public record FilmTypeArticle
 {
     public const int MinLength = 1;
     public const int MaxLength = 10;

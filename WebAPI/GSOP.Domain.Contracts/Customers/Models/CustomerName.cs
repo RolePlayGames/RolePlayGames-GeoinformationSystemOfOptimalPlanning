@@ -1,6 +1,6 @@
 ﻿namespace GSOP.Domain.Contracts.Customers.Models;
 
-public readonly record struct CustomerName
+public record CustomerName
 {
     public const int MinLength = 3;
     public const int MaxLength = 500;

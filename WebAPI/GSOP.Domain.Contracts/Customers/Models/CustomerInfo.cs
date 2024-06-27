@@ -1,8 +1,5 @@
 ﻿namespace GSOP.Domain.Contracts.Customers.Models;
 
-public record CustomerInfo
+public record CustomerInfo : ModelInfo
 {
-    public required long ID { get; init; }
-    
-    public required string Name { get; init; }
 }
