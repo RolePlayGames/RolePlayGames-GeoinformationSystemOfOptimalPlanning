@@ -11,5 +11,5 @@ public class CustomerPOCO
     public long ID { get; init; }
 
     [Column]
-    required public string Name { get; init; }
+    public required string Name { get; init; }
 }

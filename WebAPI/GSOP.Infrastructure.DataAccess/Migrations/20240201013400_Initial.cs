@@ -2,8 +2,8 @@
 
 namespace GSOP.Infrastructure.DataAccess.Migrations;
 
-[Migration(01022024013400)]
-public class _01022024013400_Initial : Migration
+[Migration(20240201013400)]
+public class _20240201013400_Initial : Migration
 {
     public override void Up()
     {
