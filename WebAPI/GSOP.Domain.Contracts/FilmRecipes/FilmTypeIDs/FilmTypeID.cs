@@ -1,6 +1,6 @@
 ﻿namespace GSOP.Domain.Contracts.FilmRecipes.FilmTypeIDs;
 
-public readonly record struct FilmTypeID
+public record FilmTypeID
 {
     public record IsFilmTypeExists
     {
