@@ -62,16 +62,16 @@ public class FilmRecipe : IFilmRecipe
     }
 
     /// <inheritdoc/>
-    public async Task SetFilmTypeID(FilmTypeID filmTypeID)
+    public async Task SetFilmTypeID(FilmTypeID filmTypeId)
     {
-        if (FilmTypeID != filmTypeID)
+        if (FilmTypeID != filmTypeId)
         {
-            var isFilmTypeExists = await _filmRecipeRepository.IsFilmTypeExists(filmTypeID);
+            var isFilmTypeExists = await _filmRecipeRepository.IsFilmTypeExists(filmTypeId);
 
             if (!isFilmTypeExists)
-                throw new FilmTypeDoesNotExistsException(filmTypeID);
+                throw new FilmTypeDoesNotExistsException(filmTypeId);
 
-            FilmTypeID = filmTypeID;
+            FilmTypeID = filmTypeId;
         }
     }
 

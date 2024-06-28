@@ -33,7 +33,7 @@ public interface IFilmRecipe
     /// Validates and updates film type id (should exists)
     /// </summary>
     /// <param name="typeID">Film type ID</param>
-    Task SetFilmTypeID(FilmTypeID filmTypeID);
+    Task SetFilmTypeID(FilmTypeID filmTypeId);
 
     /// <summary>
     /// Updates thickness

@@ -87,7 +87,7 @@ public class FilmRecipeTest
     }
 
     [Fact]
-    public async Task SetFilmTypeID_FilmTypeExists_UpdatesFilmRecipeName()
+    public async Task SetFilmTypeId_FilmTypeExists_UpdatesFilmRecipeName()
     {
         // Arrange
         var newFilmTypeId = new FilmTypeID(2);
@@ -107,7 +107,7 @@ public class FilmRecipeTest
     }
 
     [Fact]
-    public async Task SetFilmTypeID_FilmTypeDoesNotExist_ThrowsFilmTypeDoesNotExistsException()
+    public async Task SetFilmTypeId_FilmTypeDoesNotExist_ThrowsFilmTypeDoesNotExistsException()
     {
         // Arrange
         var newFilmTypeId = new FilmTypeID(2);
