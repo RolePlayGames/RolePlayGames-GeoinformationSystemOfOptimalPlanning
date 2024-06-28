@@ -12,6 +12,6 @@ public interface IFilmType
     /// <summary>
     /// Validates and updates film type article
     /// </summary>
-    /// <param name="name">Film type article</param>
+    /// <param name="article">Film type article</param>
     Task SetArticle(FilmTypeArticle article);
 }
