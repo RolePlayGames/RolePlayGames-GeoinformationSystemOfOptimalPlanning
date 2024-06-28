@@ -32,17 +32,17 @@ public class FilmRecipesController
     }
 
     [HttpGet]
-    [Route("{id}")]
-    public Task<FilmRecipeDTO> GetFilmType(long id)
-    {
-        return _filmRecipeService.GetFilmRecipe(id);
-    }
-
-    [HttpGet]
     [Route("avaliable-film-types")]
     public Task<IReadOnlyCollection<AvaliableFilmType>> GetAvaliableFilmTypes()
     {
         return _filmRecipeService.GetAvaliableFilmTypes();
+    }
+
+    [HttpGet]
+    [Route("{id}")]
+    public Task<FilmRecipeDTO> GetFilmType(long id)
+    {
+        return _filmRecipeService.GetFilmRecipe(id);
     }
 
     [HttpGet]

@@ -10,6 +10,8 @@ namespace GSOP.Interfaces.API.Test.Integrations.Customers;
 
 public class CustomersControllerTest : WebIntegrationTestBase
 {
+    private const string _url = "/api/customers";
+
     private readonly Mock<ICustomerRepository> _customerRepositoryMock;
 
     public CustomersControllerTest()
@@ -21,7 +23,6 @@ public class CustomersControllerTest : WebIntegrationTestBase
     public async Task CreateCustomer_NameDoesNotExist_ReturnsStatusCodeOKAndCustomerId()
     {
         // Arrange
-        var url = "/api/customers";
         var request = new CustomerDTO { Name = "Klockner Pentaplast Internal" };
 
         _customerRepositoryMock
@@ -37,7 +38,7 @@ public class CustomersControllerTest : WebIntegrationTestBase
             .Verifiable();
 
         // Act
-        var response = await Client.PostAsJsonAsync(url, request);
+        var response = await Client.PostAsJsonAsync(_url, request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -53,7 +54,6 @@ public class CustomersControllerTest : WebIntegrationTestBase
     public async Task CreateCustomer_NameExists_ReturnsStatusCodeUnprocessableEntity()
     {
         // Arrange
-        var url = "/api/customers";
         var request = new CustomerDTO { Name = "Klockner Pentaplast Internal" };
 
         _customerRepositoryMock
@@ -62,7 +62,7 @@ public class CustomersControllerTest : WebIntegrationTestBase
             .Verifiable();
 
         // Act
-        var response = await Client.PostAsJsonAsync(url, request);
+        var response = await Client.PostAsJsonAsync(_url, request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
@@ -79,7 +79,7 @@ public class CustomersControllerTest : WebIntegrationTestBase
     {
         // Arrange
         var customerId = Fixture.Create<long>();
-        var url = $"/api/customers/{customerId}";
+        var url = $"{_url}/{customerId}";
 
         _customerRepositoryMock
             .Setup(x => x.DeleteCustomer(It.Is<ID>(x => x == customerId)))
@@ -100,7 +100,7 @@ public class CustomersControllerTest : WebIntegrationTestBase
     {
         // Arrange
         var customerId = Fixture.Create<long>();
-        var url = $"/api/customers/{customerId}";
+        var url = $"{_url}/{customerId}";
 
         _customerRepositoryMock
             .Setup(x => x.DeleteCustomer(It.Is<ID>(x => x == customerId)))
@@ -121,7 +121,7 @@ public class CustomersControllerTest : WebIntegrationTestBase
     {
         // Arrange
         var customerId = Fixture.Create<long>();
-        var url = $"/api/customers/{customerId}";
+        var url = $"{_url}/{customerId}";
 
         var customer = Fixture.Create<CustomerDTO>();
 
@@ -148,7 +148,7 @@ public class CustomersControllerTest : WebIntegrationTestBase
     {
         // Arrange
         var customerId = Fixture.Create<long>();
-        var url = $"/api/customers/{customerId}";
+        var url = $"{_url}/{customerId}";
 
         _customerRepositoryMock
             .Setup(x => x.GetCustomer(It.Is<ID>(x => x == customerId)))
@@ -168,7 +168,7 @@ public class CustomersControllerTest : WebIntegrationTestBase
     public async Task GetCustomersInfo_ReturnsStatusCodeOKAndCustomersInfo()
     {
         // Arrange
-        var url = $"/api/customers/info";
+        var url = $"{_url}/info";
         var customers = Fixture.CreateMany<CustomerInfo>().ToList();
 
         _customerRepositoryMock
@@ -194,7 +194,7 @@ public class CustomersControllerTest : WebIntegrationTestBase
     {
         // Arrange
         var customerId = Fixture.Create<long>();
-        var url = $"/api/customers/{customerId}";
+        var url = $"{_url}/{customerId}";
         var request = new CustomerDTO { Name = "Klockner Pentaplast Internal" };
 
         var customer = Fixture.Create<CustomerDTO>();
@@ -228,7 +228,7 @@ public class CustomersControllerTest : WebIntegrationTestBase
     {
         // Arrange
         var customerId = Fixture.Create<long>();
-        var url = $"/api/customers/{customerId}";
+        var url = $"{_url}/{customerId}";
         var request = Fixture.Create<CustomerDTO>();
 
         _customerRepositoryMock
@@ -250,7 +250,7 @@ public class CustomersControllerTest : WebIntegrationTestBase
     {
         // Arrange
         var customerId = Fixture.Create<long>();
-        var url = $"/api/customers/{customerId}";
+        var url = $"{_url}/{customerId}";
         var request = new CustomerDTO { Name = "Klockner Pentaplast Internal" };
 
         var customer = Fixture.Create<CustomerDTO>();
