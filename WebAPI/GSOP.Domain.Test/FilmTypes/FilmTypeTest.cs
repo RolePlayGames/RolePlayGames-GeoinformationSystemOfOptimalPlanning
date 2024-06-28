@@ -39,7 +39,7 @@ public class FilmTypeTest
     }
 
     [Fact]
-    public async Task SetArticle_NewArticleDoesNotExist_ThrowsFilmTypeArticleAlreadyExistsException()
+    public async Task SetArticle_NewArticleExists_ThrowsFilmTypeArticleAlreadyExistsException()
     {
         // Arrange
         var newArticle = new FilmTypeArticle("NFS2");

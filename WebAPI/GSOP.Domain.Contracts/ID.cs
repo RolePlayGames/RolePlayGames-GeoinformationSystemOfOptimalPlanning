@@ -1,6 +1,6 @@
 ﻿namespace GSOP.Domain.Contracts;
 
-public readonly record struct ID
+public record ID
 {
     private readonly long _id;
 

@@ -7,7 +7,7 @@ public class CustomerWasNotFoundException : Exception
 {
     public long ID { get; }
 
-    public CustomerWasNotFoundException(ID id) : base($"Customer was not found by ID ${id}")
+    public CustomerWasNotFoundException(ID id) : base($"Customer was not found by ID {id}")
     {
         ID = id;
     }

@@ -4,6 +4,7 @@ using GSOP.Domain.Contracts.FilmTypes.Models;
 
 namespace GSOP.Domain.FilmTypes;
 
+/// <inheritdoc/>
 public class FilmType : IFilmType
 {
     private readonly IFilmTypeRepository _filmTypeRepository;

@@ -1,29 +1,73 @@
-﻿using GSOP.Domain.Contracts.FilmRecipes.FilmTypeIDs;
-using GSOP.Domain.Contracts.FilmRecipes.Models;
-using GSOP.Domain.Contracts.FilmTypes;
+﻿using GSOP.Domain.Contracts.FilmRecipes.Models;
 
 namespace GSOP.Domain.Contracts.FilmRecipes;
 
 /// <summary>
 /// Film recipe domain model
 /// </summary>
-public class IFilmRecipe
+public interface IFilmRecipe
 {
-    public required FilmRecipeName Name { get; init; }
+    FilmRecipeName Name { get; }
 
-    public required FilmTypeID FilmTypeID { get; init; }
+    FilmTypeID FilmTypeID { get; }
 
-    public required IFilmType FilmType { get; init; }
+    FilmRecipeThickness Thickness { get; }
 
-    public required FilmRecipeThickness Thickness { get; init; }
+    FilmRecipeProductionSpeed ProductionSpeed { get; }
 
-    public required FilmRecipeProductionSpeed ProductionSpeed { get; init; }
+    FilmRecipeMaterialCost MaterialCost { get; }
 
-    public required FilmRecipeMaterialCost MaterialCost { get; init; }
+    FilmRecipeNozzle Nozzle { get; }
 
-    public required FilmRecipeNozzle Nozzle { get; init; }
+    FilmRecipeCalibration Calibration { get; }
 
-    public required FilmRecipeCalibration Calibration { get; init; }
+    FilmRecipeCoolingLip CoolingLip { get; }
 
-    public required FilmRecipeCoolingLip CoolingLip { get; init; }
+    /// <summary>
+    /// Validates and updates film type article (should be unique)
+    /// </summary>
+    /// <param name="name">Film type article</param>
+    Task SetName(FilmRecipeName name);
+
+    /// <summary>
+    /// Validates and updates film type id (should exists)
+    /// </summary>
+    /// <param name="typeID">Film type ID</param>
+    Task SetFilmTypeID(FilmTypeID filmTypeId);
+
+    /// <summary>
+    /// Updates thickness
+    /// </summary>
+    /// <param name="thickness">Thickness</param>
+    void SetThickness(FilmRecipeThickness thickness);
+
+    /// <summary>
+    /// Updates production speed
+    /// </summary>
+    /// <param name="productionSpeed">Production speed</param>
+    void SetProductionSpeed(FilmRecipeProductionSpeed productionSpeed);
+
+    /// <summary>
+    /// Updates material cost
+    /// </summary>
+    /// <param name="materialCost">Material cost</param>
+    void SetMaterialCost(FilmRecipeMaterialCost materialCost);
+
+    /// <summary>
+    /// Updates nozzle
+    /// </summary>
+    /// <param name="nozzle">Nozzle</param>
+    void SetNozzle(FilmRecipeNozzle nozzle);
+
+    /// <summary>
+    /// Updates calibration
+    /// </summary>
+    /// <param name="calibration">Calibration</param>
+    void SetCalibration(FilmRecipeCalibration calibration);
+
+    /// <summary>
+    /// Updates coolingLip
+    /// </summary>
+    /// <param name="coolingLip">CoolingLip</param>
+    void SetCoolingLip(FilmRecipeCoolingLip coolingLip);
 }

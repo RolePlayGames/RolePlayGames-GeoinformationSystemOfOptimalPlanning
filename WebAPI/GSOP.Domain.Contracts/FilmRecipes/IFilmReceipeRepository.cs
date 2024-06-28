@@ -29,6 +29,12 @@ public interface IFilmRecipeRepository
     Task<FilmRecipeDTO?> Get(ID id);
 
     /// <summary>
+    /// Gets avaliable film types
+    /// </summary>
+    /// <returns>Avaliable film types</returns>
+    Task<IReadOnlyCollection<AvaliableFilmType>> GetAvaliableFilmTypes();
+
+    /// <summary>
     /// Gets film recipe short information
     /// </summary>
     /// <returns>Each film recipe info</returns>
@@ -39,7 +45,7 @@ public interface IFilmRecipeRepository
     /// </summary>
     /// <param name="id">>Film type id</param>
     /// <returns>True if film type is exists</returns>
-    Task<bool> IsFilmTypeExists(ID id);
+    Task<bool> IsFilmTypeExists(FilmTypeID id);
 
     /// <summary>
     /// Is film recipe name already exists

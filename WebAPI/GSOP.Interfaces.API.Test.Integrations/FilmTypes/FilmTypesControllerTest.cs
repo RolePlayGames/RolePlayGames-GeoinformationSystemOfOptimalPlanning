@@ -10,6 +10,8 @@ namespace GSOP.Interfaces.API.Test.Integrations.FilmTypes;
 
 public class FilmTypesControllerTest : WebIntegrationTestBase
 {
+    private const string _url = "/api/film-types";
+
     private readonly Mock<IFilmTypeRepository> _filmTypeRepositoryMock;
 
     public FilmTypesControllerTest()
@@ -18,10 +20,9 @@ public class FilmTypesControllerTest : WebIntegrationTestBase
     }
 
     [Fact]
-    public async Task CreateFilmType_ArticleDoesNotExist_ReturnsStatusCodeOKAndCustomerId()
+    public async Task CreateFilmType_ArticleDoesNotExist_ReturnsStatusCodeOKAndFilmTypeId()
     {
-        // Arrange
-        var url = "/api/film-types";
+        // Arrange        
         var request = new FilmTypeDTO { Article = "NFS" };
 
         _filmTypeRepositoryMock
@@ -37,7 +38,7 @@ public class FilmTypesControllerTest : WebIntegrationTestBase
             .Verifiable();
 
         // Act
-        var response = await Client.PostAsJsonAsync(url, request);
+        var response = await Client.PostAsJsonAsync(_url, request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -52,8 +53,7 @@ public class FilmTypesControllerTest : WebIntegrationTestBase
     [Fact]
     public async Task CreateFilmType_ArticleExists_ReturnsStatusCodeUnprocessableEntity()
     {
-        // Arrange
-        var url = "/api/film-types";
+        // Arrange        
         var request = new FilmTypeDTO { Article = "NFS" };
 
         _filmTypeRepositoryMock
@@ -62,7 +62,7 @@ public class FilmTypesControllerTest : WebIntegrationTestBase
             .Verifiable();
 
         // Act
-        var response = await Client.PostAsJsonAsync(url, request);
+        var response = await Client.PostAsJsonAsync(_url, request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
@@ -79,7 +79,7 @@ public class FilmTypesControllerTest : WebIntegrationTestBase
     {
         // Arrange
         var filmTypeId = Fixture.Create<long>();
-        var url = $"/api/film-types/{filmTypeId}";
+        var url = $"{_url}/{filmTypeId}";
 
         _filmTypeRepositoryMock
             .Setup(x => x.Delete(It.Is<ID>(x => x == filmTypeId)))
@@ -100,7 +100,7 @@ public class FilmTypesControllerTest : WebIntegrationTestBase
     {
         // Arrange
         var filmTypeId = Fixture.Create<long>();
-        var url = $"/api/film-types/{filmTypeId}";
+        var url = $"{_url}/{filmTypeId}";
 
         _filmTypeRepositoryMock
             .Setup(x => x.Delete(It.Is<ID>(x => x == filmTypeId)))
@@ -121,7 +121,7 @@ public class FilmTypesControllerTest : WebIntegrationTestBase
     {
         // Arrange
         var filmTypeId = Fixture.Create<long>();
-        var url = $"/api/film-types/{filmTypeId}";
+        var url = $"{_url}/{filmTypeId}";
 
         var customer = Fixture.Create<FilmTypeDTO>();
 
@@ -148,7 +148,7 @@ public class FilmTypesControllerTest : WebIntegrationTestBase
     {
         // Arrange
         var filmTypeId = Fixture.Create<long>();
-        var url = $"/api/film-types/{filmTypeId}";
+        var url = $"{_url}/{filmTypeId}";
 
         _filmTypeRepositoryMock
             .Setup(x => x.Get(It.Is<ID>(x => x == filmTypeId)))
@@ -168,7 +168,7 @@ public class FilmTypesControllerTest : WebIntegrationTestBase
     public async Task GetFilmTypesInfo_ReturnsStatusCodeOKAndCustomersInfo()
     {
         // Arrange
-        var url = $"/api/film-types/info";
+        var url = $"{_url}/info";
         var filmTypes = Fixture.CreateMany<FilmTypeInfo>().ToList();
 
         _filmTypeRepositoryMock
@@ -190,11 +190,11 @@ public class FilmTypesControllerTest : WebIntegrationTestBase
     }
 
     [Fact]
-    public async Task UpdateFilmType_FilmTypeExistsAndArticleDoesNotExist_ReturnsStatusCodeOKAndCustomerId()
+    public async Task UpdateFilmType_FilmTypeExistsAndArticleDoesNotExist_ReturnsStatusCodeOKAndFilmTypeId()
     {
         // Arrange
         var filmTypeId = Fixture.Create<long>();
-        var url = $"/api/film-types/{filmTypeId}";
+        var url = $"{_url}/{filmTypeId}";
         var request = new FilmTypeDTO { Article = "NFS" };
 
         var filmType = new FilmTypeDTO { Article = "NFS2" };
@@ -228,7 +228,7 @@ public class FilmTypesControllerTest : WebIntegrationTestBase
     {
         // Arrange
         var filmTypeId = Fixture.Create<long>();
-        var url = $"/api/film-types/{filmTypeId}";
+        var url = $"{_url}/{filmTypeId}";
         var request = new FilmTypeDTO { Article = "NFS" };
 
         _filmTypeRepositoryMock
@@ -250,7 +250,7 @@ public class FilmTypesControllerTest : WebIntegrationTestBase
     {
         // Arrange
         var filmTypeId = Fixture.Create<long>();
-        var url = $"/api/film-types/{filmTypeId}";
+        var url = $"{_url}/{filmTypeId}";
         var request = new FilmTypeDTO { Article = "NFS" };
 
         var filmType = new FilmTypeDTO { Article = "NFS2" };

@@ -15,9 +15,10 @@ public class FilmRecipeRepository : IFilmRecipeRepository
         _connection = connection;
     }
 
+    /// <inheritdoc/>
     public Task<long> Create(IFilmRecipe filmRecipe)
     {
-        return _connection.InsertWithInt64IdentityAsync(new FilmRecipePOCO()
+        return _connection.InsertWithInt64IdentityAsync(new FilmRecipePOCO
         {
             Name = filmRecipe.Name,
             FilmTypeID = filmRecipe.FilmTypeID,
@@ -30,6 +31,7 @@ public class FilmRecipeRepository : IFilmRecipeRepository
         });
     }
 
+    /// <inheritdoc/>
     public async Task<bool> Delete(ID id)
     {
         return await _connection.FilmRecipes
@@ -37,6 +39,7 @@ public class FilmRecipeRepository : IFilmRecipeRepository
             .DeleteAsync() == 1;
     }
 
+    /// <inheritdoc/>
     public Task<FilmRecipeDTO?> Get(ID id)
     {
         return _connection.FilmRecipes
@@ -55,6 +58,15 @@ public class FilmRecipeRepository : IFilmRecipeRepository
             .FirstOrDefaultAsync();
     }
 
+    /// <inheritdoc/>
+    public async Task<IReadOnlyCollection<AvaliableFilmType>> GetAvaliableFilmTypes()
+    {
+        return await _connection.FilmTypes
+            .Select(x => new AvaliableFilmType { ID = x.ID, Name = x.Article })
+            .ToListAsync();
+    }
+
+    /// <inheritdoc/>
     public async Task<IReadOnlyCollection<FilmRecipeInfo>> GetInfos()
     {
         return await _connection.FilmRecipes
@@ -62,18 +74,21 @@ public class FilmRecipeRepository : IFilmRecipeRepository
             .ToListAsync();
     }
 
-    public Task<bool> IsFilmTypeExists(ID id)
+    /// <inheritdoc/>
+    public Task<bool> IsFilmTypeExists(FilmTypeID id)
     {
         return _connection.FilmTypes
             .AnyAsync(x => x.ID == id);
     }
 
+    /// <inheritdoc/>
     public Task<bool> IsNameExsits(FilmRecipeName filmRecipeName)
     {
         return _connection.FilmRecipes
             .AnyAsync(x => x.Name == filmRecipeName);
     }
 
+    /// <inheritdoc/>
     public Task Update(ID id, IFilmRecipe filmRecipe)
     {
         return _connection.FilmRecipes

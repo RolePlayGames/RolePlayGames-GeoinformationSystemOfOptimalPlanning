@@ -7,12 +7,12 @@ namespace GSOP.Interfaces.API.FilmTypes;
 [ApiController]
 [TypeFilter<FilmTypesExceptionFilter>]
 [Route("api/film-types")]
-public class FilmTypeController : ControllerBase
+public class FilmTypesController : ControllerBase
 {
-    private readonly ILogger<FilmTypeController> _logger;
+    private readonly ILogger<FilmTypesController> _logger;
     private readonly IFilmTypeSerivce _filmTypeService;
 
-    public FilmTypeController(ILogger<FilmTypeController> logger, IFilmTypeSerivce filmTypeService)
+    public FilmTypesController(ILogger<FilmTypesController> logger, IFilmTypeSerivce filmTypeService)
     {
         _logger = logger;
         _filmTypeService = filmTypeService;
@@ -40,7 +40,7 @@ public class FilmTypeController : ControllerBase
 
     [HttpGet]
     [Route("info")]
-    public Task<IReadOnlyCollection<FilmTypeInfo>> GetCustomersInfo()
+    public Task<IReadOnlyCollection<FilmTypeInfo>> GetFilmTypesInfo()
     {
         return _filmTypeService.GetFilmTypesInfo();
     }
