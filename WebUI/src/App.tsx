@@ -2,9 +2,10 @@ import { SideMenu } from './menu/SideMenu';
 import { Box, styled } from '@mui/material';
 import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import { CUSTOMERS, FILM_TYPES } from './routes/routes';
+import { CUSTOMERS, FILM_RECIPES, FILM_TYPES } from './routes/routes';
 import { CustomersPage } from './customers/CustomersPage';
 import { FilmTypesPage } from './film-types/FilmTypesPage';
+import { FilmRecipesPage } from './film-recipes/FilmRecipesPage';
 
 const AppContainer = styled(Box)({
 	backgroundColor: '#F3F7FA',
@@ -43,6 +44,8 @@ export const App = () => (
 				<Route path={`${CUSTOMERS}/:id`} element={<CustomersPage/>}/>
 				<Route path={FILM_TYPES} element={<FilmTypesPage/>}/>
 				<Route path={`${FILM_TYPES}/:id`} element={<FilmTypesPage/>}/>
+				<Route path={FILM_RECIPES} element={<FilmRecipesPage/>}/>
+				<Route path={`${FILM_RECIPES}/:id`} element={<FilmRecipesPage/>}/>
 			</Routes>
 		</WorkspaceContainer>
 	</AppContainer>

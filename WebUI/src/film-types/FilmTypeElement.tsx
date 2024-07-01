@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CommonInputField } from "../common/inputs/inputs";
+import { InputField } from "../common/inputs/inputs";
 import { FilmType, IClientError, createFilmType, deleteFilmType, updateFilmType } from "./filmTypesClient";
 import { HeaderLabel } from "../common/controls";
 import { ElementContainer, ActionsBar, SaveButton, DeleteButton } from "../common/elementControls";
+import { useItemFieldWithValidation } from "../common/useItemField";
 
 const validateArticle = (article: string) => {
 	if (article.length == 0)
@@ -22,8 +23,7 @@ type FilmTypeElementProps = {
 }
 
 export const FilmTypeElement = ({ id, item, apiPath }: FilmTypeElementProps) => {
-	const [article, setArticle] = useState(item.article);
-	const [articleError, setArticleError] = useState<string>();
+	const [article, setArticle, articleError, setArticleError] = useItemFieldWithValidation<FilmType, string>(item, x => x.article, validateArticle);
 
 	const navigate = useNavigate();
     
@@ -77,16 +77,11 @@ export const FilmTypeElement = ({ id, item, apiPath }: FilmTypeElementProps) => 
 				<SaveButton onClick={onSave} disabled={!!articleError}/>
 				<DeleteButton onClick={onDelete} disabled={id <= 0}/>
 			</ActionsBar>
-			<CommonInputField
-				label={'Название'}
+			<InputField
+				label='Название'
 				value={article}
-				onChange={changeArticle}
-				error={!!articleError}
-				helperText={articleError}
-				sx={{
-					marginTop: '1vw',
-					marginBottom: '1vw',
-				}}/>
+				onChange={setArticle}
+				errorText={articleError}/>
 		</ElementContainer>
 	);
 }
