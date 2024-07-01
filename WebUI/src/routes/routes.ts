@@ -1,8 +1,7 @@
 /** COMMON */
 export const DEFAULT_PATH = '/';
 
-/** CUSTOMRES */
+/** EDITOR */
 export const CUSTOMERS = '/customers';
-
-/** FILM TYPES */
 export const FILM_TYPES = '/film-types';
+export const FILM_RECIPES = '/film-recipes';
