@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { InputField, SelectField } from "../common/inputs/inputs";
 import { HeaderLabel } from "../common/controls";
@@ -6,103 +6,8 @@ import { ElementContainer, ActionsBar, SaveButton, DeleteButton } from "../commo
 import { FilmRecipe, updateFilmRecipe, IClientError, createFilmRecipe, deleteFilmRecipe, AvaliableFilmType } from "./filmRecipesClient";
 import { convertToNumber } from "../utils/number-converters/numberConverter";
 import { MenuItem, SelectChangeEvent } from "@mui/material";
-
-const validateName = (name: string) => {
-	if (name.length == 0)
-		return 'Заполните название';
-
-	if (name.length > 20)
-		return 'Название не должно превышать 20 символов';
-
-	return undefined;
-}
-
-const validateThickness = (value: string) => {
-	const number = convertToNumber(value);
-
-	if (number === undefined)
-		return 'Введите число';
-
-	if (number <= 0)
-		return 'Толщина должна быть положительной';
-
-	if (number > 300)
-		return 'Толщина не должна быть больше 300';
-
-	return undefined;
-}
-
-const validateProductionSpeed = (value: string) => {
-	const number = convertToNumber(value);
-
-	if (number === undefined)
-		return 'Введите число';
-
-	if (number <= 0)
-		return 'Скорость производства должна быть положительной';
-
-	if (number > 300)
-		return 'Скорость производства не должна быть больше 300';
-
-	return undefined;
-}
-
-const validateMaterialCost = (value: string) => {
-	const number = convertToNumber(value);
-
-	if (number === undefined)
-		return 'Введите число';
-
-	if (number <= 0)
-		return 'Стоимость материала должна быть положительной';
-
-	return undefined;
-}
-
-const validateNozzle = (value: string) => {
-	const number = convertToNumber(value);
-
-	if (number === undefined)
-		return 'Введите число';
-
-	if (number <= 0)
-		return 'Размер сопла должен быть положительной';
-
-	if (number > 300)
-		return 'Размер сопла не должен быть больше 300';
-
-	return undefined;
-}
-
-const validateCalibration = (value: string) => {
-	const number = convertToNumber(value);
-
-	if (number === undefined)
-		return 'Введите число';
-
-	if (number <= 0)
-		return 'Калибровка должна быть положительной';
-
-	if (number > 300)
-		return 'Калибровка не должна быть больше 300';
-
-	return undefined;
-}
-
-const validateCoolingLip = (value: string) => {
-	const number = convertToNumber(value);
-
-	if (number === undefined)
-		return 'Введите число';
-
-	if (number <= 0)
-		return 'Расстояние между валиками должно быть положительной';
-
-	if (number > 1000)
-		return 'Расстояние между валиками не должно быть больше 1000';
-
-	return undefined;
-}
+import { useItemField, useItemFieldWithValidation } from "../common/useField";
+import { validateName, validateThickness, validateProductionSpeed, validateMaterialCost, validateNozzle, validateCalibration, validateCoolingLip } from "./validations";
 
 type FilmRecipeElementProps = {
     id: number,
@@ -112,62 +17,17 @@ type FilmRecipeElementProps = {
 }
 
 export const FilmRecipeElement = ({ id, item, apiPath, filmTypes }: FilmRecipeElementProps) => {
-	const [name, setName] = useState(item.name);
-	const [nameError, setNameError] = useState<string>();
-	const [filmTypeID, setFilmTypeId] = useState(filmTypes.findIndex(x => x.id === item.filmTypeID) > -1 ? item.filmTypeID : filmTypes[0].id);
-	const [thickness, setThickness] = useState(item.thickness.toString());
-	const [thicknessError, setThicknessError] = useState<string>();
-	const [productionSpeed, setProductionSpeed] = useState(item.productionSpeed.toString());
-	const [productionSpeedError, setProductionSpeedError] = useState<string>();
-	const [materialCost, setMaterialCost] = useState(item.materialCost.toString());
-	const [materialCostError, setMaterialCostError] = useState<string>();
-	const [nozzle, setNozzle] = useState(item.nozzle.toString());
-	const [nozzleError, setNozzleError] = useState<string>();
-	const [calibration, setCalibration] = useState(item.calibration.toString());
-	const [calibrationError, setCalibrationError] = useState<string>();
-	const [coolingLip, setCoolingLip] = useState(item.coolingLip.toString());
-	const [coolingLipError, setCoolingLipError] = useState<string>();
+	const [name, setName, nameError, setNameError] = useItemFieldWithValidation<FilmRecipe, string>(item, x => x.name, validateName);
+	const [filmTypeID, setFilmTypeId] = useItemField<FilmRecipe, number>(item, item => filmTypes.findIndex(x => x.id === item.filmTypeID) > -1 ? item.filmTypeID : filmTypes[0].id);
+	const [thickness, setThickness, thicknessError] = useItemFieldWithValidation<FilmRecipe, string>(item, x => x.thickness.toString(), validateThickness);
+	const [productionSpeed, setProductionSpeed, productionSpeedError] = useItemFieldWithValidation<FilmRecipe, string>(item, x => x.productionSpeed.toString(), validateProductionSpeed);
+	const [materialCost, setMaterialCost, materialCostError] = useItemFieldWithValidation<FilmRecipe, string>(item, x => x.materialCost.toString(), validateMaterialCost);
+	const [nozzle, setNozzle, nozzleError] = useItemFieldWithValidation<FilmRecipe, string>(item, x => x.nozzle.toString(), validateNozzle);
+	const [calibration, setCalibration, calibrationError] = useItemFieldWithValidation<FilmRecipe, string>(item, x => x.calibration.toString(), validateCalibration);
+	const [coolingLip, setCoolingLip, coolingLipError] = useItemFieldWithValidation<FilmRecipe, string>(item, x => x.coolingLip.toString(), validateCoolingLip);
+
 
 	const navigate = useNavigate();
-    
-	useEffect(() => {
-		setName(item.name);
-		setFilmTypeId(filmTypes.findIndex(x => x.id === item.filmTypeID) > -1 ? item.filmTypeID : filmTypes[0].id);
-		setThickness(item.thickness.toString());
-		setProductionSpeed(item.productionSpeed.toString());
-		setMaterialCost(item.materialCost.toString());
-		setNozzle(item.nozzle.toString());
-		setCalibration(item.calibration.toString());
-		setCoolingLip(item.coolingLip.toString());
-	}, [item]);
-    
-	useEffect(() => {
-		setNameError(validateName(name));
-	}, [name]);
-    
-	useEffect(() => {
-		setThicknessError(validateThickness(thickness));
-	}, [thickness]);
-    
-	useEffect(() => {
-		setProductionSpeedError(validateProductionSpeed(productionSpeed));
-	}, [productionSpeed]);
-    
-	useEffect(() => {
-		setMaterialCostError(validateMaterialCost(materialCost));
-	}, [materialCost]);
-    
-	useEffect(() => {
-		setNozzleError(validateNozzle(nozzle));
-	}, [nozzle]);
-    
-	useEffect(() => {
-		setCalibrationError(validateCalibration(calibration));
-	}, [calibration]);
-    
-	useEffect(() => {
-		setCoolingLipError(validateCoolingLip(coolingLip));
-	}, [coolingLip]);
 
 	const onUpdate = async (item: FilmRecipe) => {
 		try {
@@ -197,7 +57,12 @@ export const FilmRecipeElement = ({ id, item, apiPath, filmTypes }: FilmRecipeEl
 		const calibrationNumber = convertToNumber(calibration);
 		const coolingLipNumber = convertToNumber(coolingLip);
 
-		if (thicknessNumber && productionSpeedNumber && materialCostNumber && nozzleNumber && calibrationNumber && coolingLipNumber)
+		if (thicknessNumber !== undefined
+			&& productionSpeedNumber !== undefined
+			&& materialCostNumber !== undefined
+			&& nozzleNumber !== undefined
+			&& calibrationNumber !== undefined
+			&& coolingLipNumber !== undefined)
 		{
 			const item = {
 				name: name,
@@ -221,9 +86,6 @@ export const FilmRecipeElement = ({ id, item, apiPath, filmTypes }: FilmRecipeEl
 
 	const changeFilmType = (event: SelectChangeEvent<unknown>, child: ReactNode) => {
 		const newFilmTypeId = Number(event?.target?.value);
-
-
-
 		setFilmTypeId(newFilmTypeId);
 	};
 
@@ -262,7 +124,7 @@ export const FilmRecipeElement = ({ id, item, apiPath, filmTypes }: FilmRecipeEl
 				onChange={changeFilmType}
 				variant='standard'
 				value={filmTypeID.toString()}
-				defaultValue={filmTypes.length === 0 ? undefined : filmTypes[0].id.toString()}
+				defaultValue={filmTypes[0].id.toString()}
 			>
 				{filmTypes.map((filmType) => 
 					<MenuItem 
