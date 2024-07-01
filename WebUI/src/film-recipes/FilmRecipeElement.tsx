@@ -6,7 +6,7 @@ import { ElementContainer, ActionsBar, SaveButton, DeleteButton } from "../commo
 import { FilmRecipe, updateFilmRecipe, IClientError, createFilmRecipe, deleteFilmRecipe, AvaliableFilmType } from "./filmRecipesClient";
 import { convertToNumber } from "../utils/number-converters/numberConverter";
 import { MenuItem, SelectChangeEvent } from "@mui/material";
-import { useItemField, useItemFieldWithValidation } from "../common/useField";
+import { useItemField, useItemFieldWithValidation } from "../common/useItemField";
 import { validateName, validateThickness, validateProductionSpeed, validateMaterialCost, validateNozzle, validateCalibration, validateCoolingLip } from "./validations";
 
 type FilmRecipeElementProps = {

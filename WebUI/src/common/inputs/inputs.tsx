@@ -97,15 +97,6 @@ const SelectContainer = styled(FormControl)({
 export const SelectField = (props: SelectProps) => (
 	<SelectContainer>
 		<InputLabel>{props.label}</InputLabel>
-		<Select
-			MenuProps={{
-				PaperProps: {
-					sx: {
-						// height: 400,
-					}
-				}
-			}}
-			{...props}
-		/>
+		<Select	{...props}/>
 	</SelectContainer>
 );

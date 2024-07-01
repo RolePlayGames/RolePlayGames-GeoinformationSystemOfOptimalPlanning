@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CommonInputField } from "../common/inputs/inputs";
+import { InputField } from "../common/inputs/inputs";
 import { Customer, updateCustomer, createCustomer, deleteCustomer, IClientError } from "./customersClient";
 import { HeaderLabel } from "../common/controls";
 import { ActionsBar, SaveButton, DeleteButton, ElementContainer } from "../common/elementControls";
+import { useItemFieldWithValidation } from "../common/useItemField";
 
 const validateName = (name: string) => {
 	if (name.length == 0)
@@ -22,18 +22,9 @@ type CustomerElementProps = {
 }
 
 export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
-	const [name, setName] = useState(item.name);
-	const [nameError, setNameError] = useState<string>();
+	const [name, setName, nameError, setNameError] = useItemFieldWithValidation<Customer, string>(item, x => x.name, validateName);
 
 	const navigate = useNavigate();
-    
-	useEffect(() => {
-		setNameError(validateName(name));
-	}, [name]);
-
-	const changeName = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setName(event.target.value);
-	};
 
 	const onUpdate = async () => {
 		try {
@@ -77,16 +68,11 @@ export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
 				<SaveButton onClick={onSave} disabled={!!nameError}/>
 				<DeleteButton onClick={onDelete} disabled={id <= 0}/>
 			</ActionsBar>
-			<CommonInputField
-				label={'Название'}
+			<InputField
+				label='Название'
 				value={name}
-				onChange={changeName}
-				error={!!nameError}
-				helperText={nameError}
-				sx={{
-					marginTop: '1vw',
-					marginBottom: '1vw',
-				}}/>
+				onChange={setName}
+				errorText={nameError}/>
 		</ElementContainer>
 	);
 }
