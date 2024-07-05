@@ -38,7 +38,7 @@ public interface IFilmTypeRepository
     /// Is film type name already exists
     /// </summary>
     /// <param name="filmTypeArticle">Film type article</param>
-    /// <returns>True if article is exists</returns>
+    /// <returns>True if article exists</returns>
     Task<bool> IsArticleExsits(FilmTypeArticle filmTypeArticle);
 
     /// <summary>

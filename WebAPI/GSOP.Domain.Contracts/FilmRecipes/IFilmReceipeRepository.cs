@@ -44,14 +44,14 @@ public interface IFilmRecipeRepository
     /// Is film type already exists
     /// </summary>
     /// <param name="id">>Film type id</param>
-    /// <returns>True if film type is exists</returns>
+    /// <returns>True if film type exists</returns>
     Task<bool> IsFilmTypeExists(FilmTypeID id);
 
     /// <summary>
     /// Is film recipe name already exists
     /// </summary>
     /// <param name="filmRecipeName">Film recipe article</param>
-    /// <returns>True if name is exists</returns>
+    /// <returns>True if name exists</returns>
     Task<bool> IsNameExsits(FilmRecipeName filmRecipeName);
 
     /// <summary>
