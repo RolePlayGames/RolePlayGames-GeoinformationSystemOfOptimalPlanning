@@ -15,3 +15,5 @@ bin/
 
 # SPA page
 /wwwroot/UI
+/WebAPI/GSOP.Interfaces.API/wwwroot/UI/static/js
+/WebAPI/GSOP.Interfaces.API/wwwroot/UI
