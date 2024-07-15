@@ -82,6 +82,12 @@ public class OrderRepository : IOrderRepository
     }
 
     /// <inheritdoc/>
+    public Task<bool> IsNumberExists(OrderNumber number)
+    {
+        return _connection.Orders.AnyAsync(x => x.Number == number);
+    }
+
+    /// <inheritdoc/>
     public Task Update(ID id, IOrder order)
     {
         return _connection.Orders

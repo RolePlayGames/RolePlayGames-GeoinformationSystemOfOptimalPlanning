@@ -115,17 +115,17 @@ public class FilmRecipeFactoryTest
         var coolingLip = new FilmRecipeCoolingLip(filmRecipeDTO.CoolingLip);
 
         // Act
-        var filmType = await _filmRecipeFactory.Create(filmRecipeDTO);
+        var filmRecipe = await _filmRecipeFactory.Create(filmRecipeDTO);
 
         // Assert
-        filmType.Name.Should().Be(filmRecipeName);
-        filmType.FilmTypeID.Should().Be(filmTypeId);
-        filmType.Thickness.Should().Be(thickness);
-        filmType.ProductionSpeed.Should().Be(productionSpeed);
-        filmType.MaterialCost.Should().Be(materialCost);
-        filmType.Nozzle.Should().Be(nozzle);
-        filmType.Calibration.Should().Be(calibration);
-        filmType.CoolingLip.Should().Be(coolingLip);
+        filmRecipe.Name.Should().Be(filmRecipeName);
+        filmRecipe.FilmTypeID.Should().Be(filmTypeId);
+        filmRecipe.Thickness.Should().Be(thickness);
+        filmRecipe.ProductionSpeed.Should().Be(productionSpeed);
+        filmRecipe.MaterialCost.Should().Be(materialCost);
+        filmRecipe.Nozzle.Should().Be(nozzle);
+        filmRecipe.Calibration.Should().Be(calibration);
+        filmRecipe.CoolingLip.Should().Be(coolingLip);
 
         _filmRecipeRepositoryMock.VerifyStrongly();
     }

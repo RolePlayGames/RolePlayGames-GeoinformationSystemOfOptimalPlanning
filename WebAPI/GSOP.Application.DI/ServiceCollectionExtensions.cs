@@ -1,9 +1,11 @@
 ﻿using GSOP.Application.Contracts.Customers;
 using GSOP.Application.Contracts.FilmRecipes;
 using GSOP.Application.Contracts.FilmTypes;
+using GSOP.Application.Contracts.Orders;
 using GSOP.Application.Customers;
 using GSOP.Application.FilmRecipes;
 using GSOP.Application.FilmTypes;
+using GSOP.Application.Orders;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GSOP.Application.DI;
@@ -17,7 +19,8 @@ public static class ServiceCollectionExtensions
         => serviceCollection
             .AddCustomerComponents()
             .AddFilmRecipeComponents()
-            .AddFilmTypeComponents();
+            .AddFilmTypeComponents()
+            .AddOrderComponents();
 
     internal static IServiceCollection AddCustomerComponents(this IServiceCollection serviceCollection)
         => serviceCollection
@@ -30,4 +33,8 @@ public static class ServiceCollectionExtensions
     internal static IServiceCollection AddFilmTypeComponents(this IServiceCollection serviceCollection)
         => serviceCollection
             .AddScoped<IFilmTypeSerivce, FilmTypeService>();
+
+    internal static IServiceCollection AddOrderComponents(this IServiceCollection serviceCollection)
+        => serviceCollection
+            .AddScoped<IOrderService, OrderService>();
 }

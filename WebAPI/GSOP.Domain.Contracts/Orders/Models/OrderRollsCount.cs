@@ -1,6 +1,6 @@
 ﻿namespace GSOP.Domain.Contracts.Orders.Models;
 
-public class OrderRollsCount
+public record OrderRollsCount
 {
     public const int Min = 0;
 

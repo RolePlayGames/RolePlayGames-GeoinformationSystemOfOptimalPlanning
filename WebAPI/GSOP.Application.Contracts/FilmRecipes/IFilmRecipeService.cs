@@ -3,7 +3,7 @@
 namespace GSOP.Application.Contracts.FilmRecipes;
 
 /// <summary>
-/// Manages film type use cases
+/// Manages film recipe use cases
 /// </summary>
 public interface IFilmRecipeService
 {

@@ -24,7 +24,7 @@ public class FilmRecipesControllerTest : WebIntegrationTestBase
         CoolingLip = 6.06,
     };
 
-    private static readonly FilmRecipeDTO _newFilmRecipe = new FilmRecipeDTO
+    private static readonly FilmRecipeDTO _newFilmRecipe = new()
     {
         Name = "NFS-02",
         FilmTypeID = 2,
@@ -104,7 +104,7 @@ public class FilmRecipesControllerTest : WebIntegrationTestBase
     }
 
     [Fact]
-    public async Task CreateFilmRecipe_NameDoesNotExistAndFilmTypeDoesNotExists_ReturnsStatusCodeUnprocessableEntity()
+    public async Task CreateFilmRecipe_NameDoesNotExistAndFilmTypeDoesNotExist_ReturnsStatusCodeUnprocessableEntity()
     {
         // Arrange
         var request = _filmRecipe;
