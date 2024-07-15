@@ -35,18 +35,25 @@ public interface IOrderRepository
     Task<IReadOnlyCollection<OrderInfo>> GetInfos();
 
     /// <summary>
-    /// Is customer already exists
+    /// Is customer exists
     /// </summary>
     /// <param name="id">>Customer id</param>
     /// <returns>True if customer exists</returns>
     Task<bool> IsCustomerExists(CustomerID id);
 
     /// <summary>
-    /// Is film recipe already exists
+    /// Is film recipe exists
     /// </summary>
     /// <param name="id">>Film recipe id</param>
     /// <returns>True if film type exists</returns>
     Task<bool> IsFilmRecipeExists(FilmRecipeID id);
+
+    /// <summary>
+    /// Is order number already exists
+    /// </summary>
+    /// <param name="number">>Order number</param>
+    /// <returns>True if order number exists</returns>
+    Task<bool> IsNumberExists(OrderNumber number);
 
     /// <summary>
     /// Updates order
