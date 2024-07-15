@@ -33,7 +33,7 @@ public class FilmRecipeTest
         _filmRecipeCalibration = new FilmRecipeCalibration(5.05);
         _filmRecipeCoolingLip = new FilmRecipeCoolingLip(6.06);
 
-        _filmRecipe = new FilmRecipe(
+        _filmRecipe = new(
             _filmRecipeName,
             _filmTypeID,
             _filmRecipeThickness,
@@ -87,7 +87,7 @@ public class FilmRecipeTest
     }
 
     [Fact]
-    public async Task SetFilmTypeId_FilmTypeExists_UpdatesFilmRecipeName()
+    public async Task SetFilmTypeId_FilmTypeExists_UpdatesFilmRecipeFilmTypeID()
     {
         // Arrange
         var newFilmTypeId = new FilmTypeID(2);
