@@ -8,7 +8,7 @@ public record OrderPriceOverdue
 
     public OrderPriceOverdue(double priceOverdue)
     {
-        if (priceOverdue <= Min)
+        if (priceOverdue < Min)
             throw new ArgumentOutOfRangeException(nameof(priceOverdue), $"Price overdue should be greater than {Min}");
 
         _priceOverdue = priceOverdue;

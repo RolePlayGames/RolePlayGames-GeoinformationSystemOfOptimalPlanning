@@ -32,8 +32,7 @@ export const FilmRecipePage = ({ id, apiPath, filmTypes }: FilmRecipePageProps) 
 				nozzle: 0,
 				calibration: 0,
 				coolingLip: 0,
-			}
-        
+			};        
         
 		if (item)
 			setItem(item);

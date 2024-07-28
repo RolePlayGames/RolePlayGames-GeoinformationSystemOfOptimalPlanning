@@ -1,16 +1,10 @@
 import axios, { AxiosError } from "axios"
-import { toast } from "react-toastify";
 import { nameof } from "../utils/nameof/nameof";
+import { handleError } from "../common/clients/clients";
+import { ClientError } from "../common/clients/clientError";
 
 const API_ROOT = `${document.location.protocol}//${document.location.host}/api/`;
 const CUSTOMERS_ROOT = 'customers';
-
-const handleError = (methodName: string, error: AxiosError | undefined) => {
-	if (error) 
-		console.log(`${methodName} получил ответ ${error.response?.status} с сообщением ${error.response?.data} and error: ${error}`);
-	//toast.error('Что-то пошло не так, попробуйте позже');
-    
-}
 
 export type CustomerInfo = {
     id: number,
@@ -67,21 +61,5 @@ export const deleteCustomer = async (id: number) => {
 	} catch (error: unknown) {
 		handleError(nameof({deleteCustomer}), error as AxiosError);
 		return false;
-	}
-}
-
-export interface IClientError {
-    status: number;
-    errorCode: string;
-}
-
-export class ClientError extends Error implements IClientError {
-	status: number;
-	errorCode: string;
-	constructor(error: AxiosError) {
-		super(error.message);
-
-		this.status = error.response?.status as number;
-		this.errorCode = error.response?.data as string;
 	}
 }

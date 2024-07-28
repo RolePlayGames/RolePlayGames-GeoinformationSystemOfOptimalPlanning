@@ -15,3 +15,18 @@ export const convertToNumber = (value: string): number | undefined => {
 
 	return undefined;
 }
+
+/**
+ * Converts string to int number
+ * @param value string value to convert
+ * @returns number as convertion result or undefined if failure
+ */
+export const convertToInt = (value: string): number | undefined => {
+    
+	const number = convertToNumber(value);
+
+	if (number === undefined || (number | 0) !== number)
+		return undefined;
+
+	return number;
+}
