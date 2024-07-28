@@ -1,13 +1,12 @@
-import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { InputField, SelectField } from "../common/inputs/inputs";
+import { InputField, SelectField } from "../common/inputs";
 import { HeaderLabel } from "../common/controls";
 import { ElementContainer, ActionsBar, SaveButton, DeleteButton } from "../common/elementControls";
-import { FilmRecipe, updateFilmRecipe, IClientError, createFilmRecipe, deleteFilmRecipe, AvaliableFilmType } from "./filmRecipesClient";
+import { FilmRecipe, updateFilmRecipe, createFilmRecipe, deleteFilmRecipe, AvaliableFilmType } from "./filmRecipesClient";
 import { convertToNumber } from "../utils/number-converters/numberConverter";
-import { MenuItem, SelectChangeEvent } from "@mui/material";
 import { useItemField, useItemFieldWithValidation } from "../common/useItemField";
 import { validateName, validateThickness, validateProductionSpeed, validateMaterialCost, validateNozzle, validateCalibration, validateCoolingLip } from "./validations";
+import { IClientError } from "../common/clients/clientError";
 
 type FilmRecipeElementProps = {
     id: number,
@@ -18,14 +17,13 @@ type FilmRecipeElementProps = {
 
 export const FilmRecipeElement = ({ id, item, apiPath, filmTypes }: FilmRecipeElementProps) => {
 	const [name, setName, nameError, setNameError] = useItemFieldWithValidation<FilmRecipe, string>(item, x => x.name, validateName);
-	const [filmTypeID, setFilmTypeId] = useItemField<FilmRecipe, number>(item, item => filmTypes.findIndex(x => x.id === item.filmTypeID) > -1 ? item.filmTypeID : filmTypes[0].id);
+	const [filmTypeID, setFilmTypeId] = useItemField<FilmRecipe, number | undefined>(item, item => filmTypes.findIndex(x => x.id === item.filmTypeID) > -1 ? item.filmTypeID : filmTypes[0].id);
 	const [thickness, setThickness, thicknessError] = useItemFieldWithValidation<FilmRecipe, string>(item, x => x.thickness.toString(), validateThickness);
 	const [productionSpeed, setProductionSpeed, productionSpeedError] = useItemFieldWithValidation<FilmRecipe, string>(item, x => x.productionSpeed.toString(), validateProductionSpeed);
 	const [materialCost, setMaterialCost, materialCostError] = useItemFieldWithValidation<FilmRecipe, string>(item, x => x.materialCost.toString(), validateMaterialCost);
 	const [nozzle, setNozzle, nozzleError] = useItemFieldWithValidation<FilmRecipe, string>(item, x => x.nozzle.toString(), validateNozzle);
 	const [calibration, setCalibration, calibrationError] = useItemFieldWithValidation<FilmRecipe, string>(item, x => x.calibration.toString(), validateCalibration);
 	const [coolingLip, setCoolingLip, coolingLipError] = useItemFieldWithValidation<FilmRecipe, string>(item, x => x.coolingLip.toString(), validateCoolingLip);
-
 
 	const navigate = useNavigate();
 
@@ -62,7 +60,8 @@ export const FilmRecipeElement = ({ id, item, apiPath, filmTypes }: FilmRecipeEl
 			&& materialCostNumber !== undefined
 			&& nozzleNumber !== undefined
 			&& calibrationNumber !== undefined
-			&& coolingLipNumber !== undefined)
+			&& coolingLipNumber !== undefined
+			&& filmTypeID !== undefined)
 		{
 			const item = {
 				name: name,
@@ -82,11 +81,6 @@ export const FilmRecipeElement = ({ id, item, apiPath, filmTypes }: FilmRecipeEl
 		}
 		
 		return Promise.resolve();
-	};
-
-	const changeFilmType = (event: SelectChangeEvent<unknown>, child: ReactNode) => {
-		const newFilmTypeId = Number(event?.target?.value);
-		setFilmTypeId(newFilmTypeId);
 	};
 
 	const onDelete = async () => {
@@ -110,6 +104,7 @@ export const FilmRecipeElement = ({ id, item, apiPath, filmTypes }: FilmRecipeEl
 						&& !!nozzleError
 						&& !!calibrationError
 						&& !!coolingLipError
+						&& filmTypeID !== undefined
 					}
 				/>
 				<DeleteButton onClick={onDelete} disabled={id <= 0}/>
@@ -121,20 +116,11 @@ export const FilmRecipeElement = ({ id, item, apiPath, filmTypes }: FilmRecipeEl
 				errorText={nameError}/>
 			<SelectField
 				label='Тип пленки'
-				onChange={changeFilmType}
+				items={filmTypes}
+				onItemChanged={setFilmTypeId}
 				variant='standard'
-				value={filmTypeID.toString()}
-				defaultValue={filmTypes[0].id.toString()}
-			>
-				{filmTypes.map((filmType) => 
-					<MenuItem 
-						key={filmType.id}
-						value={filmType.id}
-					>
-						{filmType.name}
-					</MenuItem>
-				)}
-			</SelectField>
+				value={filmTypeID}
+			/>
 			<InputField
 				label='Толщина'
 				value={thickness}

@@ -1,16 +1,10 @@
 import axios, { AxiosError } from "axios"
-import { toast } from "react-toastify";
 import { nameof } from "../utils/nameof/nameof";
+import { handleError } from "../common/clients/clients";
+import { ClientError } from "../common/clients/clientError";
 
 const API_ROOT = `${document.location.protocol}//${document.location.host}/api/`;
 const API_URL = 'film-types';
-
-const handleError = (methodName: string, error: AxiosError | undefined) => {
-	if (error) 
-		console.log(`${methodName} получил ответ ${error.response?.status} с сообщением ${error.response?.data} and error: ${error}`);
-	//toast.error('Что-то пошло не так, попробуйте позже');
-    
-}
 
 export type FilmTypeInfo = {
     id: number,
@@ -67,21 +61,5 @@ export const deleteFilmType = async (id: number) => {
 	} catch (error: unknown) {
 		handleError(nameof({deleteFilmType}), error as AxiosError);
 		return false;
-	}
-}
-
-export interface IClientError {
-    status: number;
-	errorCode: string;
-}
-
-export class ClientError extends Error implements IClientError {
-	status: number;
-	errorCode: string;
-	constructor(error: AxiosError) {
-		super(error.message);
-
-		this.status = error.response?.status as number;
-		this.errorCode = error.response?.data as string;
 	}
 }

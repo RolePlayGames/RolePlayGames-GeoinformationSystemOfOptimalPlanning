@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { InputField } from "../common/inputs/inputs";
-import { Customer, updateCustomer, createCustomer, deleteCustomer, IClientError } from "./customersClient";
+import { InputField } from "../common/inputs";
+import { Customer, updateCustomer, createCustomer, deleteCustomer } from "./customersClient";
 import { HeaderLabel } from "../common/controls";
 import { ActionsBar, SaveButton, DeleteButton, ElementContainer } from "../common/elementControls";
 import { useItemFieldWithValidation } from "../common/useItemField";
+import { IClientError } from "../common/clients/clientError";
 
 const validateName = (name: string) => {
 	if (name.length == 0)

@@ -1,31 +1,7 @@
 import styled from "@emotion/styled";
-import { TextFieldProps, TextField, FormControl, InputLabel, Select, SelectProps } from "@mui/material";
+import { TextFieldProps, TextField, FormControl, InputLabel, Select, SelectProps, SelectVariants, BaseSelectProps } from "@mui/material";
 import { PasswordInputProps, PasswordInput } from "./PasswordInput";
-
-export const inputFieldStyle = {
-	margin: '10px 0',
-	'& label': {
-		color: '#11101d',
-		fontFamily: 'Open Sans, sans-serif',
-	},
-	'& label.Mui-focused': {
-		color: '#11101d',
-	},
-	'& .MuiInput-underline:after': {
-		borderBottomColor: '#1d1b31',
-	},
-	'& .MuiOutlinedInput-root': {
-		'& fieldset': {
-			borderColor: '#1d1b31',
-		},
-		'&:hover fieldset': {
-			borderColor: '#1d1b31',
-		},
-		'&.Mui-focused fieldset': {
-			borderColor: '#1d1b31',
-		},
-	},
-};
+import { inputFieldStyle } from "./inputFieldStyle";
 
 export const CommonInputField = styled((props: TextFieldProps) => (
 	<TextField
@@ -67,36 +43,3 @@ export const InputField = ({ label, value, onChange, errorText }: InputFieldProp
 			}}/>
 	);
 }
-
-const SelectContainer = styled(FormControl)({
-	margin: '10px 0',
-	width: '100%',
-	'& label': {
-		color: '#11101d',
-		fontFamily: 'Open Sans, sans-serif',
-	},
-	'& label.Mui-focused': {
-		color: '#11101d',
-	},
-	'& .MuiInput-underline:after': {
-		borderBottomColor: '#1d1b31',
-	},
-	'& .MuiOutlinedInput-root': {
-		'& fieldset': {
-			borderColor: '#1d1b31',
-		},
-		'&:hover fieldset': {
-			borderColor: '#1d1b31',
-		},
-		'&.Mui-focused fieldset': {
-			borderColor: '#1d1b31',
-		},
-	},
-});
-
-export const SelectField = (props: SelectProps) => (
-	<SelectContainer>
-		<InputLabel>{props.label}</InputLabel>
-		<Select	{...props}/>
-	</SelectContainer>
-);

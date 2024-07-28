@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { InputField } from "../common/inputs/inputs";
-import { FilmType, IClientError, createFilmType, deleteFilmType, updateFilmType } from "./filmTypesClient";
+import { InputField } from "../common/inputs";
+import { FilmType, createFilmType, deleteFilmType, updateFilmType } from "./filmTypesClient";
 import { HeaderLabel } from "../common/controls";
 import { ElementContainer, ActionsBar, SaveButton, DeleteButton } from "../common/elementControls";
 import { useItemFieldWithValidation } from "../common/useItemField";
+import { IClientError } from "../common/clients/clientError";
 
 const validateArticle = (article: string) => {
 	if (article.length == 0)
@@ -64,10 +65,6 @@ export const FilmTypeElement = ({ id, item, apiPath }: FilmTypeElementProps) => 
 			await deleteFilmType(id);
 			navigate(apiPath);
 		}
-	};
-
-	const changeArticle = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setArticle(event.target.value);
 	};
 
 	return(
