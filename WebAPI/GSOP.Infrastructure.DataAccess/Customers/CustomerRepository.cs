@@ -18,7 +18,7 @@ public class CustomerRepository : ICustomerRepository
     /// <inheritdoc/>
     public Task<long> CreateCustomer(ICustomer customer)
     {
-        return _connection.InsertWithInt64IdentityAsync(new CustomerPOCO() { Name = customer.Name });
+        return _connection.InsertWithInt64IdentityAsync(new CustomerPOCO { Name = customer.Name });
     }
 
     /// <inheritdoc/>
