@@ -9,9 +9,5 @@ public interface ICustomer
 {
     CustomerName Name { get; }
 
-    /// <summary>
-    /// Validates and updates customer name
-    /// </summary>
-    /// <param name="name">Customer name</param>
     Task SetName(CustomerName name);
 }

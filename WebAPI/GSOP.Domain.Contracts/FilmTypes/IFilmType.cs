@@ -9,9 +9,5 @@ public interface IFilmType
 {
     FilmTypeArticle Article { get; }
 
-    /// <summary>
-    /// Validates and updates film type article
-    /// </summary>
-    /// <param name="article">Film type article</param>
     Task SetArticle(FilmTypeArticle article);
 }

@@ -2,8 +2,6 @@
 
 public record OrderDTO
 {
-    public long ID { get; init; }
-
     public required string Number { get; init; }
 
     public required long CustomerID { get; init; }

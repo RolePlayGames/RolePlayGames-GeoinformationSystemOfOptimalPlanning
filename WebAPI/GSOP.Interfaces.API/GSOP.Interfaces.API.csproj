@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.2" />
     <PackageReference Include="RolePlayGames.StaticClassesProxies" Version="0.1.0-alpha" />
     <PackageReference Include="RolePlayGames.StaticClassesProxies.DI.Microsoft" Version="0.1.0-alpha" />

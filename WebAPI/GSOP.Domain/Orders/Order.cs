@@ -55,7 +55,6 @@ public class Order : IOrder
         _orderRepository = orderRepository;
     }
 
-    /// <inheritdoc/>
     public async Task SetNumber(OrderNumber number)
     {
         if (Number != number)
@@ -69,7 +68,6 @@ public class Order : IOrder
         }
     }
 
-    /// <inheritdoc/>
     public async Task SetCustomerID(CustomerID customerID)
     {
         if (CustomerID != customerID)
@@ -83,7 +81,6 @@ public class Order : IOrder
         }
     }
 
-    /// <inheritdoc/>
     public async Task SetFilmRecipeID(FilmRecipeID filmRecipeID)
     {
         if (FilmRecipeID != filmRecipeID)
@@ -97,43 +94,36 @@ public class Order : IOrder
         }
     }
 
-    /// <inheritdoc/>
     public void SetWidth(OrderWidth width)
     {
         Width = width;
     }
 
-    /// <inheritdoc/>
     public void SetQuantityInRunningMeter(OrderQuantityInRunningMeter quantityInRunningMeter)
     {
         QuantityInRunningMeter = quantityInRunningMeter;
     }
 
-    /// <inheritdoc/>
     public void SetFinishedGoods(OrderFinishedGoods finishedGoods)
     {
         FinishedGoods = finishedGoods;
     }
 
-    /// <inheritdoc/>
     public void SetWaste(OrderWaste waste)
     {
         Waste = waste;
     }
 
-    /// <inheritdoc/>
     public void SetRollsCount(OrderRollsCount rollsCount)
     {
         RollsCount = rollsCount;
     }
 
-    /// <inheritdoc/>
     public void SetPlannedDate(OrderPlannedDate plannedDate)
     {
         PlannedDate = plannedDate;
     }
 
-    /// <inheritdoc/>
     public void SetPriceOverdue(OrderPriceOverdue priceOverdue)
     {
         PriceOverdue = priceOverdue;
