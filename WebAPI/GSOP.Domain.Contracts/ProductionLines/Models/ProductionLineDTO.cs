@@ -2,8 +2,6 @@
 
 public record ProductionLineDTO
 {
-    public long ID { get; init; }
-
     public required string Name { get; init; }
 
     public required decimal HourCost { get; init; }

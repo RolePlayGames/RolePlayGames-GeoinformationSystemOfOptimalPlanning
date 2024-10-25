@@ -16,7 +16,7 @@ builder.Services.AddDomainServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddDataAccessComponents();
 builder.Services.AddWebApiComponents();
-
+//builder.Services.AddNewtonsoftJson();
 #endregion
 
 var app = builder.Build();
