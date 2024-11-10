@@ -2,8 +2,9 @@ import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
 import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
+import PrecisionManufacturingOutlinedIcon from '@mui/icons-material/PrecisionManufacturingOutlined';
 import { white } from "../styles/colors";
-import { CUSTOMERS, FILM_RECIPES, FILM_TYPES, ORDERS } from "../routes/routes";
+import { CUSTOMERS, FILM_RECIPES, FILM_TYPES, ORDERS, PRODUCTION_LINES } from "../routes/routes";
 
 export const menuItems = [
 	{
@@ -25,5 +26,10 @@ export const menuItems = [
 		header: 'Заказы',
 		icon: <ListAltOutlinedIcon sx={{ color: white }}/>,
 		path: ORDERS,
+	},
+	{
+		header: 'Производственные линии',
+		icon: <PrecisionManufacturingOutlinedIcon sx={{ color: white }}/>,
+		path: PRODUCTION_LINES,
 	},
 ];
