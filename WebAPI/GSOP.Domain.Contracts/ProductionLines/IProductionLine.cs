@@ -20,6 +20,14 @@ public interface IProductionLine
 
     public ProductionLineSetupTime SetupTime { get; }
 
+    public IReadOnlyCollection<ID> NozzleChangeRuleIDs { get; }
+
+    public IReadOnlyCollection<ID> CalibratoinChangeRuleIDs { get; }
+
+    public IReadOnlyCollection<ID> CoolingLipChangeRuleIDs { get; }
+
+    public IReadOnlyCollection<ID> FilmTypeChangeRuleIDs { get; }
+
     Task SetName(ProductionLineName name);
 
     void SetHourCost(ProductionLineHourCost hourCost);
