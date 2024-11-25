@@ -22,7 +22,7 @@ public class _20240730221852_ProductionLinessCreated : Migration
             .WithColumn(nameof(ProductionLinePOCO.ThicknessChangeConsumption)).AsDouble().NotNullable()
             .WithColumn(nameof(ProductionLinePOCO.WidthChangeTime)).AsTime().NotNullable()
             .WithColumn(nameof(ProductionLinePOCO.WidthChangeConsumption)).AsDouble().NotNullable()
-            .WithColumn(nameof(ProductionLinePOCO.SetupTime)).AsTime().NotNullable()            ;
+            .WithColumn(nameof(ProductionLinePOCO.SetupTime)).AsTime().NotNullable();
     }
 
     public override void Down()

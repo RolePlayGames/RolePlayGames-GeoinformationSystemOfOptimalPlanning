@@ -1,4 +1,5 @@
-﻿using GSOP.Domain.Contracts.ProductionLines;
+﻿using GSOP.Domain.Contracts;
+using GSOP.Domain.Contracts.ProductionLines;
 using GSOP.Domain.Contracts.ProductionLines.Exceptions;
 using GSOP.Domain.Contracts.ProductionLines.Models;
 
@@ -23,6 +24,14 @@ public class ProductionLine : IProductionLine
     public ProductionLineChangeWidthRule WidthChangeRule { get; private set; }
 
     public ProductionLineSetupTime SetupTime { get; private set; }
+
+    public IReadOnlyCollection<ID> NozzleChangeRuleIDs { get; }
+
+    public IReadOnlyCollection<ID> CalibratoinChangeRuleIDs { get; }
+
+    public IReadOnlyCollection<ID> CoolingLipChangeRuleIDs { get; }
+
+    public IReadOnlyCollection<ID> FilmTypeChangeRuleIDs { get; }
 
     public ProductionLine(
         ProductionLineName name,
