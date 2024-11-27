@@ -1,13 +1,14 @@
 ﻿using GSOP.Domain.Contracts.FilmRecipes.Models;
 using GSOP.Domain.Contracts.ProductionLines.Models;
 
-namespace GSOP.Domain.Contracts.ProductionLines.ProductionRules;
-
-public interface INozzleChangeRule
+namespace GSOP.Domain.Contracts.ProductionLines.ProductionRules
 {
-    ProductionLineID ProductionLineID { get; }
+    public interface INozzleChangeRule
+    {
+        ProductionLineID ProductionLineID { get; }
 
-    FilmRecipeNozzle NozzleTo { get; }
+        FilmRecipeNozzle NozzleTo { get; }
 
-    ProductionLineChangeValueRule ChangeValueRule { get; }
+        ProductionLineChangeValueRule ChangeValueRule { get; }
+    }
 }

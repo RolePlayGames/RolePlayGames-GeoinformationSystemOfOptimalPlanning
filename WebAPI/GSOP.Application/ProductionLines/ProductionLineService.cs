@@ -20,9 +20,9 @@ public class ProductionLineService : IProductionLineService
     /// <inheritdoc/>
     public async Task<long> CreateProductionLine(ProductionLineDTO productionLine)
     {
-        var newFilmType = await _productionLineFactory.Create(productionLine);
+        var newProductionLine = await _productionLineFactory.Create(productionLine);
 
-        return await _productionLineRepository.Create(newFilmType);
+        return await _productionLineRepository.Create(newProductionLine);
     }
 
     /// <inheritdoc/>

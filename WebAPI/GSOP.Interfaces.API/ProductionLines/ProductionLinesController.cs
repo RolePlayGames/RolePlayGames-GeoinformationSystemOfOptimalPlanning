@@ -47,7 +47,7 @@ public class ProductionLinesController
 
     [HttpPost]
     [Route("{id}")]
-    public Task UpdateCustomer(long id, ProductionLineDTO productionLine)
+    public Task UpdateProductionLine(long id, ProductionLineDTO productionLine)
     {
         return _productionLineService.UpdateProductionLine(id, productionLine);
     }
