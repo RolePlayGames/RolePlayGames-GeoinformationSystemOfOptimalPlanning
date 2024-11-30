@@ -1,7 +1,7 @@
-﻿using GSOP.Domain.Contracts;
-using GSOP.Domain.Contracts.ProductionLines;
+﻿using GSOP.Domain.Contracts.ProductionLines;
 using GSOP.Domain.Contracts.ProductionLines.Exceptions;
 using GSOP.Domain.Contracts.ProductionLines.Models;
+using GSOP.Domain.Contracts.ProductionLines.ProductionRules;
 
 namespace GSOP.Domain.ProductionLines;
 
@@ -25,13 +25,13 @@ public class ProductionLine : IProductionLine
 
     public ProductionLineSetupTime SetupTime { get; private set; }
 
-    public IReadOnlyCollection<ID> NozzleChangeRuleIDs { get; }
+    public IReadOnlyCollection<NozzleChangeRule> NozzleChangeRules { get; private set; }
 
-    public IReadOnlyCollection<ID> CalibratoinChangeRuleIDs { get; }
+    public IReadOnlyCollection<CalibratoinChangeRule> CalibratoinChangeRules { get; private set; }
 
-    public IReadOnlyCollection<ID> CoolingLipChangeRuleIDs { get; }
+    public IReadOnlyCollection<CoolingLipChangeRule> CoolingLipChangeRules { get; private set; }
 
-    public IReadOnlyCollection<ID> FilmTypeChangeRuleIDs { get; }
+    public IReadOnlyCollection<FilmTypeChangeRule> FilmTypeChangeRules { get; private set; }
 
     public ProductionLine(
         ProductionLineName name,
@@ -42,6 +42,10 @@ public class ProductionLine : IProductionLine
         ProductionLineChangeThicknessRule thicknessChangeRule,
         ProductionLineChangeWidthRule widthChangeRule,
         ProductionLineSetupTime setupTime,
+        IReadOnlyCollection<NozzleChangeRule> nozzleChangeRules,
+        IReadOnlyCollection<CalibratoinChangeRule> calibratoinChangeRsules,
+        IReadOnlyCollection<CoolingLipChangeRule> coolingLipChangeRsules,
+        IReadOnlyCollection<FilmTypeChangeRule> filmTypeChangeRsules,
         IProductionLineRepository productionLineRepository)
     {
         Name = name;
@@ -52,6 +56,10 @@ public class ProductionLine : IProductionLine
         ThicknessChangeRule = thicknessChangeRule;
         WidthChangeRule = widthChangeRule;
         SetupTime = setupTime;
+        NozzleChangeRules = nozzleChangeRules;
+        CalibratoinChangeRules = calibratoinChangeRsules;
+        CoolingLipChangeRules = coolingLipChangeRsules;
+        FilmTypeChangeRules = filmTypeChangeRsules;
         _productionLineRepository = productionLineRepository;
     }
 
@@ -101,5 +109,25 @@ public class ProductionLine : IProductionLine
     public void SetProductionLineWidthRange(ProductionLineWidthRange widthRange)
     {
         WidthRange = widthRange;
+    }
+
+    public void SetNozzleChangeRules(IReadOnlyCollection<NozzleChangeRule> nozzleChangeRules)
+    {
+        NozzleChangeRules = nozzleChangeRules;
+    }
+
+    public void SetCalibratoinChangeRules(IReadOnlyCollection<CalibratoinChangeRule> calibratoinChangeRules)
+    {
+        CalibratoinChangeRules = calibratoinChangeRules;
+    }
+
+    public void SetCoolingLipChangeRules(IReadOnlyCollection<CoolingLipChangeRule> coolingLipChangeRules)
+    {
+        CoolingLipChangeRules = coolingLipChangeRules;
+    }
+
+    public void SetFilmTypeChangeRules(IReadOnlyCollection<FilmTypeChangeRule> filmTypeChangeRules)
+    {
+        FilmTypeChangeRules = filmTypeChangeRules;
     }
 }

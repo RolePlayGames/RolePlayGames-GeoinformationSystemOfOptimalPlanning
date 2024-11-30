@@ -2,6 +2,7 @@
 using GSOP.Domain.Contracts.ProductionLines;
 using GSOP.Domain.Contracts.ProductionLines.Exceptions;
 using GSOP.Domain.Contracts.ProductionLines.Models;
+using GSOP.Domain.Contracts.ProductionLines.ProductionRules;
 
 namespace GSOP.Domain.ProductionLines;
 
@@ -28,6 +29,11 @@ public class ProductionLineFactory : IProductionLineFactory
         var thicknessChangeRule = new ProductionLineChangeThicknessRule(productionLine.ThicknessChangeTime, productionLine.ThicknessChangeConsumption);
         var widthChangeRule = new ProductionLineChangeWidthRule(productionLine.WidthChangeTime, productionLine.WidthChangeConsumption);
         var setupTime = new ProductionLineSetupTime(productionLine.SetupTime);
+        var nozzleChangeRules = productionLine.NozzleChangeRules.Select(x => new NozzleChangeRule { NozzleTo = new(x.NozzleTo), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
+        var calibratoinChangeRules = productionLine.CalibratoinChangeRules.Select(x => new CalibratoinChangeRule { CalibrationTo = new(x.CalibrationTo), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
+        var coolingLipChangeRules = productionLine.CoolingLipChangeRules.Select(x => new CoolingLipChangeRule { CoolingLipTo = new(x.CoolingLipTo), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
+        var filmTypeChangeRules = productionLine.FilmTypeChangeRules.Select(x => new FilmTypeChangeRule { FilmRecipeFromID = new(x.FilmRecipeFromID), FilmRecipeToID = new(x.FilmRecipeToID), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
+
 
         return new ProductionLine(
             name,
@@ -38,6 +44,10 @@ public class ProductionLineFactory : IProductionLineFactory
             thicknessChangeRule,
             widthChangeRule,
             setupTime,
+            nozzleChangeRules,
+            calibratoinChangeRules,
+            coolingLipChangeRules,
+            filmTypeChangeRules,
             _productionLineRepository);
     }
 
@@ -57,6 +67,10 @@ public class ProductionLineFactory : IProductionLineFactory
         var thicknessChangeRule = new ProductionLineChangeThicknessRule(productionLine.ThicknessChangeTime, productionLine.ThicknessChangeConsumption);
         var widthChangeRule = new ProductionLineChangeWidthRule(productionLine.WidthChangeTime, productionLine.WidthChangeConsumption);
         var setupTime = new ProductionLineSetupTime(productionLine.SetupTime);
+        var nozzleChangeRules = productionLine.NozzleChangeRules.Select(x => new NozzleChangeRule { NozzleTo = new(x.NozzleTo), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
+        var calibratoinChangeRules = productionLine.CalibratoinChangeRules.Select(x => new CalibratoinChangeRule { CalibrationTo = new(x.CalibrationTo), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
+        var coolingLipChangeRules = productionLine.CoolingLipChangeRules.Select(x => new CoolingLipChangeRule { CoolingLipTo = new(x.CoolingLipTo), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
+        var filmTypeChangeRules = productionLine.FilmTypeChangeRules.Select(x => new FilmTypeChangeRule { FilmRecipeFromID = new(x.FilmRecipeFromID), FilmRecipeToID = new(x.FilmRecipeToID), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
 
         return new ProductionLine(
             name,
@@ -67,6 +81,10 @@ public class ProductionLineFactory : IProductionLineFactory
             thicknessChangeRule,
             widthChangeRule,
             setupTime,
+            nozzleChangeRules,
+            calibratoinChangeRules,
+            coolingLipChangeRules,
+            filmTypeChangeRules,
             _productionLineRepository);
     }
 }

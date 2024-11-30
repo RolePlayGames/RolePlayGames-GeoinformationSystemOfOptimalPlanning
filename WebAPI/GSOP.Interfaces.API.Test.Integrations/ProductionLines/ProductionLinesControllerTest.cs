@@ -2,6 +2,7 @@
 using GSOP.Domain.Contracts.ProductionLines;
 using GSOP.Domain.Contracts.ProductionLines.Exceptions;
 using GSOP.Domain.Contracts.ProductionLines.Models;
+using GSOP.Domain.Contracts.ProductionLines.ProductionRules;
 using GSOP.Interfaces.API.Test.Integrations.Core;
 using GSOP.Interfaces.API.Test.Integrations.Core.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,10 @@ public class ProductionLinesControllerTest : WebIntegrationTestBase
         WidthChangeTime = TimeSpan.FromMinutes(15),
         WidthChangeConsumption = 8,
         SetupTime = TimeSpan.FromMinutes(30),
+        NozzleChangeRules = [new NozzleChangeRuleDTO { NozzleTo = 5, ChangeTime = TimeSpan.FromMinutes(15), ChangeConsumption = 8 }],
+        CalibratoinChangeRules = [new CalibratoinChangeRuleDTO { CalibrationTo = 25, ChangeTime = TimeSpan.FromMinutes(15), ChangeConsumption = 8 }],
+        CoolingLipChangeRules = [new CoolingLipChangeRuleDTO { CoolingLipTo = 5, ChangeTime = TimeSpan.FromMinutes(15), ChangeConsumption = 8 }],
+        FilmTypeChangeRules = [new FilmTypeChangeRuleDTO { FilmRecipeFromID = 1, FilmRecipeToID = 2, ChangeTime = TimeSpan.FromMinutes(15), ChangeConsumption = 8 }],
     };
 
     private static readonly ProductionLineDTO _newProductionLine = new()
@@ -42,6 +47,10 @@ public class ProductionLinesControllerTest : WebIntegrationTestBase
         WidthChangeTime = TimeSpan.FromMinutes(20),
         WidthChangeConsumption = 10,
         SetupTime = TimeSpan.FromMinutes(40),
+        NozzleChangeRules = [new NozzleChangeRuleDTO { NozzleTo = 5, ChangeTime = TimeSpan.FromMinutes(30), ChangeConsumption = 10 }],
+        CalibratoinChangeRules = [new CalibratoinChangeRuleDTO { CalibrationTo = 25, ChangeTime = TimeSpan.FromMinutes(30), ChangeConsumption = 10 }],
+        CoolingLipChangeRules = [new CoolingLipChangeRuleDTO { CoolingLipTo = 15, ChangeTime = TimeSpan.FromMinutes(30), ChangeConsumption = 10 }],
+        FilmTypeChangeRules = [new FilmTypeChangeRuleDTO { FilmRecipeFromID = 1, FilmRecipeToID = 2, ChangeTime = TimeSpan.FromMinutes(30), ChangeConsumption = 10 }],
     };
 
     private readonly Mock<IProductionLineRepository> _productionLineRepositoryMock;
@@ -170,7 +179,22 @@ public class ProductionLinesControllerTest : WebIntegrationTestBase
 
         var result = await response.Content.ReadAsAsync<ProductionLineDTO>();
 
-        result.Should().Be(productionLine);
+        result.HourCost.Should().Be(productionLine.HourCost);
+        result.MaxProductionSpeed.Should().Be(productionLine.MaxProductionSpeed);
+        result.Name.Should().Be(productionLine.Name);
+        result.SetupTime.Should().Be(productionLine.SetupTime);
+        result.ThicknessChangeConsumption.Should().Be(productionLine.ThicknessChangeConsumption);
+        result.ThicknessChangeTime.Should().Be(productionLine.ThicknessChangeTime);
+        result.ThicknessMax.Should().Be(productionLine.ThicknessMax);
+        result.ThicknessMin.Should().Be(productionLine.ThicknessMin);
+        result.WidthChangeConsumption.Should().Be(productionLine.WidthChangeConsumption);
+        result.WidthChangeTime.Should().Be(productionLine.WidthChangeTime);
+        result.WidthMax.Should().Be(productionLine.WidthMax);
+        result.WidthMin.Should().Be(productionLine.WidthMin);
+        result.CalibratoinChangeRules.Should().BeEquivalentTo(productionLine.CalibratoinChangeRules);
+        result.CoolingLipChangeRules.Should().BeEquivalentTo(productionLine.CoolingLipChangeRules);
+        result.FilmTypeChangeRules.Should().BeEquivalentTo(productionLine.FilmTypeChangeRules);
+        result.NozzleChangeRules.Should().BeEquivalentTo(productionLine.NozzleChangeRules);
 
         _productionLineRepositoryMock.VerifyStrongly();
     }

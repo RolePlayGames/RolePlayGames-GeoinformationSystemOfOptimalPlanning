@@ -19,21 +19,21 @@ public class ProductionLinesController
     }
 
     [HttpPost]
-    public Task<long> CreateFilmType(ProductionLineDTO productionLine)
+    public Task<long> CreateProductionLine(ProductionLineDTO productionLine)
     {
         return _productionLineService.CreateProductionLine(productionLine);
     }
 
     [HttpDelete]
     [Route("{id}")]
-    public Task DeleteFilmType(long id)
+    public Task DeleteProductionLine(long id)
     {
         return _productionLineService.DeleteProductionLine(id);
     }
 
     [HttpGet]
     [Route("{id}")]
-    public Task<ProductionLineDTO> GetFilmType(long id)
+    public Task<ProductionLineDTO> GetProductionLine(long id)
     {
         return _productionLineService.GetProductionLine(id);
     }

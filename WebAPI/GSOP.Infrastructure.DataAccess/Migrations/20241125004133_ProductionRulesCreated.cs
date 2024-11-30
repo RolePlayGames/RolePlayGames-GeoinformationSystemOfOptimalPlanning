@@ -20,7 +20,8 @@ public class _20241125004133_ProductionRulesCreated : Migration
 
         Create.ForeignKey()
             .FromTable(NozzleChangeRulePOCO.TableName).InSchema(DBConstants.Schema).ForeignColumn(nameof(NozzleChangeRulePOCO.ProductionLineID))
-            .ToTable(ProductionLinePOCO.TableName).InSchema(DBConstants.Schema).PrimaryColumn(nameof(ProductionLinePOCO.ID));
+            .ToTable(ProductionLinePOCO.TableName).InSchema(DBConstants.Schema).PrimaryColumn(nameof(ProductionLinePOCO.ID))
+            .OnDeleteOrUpdate(System.Data.Rule.Cascade);
 
         Create.Table(CalibrationChangeRulePOCO.TableName)
             .InSchema(DBConstants.Schema)
@@ -32,7 +33,8 @@ public class _20241125004133_ProductionRulesCreated : Migration
 
         Create.ForeignKey()
             .FromTable(CalibrationChangeRulePOCO.TableName).InSchema(DBConstants.Schema).ForeignColumn(nameof(CalibrationChangeRulePOCO.ProductionLineID))
-            .ToTable(ProductionLinePOCO.TableName).InSchema(DBConstants.Schema).PrimaryColumn(nameof(ProductionLinePOCO.ID));
+            .ToTable(ProductionLinePOCO.TableName).InSchema(DBConstants.Schema).PrimaryColumn(nameof(ProductionLinePOCO.ID))
+            .OnDeleteOrUpdate(System.Data.Rule.Cascade);
 
         Create.Table(CoolingLipChangeRulePOCO.TableName)
             .InSchema(DBConstants.Schema)
@@ -44,7 +46,8 @@ public class _20241125004133_ProductionRulesCreated : Migration
 
         Create.ForeignKey()
             .FromTable(CoolingLipChangeRulePOCO.TableName).InSchema(DBConstants.Schema).ForeignColumn(nameof(CoolingLipChangeRulePOCO.ProductionLineID))
-            .ToTable(ProductionLinePOCO.TableName).InSchema(DBConstants.Schema).PrimaryColumn(nameof(ProductionLinePOCO.ID));
+            .ToTable(ProductionLinePOCO.TableName).InSchema(DBConstants.Schema).PrimaryColumn(nameof(ProductionLinePOCO.ID))
+            .OnDeleteOrUpdate(System.Data.Rule.Cascade);
 
         Create.Table(FilmTypeChangeRulePOCO.TableName)
             .InSchema(DBConstants.Schema)
@@ -57,15 +60,18 @@ public class _20241125004133_ProductionRulesCreated : Migration
 
         Create.ForeignKey()
             .FromTable(FilmTypeChangeRulePOCO.TableName).InSchema(DBConstants.Schema).ForeignColumn(nameof(FilmTypeChangeRulePOCO.ProductionLineID))
-            .ToTable(ProductionLinePOCO.TableName).InSchema(DBConstants.Schema).PrimaryColumn(nameof(ProductionLinePOCO.ID));
+            .ToTable(ProductionLinePOCO.TableName).InSchema(DBConstants.Schema).PrimaryColumn(nameof(ProductionLinePOCO.ID))
+            .OnDeleteOrUpdate(System.Data.Rule.Cascade);
 
         Create.ForeignKey()
             .FromTable(FilmTypeChangeRulePOCO.TableName).InSchema(DBConstants.Schema).ForeignColumn(nameof(FilmTypeChangeRulePOCO.FilmTypeFromID))
-            .ToTable(FilmTypePOCO.TableName).InSchema(DBConstants.Schema).PrimaryColumn(nameof(FilmTypePOCO.ID));
+            .ToTable(FilmTypePOCO.TableName).InSchema(DBConstants.Schema).PrimaryColumn(nameof(FilmTypePOCO.ID))
+            .OnDeleteOrUpdate(System.Data.Rule.Cascade);
 
         Create.ForeignKey()
             .FromTable(FilmTypeChangeRulePOCO.TableName).InSchema(DBConstants.Schema).ForeignColumn(nameof(FilmTypeChangeRulePOCO.FilmTypeToID))
-            .ToTable(FilmTypePOCO.TableName).InSchema(DBConstants.Schema).PrimaryColumn(nameof(FilmTypePOCO.ID));
+            .ToTable(FilmTypePOCO.TableName).InSchema(DBConstants.Schema).PrimaryColumn(nameof(FilmTypePOCO.ID))
+            .OnDeleteOrUpdate(System.Data.Rule.Cascade);
     }
 
     public override void Down()
