@@ -1,8 +1,9 @@
-﻿namespace GSOP.Domain.Contracts;
-
-public record ModelInfo
+﻿namespace GSOP.Domain.Contracts
 {
-    public required long ID { get; init; }
+    public record ModelInfo
+    {
+        public required long ID { get; init; }
 
-    public required string Name { get; init; }
+        public required string Name { get; init; }
+    }
 }
