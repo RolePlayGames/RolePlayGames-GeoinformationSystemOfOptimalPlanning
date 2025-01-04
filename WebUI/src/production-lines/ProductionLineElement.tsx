@@ -1,35 +1,37 @@
 import { useNavigate } from "react-router-dom";
-import { HeaderLabel } from "../common/controls";
+import { AddItemButton, HeaderLabel } from "../common/controls";
 import { ElementContainer, ActionsBar, SaveButton, DeleteButton } from "../common/elementControls";
-import { createProductionLine, deleteProductionLine, ProductionLine, updateProductionLine } from "./productionLinesClient";
+import { CalibratoinChangeRule, CoolingLipChangeRule, createProductionLine, deleteProductionLine, FilmTypeChangeRule, NozzleChangeRule, ProductionLine, updateProductionLine } from "./productionLinesClient";
 import { convertToNumber } from "../utils/number-converters/numberConverter";
 import { useItemField, useItemFieldWithValidation } from "../common/useItemField";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import { IClientError } from "../common/clients/clientError";
 import { InputField } from "../common/inputs";
 import { validateHourCost, validateMaxProductionSpeed, validateMaxThickness, validateMaxWidth, validateMinThickness, validateMinWidth, validateName, validateWidthChangeConsumption } from "./validations";
 import { TimeWithoutSelectField } from "../common/inputs/TimeField";
+import { AccordionDetails } from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
+import { CalibratoinChangeRuleComponent } from "./rules/CalibratoinChangeRuleComponent";
+import { convertFromTimeSpan, convertToTimeSpan, defaultTimeSpan } from "./timespanConverter";
+import { CoolingLipChangeRuleComponent } from "./rules/CoolingLipChangeRuleComponent";
+import { FilmTypeChangeRuleComponent } from "./rules/FilmTypeChangeRuleComponent";
+import { NozzleChangeRuleComponent } from "./rules/NozzleChangeRuleComponent";
+import { AvaliableFilmType } from "../film-recipes/filmRecipesClient";
+import { ChangeRuleList, ChangeRuleHeader } from "./rules/ChangeRuleList";
 
-const convertFromTimeSpan = (value: string) => {
-	// Assuming timespanString is in the format "HH:mm:ss" (e.g., "02:30:15")
-	const [hours, minutes, seconds] = value.split(':').map(Number);
-	return dayjs().hour(hours).minute(minutes).second(seconds);
-}
-
-const convertToTimeSpan = (value: Dayjs) => {
-	const hours = value.hour().toString().padStart(2, '0');
-	const minutes = value.minute().toString().padStart(2, '0');
-	const seconds = value.second().toString().padStart(2, '0');
-	return `${hours}:${minutes}:${seconds}`;
-}
+const calibrationChangeRulesCheck = (rules: CalibratoinChangeRule[]) => rules.filter(checkRule => rules.filter(rule => checkRule !== rule && checkRule.calibrationTo === rule.calibrationTo).length > 0).length == 0;
+const coolingLipChangeRulesCheck = (rules: CoolingLipChangeRule[]) => rules.filter(checkRule => rules.filter(rule => checkRule !== rule && checkRule.coolingLipTo === rule.coolingLipTo).length > 0).length == 0;
+const filmTypeChangeRulesCheck = (rules: FilmTypeChangeRule[]) => rules.filter(checkRule => rules.filter(rule => checkRule !== rule && checkRule.filmRecipeFromID === rule.filmRecipeFromID && checkRule.filmRecipeToID == rule.filmRecipeToID).length > 0).length == 0;
+const nozzleChangeRulesCheck = (rules: NozzleChangeRule[]) => rules.filter(checkRule => rules.filter(rule => checkRule !== rule && checkRule.nozzleTo === rule.nozzleTo).length > 0).length == 0;
 
 type ProductionLineElementProps = {
     id: number,
     item: ProductionLine,
     apiPath: string,
+	filmTypes: AvaliableFilmType[],
 }
 
-export const ProductionLineElement = ({ id, item, apiPath }: ProductionLineElementProps) => {
+export const ProductionLineElement = ({ id, item, apiPath, filmTypes }: ProductionLineElementProps) => {
 	const [name, setName, nameError, setNameError] = useItemFieldWithValidation<ProductionLine, string>(item, x => x.name, validateName);
 	const [hourCost, setHourCost, hourCostError] = useItemFieldWithValidation<ProductionLine, string>(item, x => x.hourCost.toString(), validateHourCost);
 	const [maxProductionSpeed, setMaxProductionSpeed, maxProductionSpeedError] = useItemFieldWithValidation<ProductionLine, string>(item, x => x.maxProductionSpeed.toString(), validateMaxProductionSpeed);
@@ -42,6 +44,13 @@ export const ProductionLineElement = ({ id, item, apiPath }: ProductionLineEleme
 	const [thicknessChangeTime, setThicknessChangeTime] = useItemField<ProductionLine, Dayjs | null>(item, x => convertFromTimeSpan(x.thicknessChangeTime));
 	const [thicknessChangeConsumption, setThicknessChangeConsumption, thicknessChangeConsumptionError] = useItemFieldWithValidation<ProductionLine, string>(item, x => x.thicknessChangeConsumption.toString(), validateWidthChangeConsumption);
 	const [setupTime, setSetupTime] = useItemField<ProductionLine, Dayjs | null>(item, x => convertFromTimeSpan(x.setupTime));
+
+	const [calibratoinChangeRules, setCalibratoinChangeRules] = useState(item.calibratoinChangeRules);
+	const [coolingLipChangeRules, setCoolingLipChangeRules] = useState(item.coolingLipChangeRules);
+	const [filmTypeChangeRules, setFilmTypeChangeRules] = useState(item.filmTypeChangeRules);
+	const [nozzleChangeRules, setNozzleChangeRules] = useState(item.nozzleChangeRules);
+
+	const [savingAvaliable, setSavingAvaliable] = useState(false);
 
 	const navigate = useNavigate();
 
@@ -65,7 +74,7 @@ export const ProductionLineElement = ({ id, item, apiPath }: ProductionLineEleme
 		}
 	};
 
-	const onSave = () => {
+	const onSave = useCallback(() => {
 		const hourCostNumber = convertToNumber(hourCost);
 		const maxProductionSpeedNumber = convertToNumber(maxProductionSpeed);
 		const minWidthNumber = convertToNumber(minWidth);
@@ -85,7 +94,11 @@ export const ProductionLineElement = ({ id, item, apiPath }: ProductionLineEleme
 			&& widthChangeConsumptionNumber !== undefined
 			&& thicknessChangeTime !== null
 			&& thicknessChangeConsumptionNumber !== undefined
-			&& setupTime !== null)
+			&& setupTime !== null
+			&& calibrationChangeRulesCheck(calibratoinChangeRules)
+			&& coolingLipChangeRulesCheck(coolingLipChangeRules)
+			&& filmTypeChangeRulesCheck(filmTypeChangeRules)
+			&& nozzleChangeRulesCheck(nozzleChangeRules))
 		{
 			const item = {
 				name: name,
@@ -100,6 +113,10 @@ export const ProductionLineElement = ({ id, item, apiPath }: ProductionLineEleme
 				widthChangeTime: convertToTimeSpan(widthChangeTime),
 				widthChangeConsumption: thicknessChangeConsumptionNumber,
 				setupTime: convertToTimeSpan(setupTime),
+				calibratoinChangeRules: calibratoinChangeRules,
+				coolingLipChangeRules: coolingLipChangeRules,
+				filmTypeChangeRules: filmTypeChangeRules,
+				nozzleChangeRules: nozzleChangeRules,
 			};
 
 			if (id > 0) 
@@ -109,7 +126,18 @@ export const ProductionLineElement = ({ id, item, apiPath }: ProductionLineEleme
 		}
 		
 		return Promise.resolve();
-	};
+	}, [hourCost,
+		maxProductionSpeed,
+		minWidth,
+		maxWidth,
+		minThickness,
+		maxThickness,
+		widthChangeConsumption,
+		thicknessChangeConsumption,
+		calibratoinChangeRules,
+		coolingLipChangeRules,
+		filmTypeChangeRules,
+		nozzleChangeRules]);
 
 	const onDelete = async () => {
 		if (id > 0) {
@@ -118,26 +146,122 @@ export const ProductionLineElement = ({ id, item, apiPath }: ProductionLineEleme
 		}
 	};
 
+	const updateSavingAvaliable = useCallback(() => {
+		const hourCostNumber = convertToNumber(hourCost);
+		const maxProductionSpeedNumber = convertToNumber(maxProductionSpeed);
+		const minWidthNumber = convertToNumber(minWidth);
+		const maxWidthNumber = convertToNumber(maxWidth);
+		const minThicknessNumber = convertToNumber(minThickness);
+		const maxThicknessNumber = convertToNumber(maxThickness);
+		const widthChangeConsumptionNumber = convertToNumber(widthChangeConsumption);
+		const thicknessChangeConsumptionNumber = convertToNumber(thicknessChangeConsumption);
+
+		console.log(`Check started: ${hourCostNumber !== undefined}
+			&& ${maxProductionSpeedNumber !== undefined}
+			&& ${minWidthNumber !== undefined}
+			&& ${maxWidthNumber !== undefined}
+			&& ${minThicknessNumber !== undefined}
+			&& ${maxThicknessNumber !== undefined}
+            && ${widthChangeTime !== null}
+			&& ${widthChangeConsumptionNumber !== undefined}
+			&& ${thicknessChangeTime !== null}
+			&& ${thicknessChangeConsumptionNumber !== undefined}
+			&& ${setupTime !== null}
+			&& ${calibrationChangeRulesCheck(calibratoinChangeRules)}
+			&& ${coolingLipChangeRulesCheck(coolingLipChangeRules)}
+			&& ${filmTypeChangeRulesCheck(filmTypeChangeRules)}
+			&& ${nozzleChangeRulesCheck(nozzleChangeRules)}`);
+
+		setSavingAvaliable(hourCostNumber !== undefined
+			&& maxProductionSpeedNumber !== undefined
+			&& minWidthNumber !== undefined
+			&& maxWidthNumber !== undefined
+			&& minThicknessNumber !== undefined
+			&& maxThicknessNumber !== undefined
+            && widthChangeTime !== null
+			&& widthChangeConsumptionNumber !== undefined
+			&& thicknessChangeTime !== null
+			&& thicknessChangeConsumptionNumber !== undefined
+			&& setupTime !== null
+			&& calibrationChangeRulesCheck(calibratoinChangeRules)
+			&& coolingLipChangeRulesCheck(coolingLipChangeRules)
+			&& filmTypeChangeRulesCheck(filmTypeChangeRules)
+			&& nozzleChangeRulesCheck(nozzleChangeRules));
+	}, [hourCost,
+		maxProductionSpeed,
+		minWidth,
+		maxWidth,
+		minThickness,
+		maxThickness,
+		widthChangeConsumption,
+		thicknessChangeConsumption,
+		calibratoinChangeRules,
+		coolingLipChangeRules,
+		filmTypeChangeRules,
+		nozzleChangeRules]);
+
+	useEffect(() => {
+		updateSavingAvaliable();
+	}, [hourCost,
+		maxProductionSpeed,
+		minWidth,
+		maxWidth,
+		minThickness,
+		maxThickness,
+		widthChangeConsumption,
+		thicknessChangeConsumption,
+		calibratoinChangeRules,
+		coolingLipChangeRules,
+		filmTypeChangeRules,
+		nozzleChangeRules]);
+
+	const onAddCalibrationChangeRule = () => {
+		item.calibratoinChangeRules = [...item.calibratoinChangeRules, { calibrationTo: 0, changeTime: defaultTimeSpan, changeConsumption: 0 } ];
+		setCalibratoinChangeRules(item.calibratoinChangeRules);
+	};
+
+	const onDeleteCalibrationChangeRule = (index: number) => {
+		item.calibratoinChangeRules = item.calibratoinChangeRules.filter((_, i) => i !== index);
+		setCalibratoinChangeRules(item.calibratoinChangeRules);
+	};
+
+	const onAddCoolingLipChangeRule = () => {
+		item.coolingLipChangeRules = [...item.coolingLipChangeRules, { coolingLipTo: 0, changeTime: defaultTimeSpan, changeConsumption: 0 } ];
+		setCoolingLipChangeRules(item.coolingLipChangeRules);
+	};
+
+	const onDeleteCoolingLipChangeRule = (index: number) => {
+		item.coolingLipChangeRules = item.coolingLipChangeRules.filter((_, i) => i !== index);
+		setCoolingLipChangeRules(item.coolingLipChangeRules);
+	};
+
+	const onAddFilmTypeChangeRule = () => {
+		item.filmTypeChangeRules = [...item.filmTypeChangeRules, { filmRecipeFromID: 0, filmRecipeToID: 0, changeTime: defaultTimeSpan, changeConsumption: 0 } ];
+		setFilmTypeChangeRules(item.filmTypeChangeRules);
+	};
+
+	const onDeleteFilmTypeChangeRule = (index: number) => {
+		item.filmTypeChangeRules = item.filmTypeChangeRules.filter((_, i) => i !== index);
+		setFilmTypeChangeRules(item.filmTypeChangeRules);
+	};
+
+	const onAddNozzleChangeRule = () => {
+		item.nozzleChangeRules = [...item.nozzleChangeRules, { nozzleTo: 0, changeTime: defaultTimeSpan, changeConsumption: 0 } ];
+		setNozzleChangeRules(item.nozzleChangeRules);
+	};
+
+	const onDeleteNozzleChangeRule = (index: number) => {
+		item.nozzleChangeRules = item.nozzleChangeRules.filter((_, i) => i !== index);
+		setNozzleChangeRules(item.nozzleChangeRules);
+	};
+
 	return(
 		<ElementContainer>
 			<HeaderLabel>Производственная линия {item.name}</HeaderLabel>
 			<ActionsBar>
 				<SaveButton
 					onClick={onSave}
-					disabled={
-						!!nameError
-						&& !!hourCostError
-						&& !!maxProductionSpeedError
-						&& !!minWidthError
-						&& !!maxWidthError
-						&& !!minThicknessError
-						&& !!maxThicknessError
-						&& widthChangeTime === null
-						&& !!widthChangeConsumptionError
-						&& thicknessChangeTime === null
-						&& !!thicknessChangeConsumptionError
-						&& setupTime === null
-					}
+					disabled={!savingAvaliable}
 				/>
 				<DeleteButton onClick={onDelete} disabled={id <= 0}/>
 			</ActionsBar>
@@ -198,6 +322,63 @@ export const ProductionLineElement = ({ id, item, apiPath }: ProductionLineEleme
 				label='Время прогрева'
 				value={setupTime}
 				onChange={setSetupTime}/>
+			<ChangeRuleList defaultExpanded>
+				<ChangeRuleHeader>Правила перенастройки по калибровке</ChangeRuleHeader>
+				<AccordionDetails>
+					<AddItemButton onClick={onAddCalibrationChangeRule}/>
+					{ item.calibratoinChangeRules.map((rule, index) => (
+						<CalibratoinChangeRuleComponent
+							rule={rule}
+							index={index}
+							onDelete={onDeleteCalibrationChangeRule}
+							rules={calibratoinChangeRules}
+							onValueChanged={updateSavingAvaliable}/>
+					)) }
+				</AccordionDetails>
+			</ChangeRuleList>
+			<ChangeRuleList defaultExpanded>
+				<ChangeRuleHeader>Правила перенастройки по охлождающим роликам</ChangeRuleHeader>
+				<AccordionDetails>
+					<AddItemButton onClick={onAddCoolingLipChangeRule}/>
+					{ item.coolingLipChangeRules.map((rule, index) => (
+						<CoolingLipChangeRuleComponent
+							rule={rule}
+							index={index}
+							onDelete={onDeleteCoolingLipChangeRule}
+							rules={coolingLipChangeRules}
+							onValueChanged={updateSavingAvaliable}/>
+					)) }
+				</AccordionDetails>
+			</ChangeRuleList>
+			<ChangeRuleList defaultExpanded>
+				<ChangeRuleHeader>Правила перенастройки по типу пленки</ChangeRuleHeader>
+				<AccordionDetails>
+					<AddItemButton onClick={onAddFilmTypeChangeRule}/>
+					{ item.filmTypeChangeRules.map((rule, index) => (
+						<FilmTypeChangeRuleComponent
+							rule={rule}
+							index={index}
+							onDelete={onDeleteFilmTypeChangeRule}
+							filmTypes={filmTypes}
+							rules={filmTypeChangeRules}
+							onValueChanged={updateSavingAvaliable}/>
+					)) }
+				</AccordionDetails>
+			</ChangeRuleList>
+			<ChangeRuleList defaultExpanded>
+				<ChangeRuleHeader>Правила перенастройки по диаметру сопла</ChangeRuleHeader>
+				<AccordionDetails>
+					<AddItemButton onClick={onAddNozzleChangeRule}/>
+					{ item.nozzleChangeRules.map((rule, index) => (
+						<NozzleChangeRuleComponent
+							rule={rule}
+							index={index}
+							onDelete={onDeleteNozzleChangeRule}
+							rules={nozzleChangeRules}
+							onValueChanged={updateSavingAvaliable}/>
+					)) }
+				</AccordionDetails>
+			</ChangeRuleList>
 		</ElementContainer>
 	);
 }

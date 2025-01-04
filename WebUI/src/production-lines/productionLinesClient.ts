@@ -11,6 +11,31 @@ export type ProductionLineInfo = {
     name: string,
 }
 
+export type CalibratoinChangeRule = {
+	calibrationTo: number,
+	changeTime: string,
+	changeConsumption: number,
+}
+
+export type CoolingLipChangeRule = {
+	coolingLipTo: number,
+	changeTime: string,
+	changeConsumption: number,
+}
+
+export type FilmTypeChangeRule = {
+	filmRecipeFromID: number,
+	filmRecipeToID: number,
+	changeTime: string,
+	changeConsumption: number,
+}
+
+export type NozzleChangeRule = {
+	nozzleTo: number,
+	changeTime: string,
+	changeConsumption: number,
+}
+
 export type ProductionLine = {
 	name: string,
 	hourCost: number,
@@ -24,6 +49,10 @@ export type ProductionLine = {
 	widthChangeTime: string,
 	widthChangeConsumption: number,
 	setupTime: string,
+	calibratoinChangeRules: CalibratoinChangeRule[],
+	coolingLipChangeRules: CoolingLipChangeRule[],
+	filmTypeChangeRules: FilmTypeChangeRule[],
+	nozzleChangeRules: NozzleChangeRule[],
 }
 
 export const getProductionLinesInfo = async () => {
