@@ -14,7 +14,7 @@ import { MenuItem } from './MenuItem';
 import { white } from '../styles/colors';
 import { menuItems } from './menuItems';
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 
 const openedMixin = (theme: Theme): CSSObject => ({
 	width: drawerWidth,
@@ -206,7 +206,7 @@ export const SideMenu = () => {
 						</ClosedMenuHeaderContainer>
 					)}
 					<MenuItemsList>
-						{ menuItems.map((item, index) => (
+						{ menuItems.map((item) => (
 							<MenuItem key={item.header} item={item} isMenuOpen={isMenuOpen}/>
 						))}
 					</MenuItemsList>

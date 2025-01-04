@@ -3,13 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { LoadingProgress } from "../common/LoadingProgress";
 import { ProductionLine, getProductionLine } from "./productionLinesClient";
 import { ProductionLineElement } from "./ProductionLineElement";
+import { AvaliableFilmType } from "../film-recipes/filmRecipesClient";
 
 type ProductionLinePageProps = {
     id: number,
     apiPath: string,
+	filmTypes: AvaliableFilmType[],
 }
 
-export const ProductionLinePage = ({ id, apiPath }: ProductionLinePageProps) => {
+export const ProductionLinePage = ({ id, apiPath, filmTypes }: ProductionLinePageProps) => {
 
 	const [item, setItem] = useState<ProductionLine | undefined>();
 
@@ -35,6 +37,10 @@ export const ProductionLinePage = ({ id, apiPath }: ProductionLinePageProps) => 
 				widthChangeTime: '00:00:00',
 				widthChangeConsumption: 0,
 				setupTime: '00:00:00',
+				calibratoinChangeRules: [],
+				coolingLipChangeRules: [],
+				filmTypeChangeRules: [],
+				nozzleChangeRules: [],
 			};        
         
 		if (item)
@@ -53,7 +59,7 @@ export const ProductionLinePage = ({ id, apiPath }: ProductionLinePageProps) => 
 		);
 	else 
 		return (
-			<ProductionLineElement id={id} item={item} apiPath={apiPath}/>
+			<ProductionLineElement id={id} item={item} apiPath={apiPath} filmTypes={filmTypes}/>
 		);
     
 }

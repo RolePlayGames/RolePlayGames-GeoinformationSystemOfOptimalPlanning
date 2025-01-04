@@ -45,7 +45,7 @@ export const AddItemButton = (props: ButtonProps) => (
 			background: '#1d1b31',
 			'&:hover': {
 				backgroundColor: '#11101d'
-			}
+			},
 		}}
 		{...props}
 	>

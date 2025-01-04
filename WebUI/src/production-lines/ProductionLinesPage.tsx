@@ -6,6 +6,7 @@ import { Item, ListItem } from "../common/Item";
 import { ProductionLinePage } from "./ProductionLinePage";
 import { getProductionLinesInfo } from "./productionLinesClient";
 import { PRODUCTION_LINES } from "../routes/routes";
+import { AvaliableFilmType, getAvaliableFilmTypes } from "../film-recipes/filmRecipesClient";
 
 const apiPath = PRODUCTION_LINES;
 
@@ -17,12 +18,16 @@ export const ProductionLinesPage = () => {
 	const [isVisible, setIsVisible] = useState(false);
 
 	const [items, setItems] = useState<ListItem[]>();
+	const [filmTypes, setFilmTypes] = useState<AvaliableFilmType[]>();
 
 	const navigate = useNavigate();
 
 	const loadItems = useCallback(async () => {
 		const items = await getProductionLinesInfo();      
 		setItems(items);
+		
+		const filmTypes = await getAvaliableFilmTypes();
+		setFilmTypes(filmTypes);
 	}, []);
 
 	useEffect(() => {
@@ -47,7 +52,7 @@ export const ProductionLinesPage = () => {
 	return(
 		<PageContainer>
 			<HeaderLabel>Производственные линии</HeaderLabel>
-			{ items === undefined ? (
+			{ items === undefined || filmTypes === undefined || filmTypes.length === 0 ? (
 				<LoadingProgress/>
 			) : (
 				<ItemsContainer>
@@ -57,7 +62,7 @@ export const ProductionLinesPage = () => {
 							{ items.map((item) => (<Item item={item} handleItemClick={handleItemClick}/>)) }
 						</ItemsList>
 					</ItemsBlock>
-					{ (itemId !== undefined && isVisible) && <ProductionLinePage id={itemId} apiPath={apiPath}/> }
+					{ (itemId !== undefined && isVisible) && <ProductionLinePage id={itemId} apiPath={apiPath} filmTypes={filmTypes}/> }
 				</ItemsContainer>
 			)}
 		</PageContainer>
