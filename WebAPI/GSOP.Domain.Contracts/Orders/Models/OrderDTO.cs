@@ -18,7 +18,7 @@ public record OrderDTO
 
     public required int RollsCount { get; init; }
 
-    public required DateTime PlannedDate { get; init; }
+    public required DateTime? PlannedDate { get; init; }
 
     public required double PriceOverdue { get; init; }
 }
