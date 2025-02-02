@@ -16,13 +16,13 @@ public record ProductionLineModel
 
     public required double ThicknessMax { get; init; }
 
-    public required TimeSpan ThicknessChangeTime { get; init; }
+    public required int ThicknessChangeTimeMinutes { get; init; }
 
     public required double ThicknessChangeConsumption { get; init; }
 
-    public required TimeSpan WidthChangeTime { get; init; }
+    public required int WidthChangeTimeMinutes { get; init; }
 
     public required double WidthChangeConsumption { get; init; }
 
-    public required TimeSpan SetupTime { get; init; }
+    public required int SetupTimeMinutes { get; init; }
 }

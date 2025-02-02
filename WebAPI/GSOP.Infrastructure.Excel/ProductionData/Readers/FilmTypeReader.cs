@@ -1,7 +1,7 @@
 ﻿using GSOP.Application.Contracts.ProductionData.Models;
 using OfficeOpenXml;
 
-namespace GSOP.Infrastructure.Excel.ProductionData.Models;
+namespace GSOP.Infrastructure.Excel.ProductionData.Readers;
 
 public class FilmTypeReader : ModelReader<FilmTypeModel>
 {

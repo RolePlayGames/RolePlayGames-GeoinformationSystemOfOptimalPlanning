@@ -9,7 +9,8 @@ public interface IProductionDataService
     /// Imports production data
     /// </summary>
     /// <param name="data">Production data</param>
-    Task Import(ProductionData data);
+    /// <param name="shouldClearProductionData">Is production data should be cleared befor</param>
+    Task Import(ProductionData data, bool shouldClearProductionData = false);
 
     /// <summary>
     /// Exports production data

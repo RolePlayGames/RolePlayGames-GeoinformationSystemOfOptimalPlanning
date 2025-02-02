@@ -1,7 +1,7 @@
 ﻿using GSOP.Application.Contracts.ProductionData.Models;
 using OfficeOpenXml;
 
-namespace GSOP.Infrastructure.Excel.ProductionData.Models;
+namespace GSOP.Infrastructure.Excel.ProductionData.Readers;
 
 public class ProductionLineReader : ModelReader<ProductionLineModel>
 {
@@ -30,11 +30,11 @@ public class ProductionLineReader : ModelReader<ProductionLineModel>
             || !double.TryParse(widthMax, out var widthMaxNum)
             || !double.TryParse(thicknessMin, out var thicknessMinNum)
             || !double.TryParse(thicknessMax, out var thicknessMaxNum)
-            || !TimeSpan.TryParse(thicknessChangeTime, out var thicknessChangeTimeSpan)
+            || !int.TryParse(thicknessChangeTime, out var thicknessChangeTimeNum)
             || !double.TryParse(thicknessChangeConsumption, out var thicknessChangeConsumptionNum)
-            || !TimeSpan.TryParse(widthChangeTime, out var widthChangeTimeSpan)
+            || !int.TryParse(widthChangeTime, out var widthChangeTimeNum)
             || !double.TryParse(widthChangeConsumption, out var widthChangeConsumptionNum)
-            || !TimeSpan.TryParse(setupTime, out var setupTimeSpan)
+            || !int.TryParse(setupTime, out var setupTimeNum)
             ? null
             : new()
             {
@@ -45,11 +45,11 @@ public class ProductionLineReader : ModelReader<ProductionLineModel>
                 WidthMax = widthMaxNum,
                 ThicknessMin = thicknessMinNum,
                 ThicknessMax = thicknessMaxNum,
-                ThicknessChangeTime = thicknessChangeTimeSpan,
+                ThicknessChangeTimeMinutes = thicknessChangeTimeNum,
                 ThicknessChangeConsumption = thicknessChangeConsumptionNum,
-                WidthChangeTime = widthChangeTimeSpan,
+                WidthChangeTimeMinutes = widthChangeTimeNum,
                 WidthChangeConsumption = widthChangeConsumptionNum,
-                SetupTime = setupTimeSpan,
+                SetupTimeMinutes = setupTimeNum,
             };
     }
 }

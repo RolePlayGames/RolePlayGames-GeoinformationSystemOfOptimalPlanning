@@ -10,22 +10,34 @@ namespace GSOP.Interfaces.API.ProductionData;
 public class ProductionDataController : ControllerBase
 {
     private readonly IProductionDataReader _productionDataReader;
+    private readonly IProductionDataWriter _productionDataWriter;
     private readonly IProductionDataService _productionDataService;
 
-    public ProductionDataController(IProductionDataReader productionDataReader, IProductionDataService productionDataService)
+    public ProductionDataController(IProductionDataReader productionDataReader, IProductionDataWriter productionDataWriter, IProductionDataService productionDataService)
     {
         _productionDataReader = productionDataReader;
+        _productionDataWriter = productionDataWriter;
         _productionDataService = productionDataService;
+    }
+
+    [HttpGet]
+    [Route("excel/export")]
+    public async Task<IActionResult> Export()
+    {
+        var productionnData = await _productionDataService.Export();
+        var excelStream = await _productionDataWriter.Write(productionnData);
+
+        return File(excelStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ProductionData.xlsx");
     }
 
     [HttpPost]
     [Route("excel/import")]
-    public Task Import(IFormFile file)
+    public Task Import([FromForm] IFormFile file, [FromQuery] bool shouldClearProductionData = false)
     {
         using var steam = file.OpenReadStream();
 
         var data = _productionDataReader.ReadProductionData(steam);
 
-        return _productionDataService.Import(data);
+        return _productionDataService.Import(data, shouldClearProductionData);
     }
 }

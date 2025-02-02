@@ -1,6 +1,6 @@
 ﻿using OfficeOpenXml;
 
-namespace GSOP.Infrastructure.Excel.ProductionData.Models;
+namespace GSOP.Infrastructure.Excel.ProductionData.Readers;
 
 /// <summary>
 /// Manages models reading logic

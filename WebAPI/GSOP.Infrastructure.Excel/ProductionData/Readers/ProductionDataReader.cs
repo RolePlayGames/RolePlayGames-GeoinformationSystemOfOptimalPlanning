@@ -1,10 +1,9 @@
 ﻿using GSOP.Application.Contracts.ProductionData.Models;
 using GSOP.Application.Contracts.ProductionData.Models.ChangeRules;
 using GSOP.Infrastructure.Excel.Contracts.ProductionData;
-using GSOP.Infrastructure.Excel.ProductionData.Models;
 using OfficeOpenXml;
 
-namespace GSOP.Infrastructure.Excel.ProductionData;
+namespace GSOP.Infrastructure.Excel.ProductionData.Readers;
 
 public class ProductionDataReader : IProductionDataReader
 {

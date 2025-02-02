@@ -1,29 +1,29 @@
 ﻿using GSOP.Application.Contracts.ProductionData.Models.ChangeRules;
 using OfficeOpenXml;
 
-namespace GSOP.Infrastructure.Excel.ProductionData.Models;
+namespace GSOP.Infrastructure.Excel.ProductionData.Readers;
 
-public class NozzleChangeRuleReader : ModelReader<NozzleChangeRuleModel>
+public class CalibratoinChangeRuleReader : ModelReader<CalibratoinChangeRuleModel>
 {
-    protected override int WorkSheetNum => 6;
+    protected override int WorkSheetNum => 7;
 
-    protected override NozzleChangeRuleModel? ReadModel(ExcelRange cells, int rowNum)
+    protected override CalibratoinChangeRuleModel? ReadModel(ExcelRange cells, int rowNum)
     {
         var productionLineName = cells[rowNum, 1].Value?.ToString();
-        var nozzleTo = cells[rowNum, 2].Value?.ToString();
+        var calibrationTo = cells[rowNum, 2].Value?.ToString();
         var changeTimeMinutes = cells[rowNum, 3].Value?.ToString();
         var changeConsumption = cells[rowNum, 4].Value?.ToString();
 
         return productionLineName is null
             || productionLineName == string.Empty
-            || !double.TryParse(nozzleTo, out var nozzleToNum)
+            || !double.TryParse(calibrationTo, out var calibrationToNum)
             || !int.TryParse(changeTimeMinutes, out var changeTimeMinutesNum)
             || !double.TryParse(changeConsumption, out var changeConsumptionNum)
             ? null
             : new()
             {
                 ProductionLineName = productionLineName,
-                NozzleTo = nozzleToNum,
+                CalibrationTo = calibrationToNum,
                 ChangeTimeMinutes = changeTimeMinutesNum,
                 ChangeConsumption = changeConsumptionNum,
             };

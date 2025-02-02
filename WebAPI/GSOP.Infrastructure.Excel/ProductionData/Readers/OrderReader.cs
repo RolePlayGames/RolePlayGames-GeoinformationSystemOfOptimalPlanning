@@ -1,7 +1,7 @@
 ﻿using GSOP.Application.Contracts.ProductionData.Models;
 using OfficeOpenXml;
 
-namespace GSOP.Infrastructure.Excel.ProductionData.Models;
+namespace GSOP.Infrastructure.Excel.ProductionData.Readers;
 
 public class OrderReader : ModelReader<OrderModel>
 {
@@ -16,7 +16,7 @@ public class OrderReader : ModelReader<OrderModel>
         var waste = cells[rowNum, 5].Value?.ToString();
         var rollsCount = cells[rowNum, 6].Value?.ToString();
         var filmRecipeName = cells[rowNum, 8].Value?.ToString();
-        var plannedDate = cells[rowNum, 9].Value?.ToString();
+        var plannedDate = cells[rowNum, 9].GetValue<DateTime?>();
         var priceOverdue = cells[rowNum, 10].Value?.ToString();
         var customerName = cells[rowNum, 11].Value?.ToString();
 
@@ -42,7 +42,7 @@ public class OrderReader : ModelReader<OrderModel>
                 Waste = wasteNum,
                 RollsCount = rollsCountNum,
                 FilmRecipeName = filmRecipeName,
-                PlannedDate = DateTime.TryParse(plannedDate, out var date) ? date : null,
+                PlannedDate = plannedDate,
                 PriceOverdue = priceOverdueNum,
                 CustomerName = customerName,
             };

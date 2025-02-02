@@ -1,6 +1,6 @@
 ﻿using OfficeOpenXml;
 
-namespace GSOP.Infrastructure.Excel.ProductionData.Models;
+namespace GSOP.Infrastructure.Excel.ProductionData.Readers;
 
 public abstract class ModelReader<TModel> : IModelReader<TModel>
 {

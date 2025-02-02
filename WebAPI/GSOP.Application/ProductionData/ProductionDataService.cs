@@ -3,14 +3,18 @@ using GSOP.Application.Contracts.FilmRecipes;
 using GSOP.Application.Contracts.FilmTypes;
 using GSOP.Application.Contracts.Orders;
 using GSOP.Application.Contracts.ProductionData;
+using GSOP.Application.Contracts.ProductionData.Models.ChangeRules;
 using GSOP.Application.Contracts.ProductionLines;
 using GSOP.Domain.Contracts.Customers.Models;
 using GSOP.Domain.Contracts.FilmRecipes.Models;
+using GSOP.Domain.Contracts.FilmTypes;
 using GSOP.Domain.Contracts.FilmTypes.Models;
 using GSOP.Domain.Contracts.Orders.Models;
 using GSOP.Domain.Contracts.ProductionData;
 using GSOP.Domain.Contracts.ProductionLines.Models;
 using GSOP.Domain.Contracts.ProductionLines.ProductionRules;
+using System.Linq;
+using System.Net.Http.Headers;
 
 namespace GSOP.Application.ProductionData;
 
@@ -39,16 +43,145 @@ public class ProductionDataService : IProductionDataService
         _productionLineService = productionLineService;
     }
 
-    public Task<Contracts.ProductionData.ProductionData> Export()
+    public async Task<Contracts.ProductionData.ProductionData> Export()
     {
-        throw new NotImplementedException();
+        var filmTypesInfo = await _filmTypeSerivce.GetFilmTypesInfo();
+
+        var filmTypes = new List<FilmTypeDTO>(filmTypesInfo.Count);
+
+        foreach(var info in filmTypesInfo)
+        {
+            var filmType = await _filmTypeSerivce.GetFilmType(info.ID);
+            filmTypes.Add(filmType);
+        }
+
+        var filmRecipesInfo = await _filmRecipeService.GetFilmRecipesInfo();
+
+        var filmRecipes = new List<FilmRecipeDTO>(filmRecipesInfo.Count);
+
+        foreach (var info in filmRecipesInfo)
+        {
+            var filmRecipe = await _filmRecipeService.GetFilmRecipe(info.ID);
+            filmRecipes.Add(filmRecipe);
+        }
+
+        var customersInfo = await _customerService.GetCustomersInfo();
+
+        var customers = new List<CustomerDTO>(customersInfo.Count);
+
+        foreach (var info in customersInfo)
+        {
+            var customer = await _customerService.GetCustomer(info.ID);
+            customers.Add(customer);
+        }
+
+        var ordersInfo = await _orderService.GetOrdersInfo();
+
+        var orders = new List<OrderDTO>(ordersInfo.Count);
+
+        foreach (var info in ordersInfo)
+        {
+            var order = await _orderService.GetOrder(info.ID);
+            orders.Add(order);
+        }
+
+        var productionLinesInfo = await _productionLineService.GetProductionLinesInfo();
+
+        var productionLines = new List<ProductionLineDTO>(productionLinesInfo.Count);
+
+        foreach (var info in productionLinesInfo)
+        {
+            var productionLine = await _productionLineService.GetProductionLine(info.ID);
+            productionLines.Add(productionLine);
+        }
+
+        var filmTypeArticleById = filmTypesInfo.ToDictionary(x => x.ID, x => x.Name);
+        var customerNameById = customersInfo.ToDictionary(x => x.ID, x => x.Name);
+        var filmRecipeNameById = filmRecipesInfo.ToDictionary(x => x.ID, x => x.Name);
+
+        return new Contracts.ProductionData.ProductionData()
+        {
+            FilmTypes = filmTypes.Select(x => new Contracts.ProductionData.Models.FilmTypeModel { Article = x.Article }).ToList(),
+            FilmRecipes = filmRecipes.Select(x => new Contracts.ProductionData.Models.FilmRecipeModel
+            {
+                Calibration = x.Calibration,
+                CoolingLip = x.CoolingLip,
+                FilmTypeArticle = filmTypeArticleById.TryGetValue(x.FilmTypeID, out var filmTypeArticle) ? filmTypeArticle : throw new ProductionDataImportItemNotFoundException(typeof(FilmTypeDTO), x.FilmTypeID.ToString()),
+                ProductionSpeed = x.ProductionSpeed,
+                MaterialCost = x.MaterialCost,
+                Name = x.Name,
+                Nozzle = x.Nozzle,
+                Thickness = x.Thickness,
+            }).ToList(),
+            Customers = customers.Select(x => new Contracts.ProductionData.Models.CustomerModel { Name = x.Name }).ToList(),
+            Orders = orders.Select(x => new Contracts.ProductionData.Models.OrderModel
+            {
+                Number = x.Number,
+                CustomerName = customerNameById.TryGetValue(x.CustomerID, out var customerName) ? customerName : throw new ProductionDataImportItemNotFoundException(typeof(CustomerDTO), x.CustomerID.ToString()),
+                FilmRecipeName = filmRecipeNameById.TryGetValue(x.FilmRecipeID, out var filmRecipeName) ? filmRecipeName : throw new ProductionDataImportItemNotFoundException(typeof(FilmRecipeDTO), x.FilmRecipeID.ToString()),
+                FinishedGoods = x.FinishedGoods,
+                PlannedDate = x.PlannedDate,
+                PriceOverdue = x.PriceOverdue,
+                QuantityInRunningMeter = x.QuantityInRunningMeter,
+                RollsCount = x.RollsCount,
+                Waste = x.Waste,
+                Width = x.Width,
+            }).ToList(),
+            ProductionLines = productionLines.Select(x => new Contracts.ProductionData.Models.ProductionLineModel
+            {
+                Name = x.Name,
+                HourCost = x.HourCost,
+                MaxProductionSpeed = x.MaxProductionSpeed,
+                SetupTimeMinutes = (int)x.SetupTime.TotalMinutes,
+                ThicknessChangeConsumption = x.ThicknessChangeConsumption,
+                ThicknessChangeTimeMinutes = (int)x.ThicknessChangeTime.TotalMinutes,
+                ThicknessMax = x.ThicknessMax,
+                ThicknessMin = x.ThicknessMin,
+                WidthChangeConsumption = x.WidthChangeConsumption,
+                WidthChangeTimeMinutes = (int)x.WidthChangeTime.TotalMinutes,
+                WidthMax = x.WidthMax,
+                WidthMin = x.WidthMin,
+            }).ToList(),
+            CalibratoinChangeRules = productionLines.SelectMany(x => x.CalibratoinChangeRules.Select(rule => new CalibratoinChangeRuleModel
+            {
+                CalibrationTo = rule.CalibrationTo,
+                ChangeConsumption = rule.ChangeConsumption,
+                ChangeTimeMinutes = (int)rule.ChangeTime.TotalMinutes,
+                ProductionLineName = x.Name,
+            })).ToList(),
+            CoolingLipChangeRules = productionLines.SelectMany(x => x.CoolingLipChangeRules.Select(rule => new CoolingLipChangeRuleModel
+            {
+                CoolingLipTo = rule.CoolingLipTo,
+                ChangeConsumption = rule.ChangeConsumption,
+                ChangeTimeMinutes = (int)rule.ChangeTime.TotalMinutes,
+                ProductionLineName = x.Name,
+            })).ToList(),
+            FilmTypeChangeRules = productionLines.SelectMany(x => x.FilmTypeChangeRules.Select(rule => new FilmTypeChangeRuleModel
+            {
+                FilmRecipeFromArticle = filmTypeArticleById.TryGetValue(rule.FilmRecipeFromID, out var filmTypeFromArticle) ? filmTypeFromArticle : throw new ProductionDataImportItemNotFoundException(typeof(FilmTypeDTO), rule.FilmRecipeFromID.ToString()),
+                FilmRecipeToArticle = filmTypeArticleById.TryGetValue(rule.FilmRecipeToID, out var filmTypeToArticle) ? filmTypeToArticle : throw new ProductionDataImportItemNotFoundException(typeof(FilmTypeDTO), rule.FilmRecipeToID.ToString()),
+                ChangeConsumption = rule.ChangeConsumption,
+                ChangeTimeMinutes = (int)rule.ChangeTime.TotalMinutes,
+                ProductionLineName = x.Name,
+            })).ToList(),
+            NozzleChangeRules = productionLines.SelectMany(x => x.NozzleChangeRules.Select(rule => new NozzleChangeRuleModel
+            {
+                NozzleTo = rule.NozzleTo,
+                ChangeConsumption = rule.ChangeConsumption,
+                ChangeTimeMinutes = (int)rule.ChangeTime.TotalMinutes,
+                ProductionLineName = x.Name,
+            })).ToList(),
+        };
     }
 
-    public async Task Import(Contracts.ProductionData.ProductionData data)
+    public async Task Import(Contracts.ProductionData.ProductionData data, bool shouldClearProductionData = false)
     {
         await using (await _productionDataRepository.StartImport())
         {
-            await _productionDataRepository.DeleteProductionData();
+            if (shouldClearProductionData)
+            {
+                await _productionDataRepository.DeleteProductionData();
+            }
 
             foreach (var dto in data.FilmTypes.Select(x => new FilmTypeDTO { Article = x.Article }))
             {
@@ -106,11 +239,11 @@ public class ProductionDataService : IProductionDataService
                 WidthMax = x.WidthMax,
                 WidthMin = x.WidthMin,
                 HourCost = x.HourCost,
-                SetupTime = x.SetupTime,
+                SetupTime = TimeSpan.FromMinutes(x.SetupTimeMinutes),
                 ThicknessChangeConsumption = x.ThicknessChangeConsumption,
-                ThicknessChangeTime = x.ThicknessChangeTime,
+                ThicknessChangeTime = TimeSpan.FromMinutes(x.ThicknessChangeTimeMinutes),
                 WidthChangeConsumption = x.WidthChangeConsumption,
-                WidthChangeTime = x.WidthChangeTime,
+                WidthChangeTime = TimeSpan.FromMinutes(x.WidthChangeTimeMinutes),
                 CalibratoinChangeRules = data.CalibratoinChangeRules
                     .Where(rule => rule.ProductionLineName == x.Name)
                     .Select(x => new CalibratoinChangeRuleDTO
