@@ -35,7 +35,7 @@ public class OrderPOCO
     public required int RollsCount { get; init; }
 
     [Column]
-    public required DateTime PlannedDate { get; init; }
+    public required DateTime? PlannedDate { get; init; }
 
     [Column]
     public required double PriceOverdue { get; init; }

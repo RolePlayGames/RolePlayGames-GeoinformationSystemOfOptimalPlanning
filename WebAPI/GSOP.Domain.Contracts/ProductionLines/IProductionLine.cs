@@ -1,56 +1,55 @@
 ﻿using GSOP.Domain.Contracts.ProductionLines.Models;
 using GSOP.Domain.Contracts.ProductionLines.ProductionRules;
 
-namespace GSOP.Domain.Contracts.ProductionLines
+namespace GSOP.Domain.Contracts.ProductionLines;
+
+public interface IProductionLine
 {
-    public interface IProductionLine
-    {
-        ProductionLineName Name { get; }
+    ProductionLineName Name { get; }
 
-        ProductionLineHourCost HourCost { get; }
+    ProductionLineHourCost HourCost { get; }
 
-        ProductionLineMaxProductionSpeed MaxProductionSpeed { get; }
+    ProductionLineMaxProductionSpeed MaxProductionSpeed { get; }
 
-        ProductionLineWidthRange WidthRange { get; }
+    ProductionLineWidthRange WidthRange { get; }
 
-        ProductionLineThicknessRange ThicknessRange { get; }
+    ProductionLineThicknessRange ThicknessRange { get; }
 
-        ProductionLineChangeThicknessRule ThicknessChangeRule { get; }
+    ProductionLineChangeThicknessRule ThicknessChangeRule { get; }
 
-        ProductionLineChangeWidthRule WidthChangeRule { get; }
+    ProductionLineChangeWidthRule WidthChangeRule { get; }
 
-        ProductionLineSetupTime SetupTime { get; }
+    ProductionLineSetupTime SetupTime { get; }
 
-        IReadOnlyCollection<NozzleChangeRule> NozzleChangeRules { get; }
+    IReadOnlyCollection<NozzleChangeRule> NozzleChangeRules { get; }
 
-        IReadOnlyCollection<CalibratoinChangeRule> CalibratoinChangeRules { get; }
+    IReadOnlyCollection<CalibratoinChangeRule> CalibratoinChangeRules { get; }
 
-        IReadOnlyCollection<CoolingLipChangeRule> CoolingLipChangeRules { get; }
+    IReadOnlyCollection<CoolingLipChangeRule> CoolingLipChangeRules { get; }
 
-        IReadOnlyCollection<FilmTypeChangeRule> FilmTypeChangeRules { get; }
+    IReadOnlyCollection<FilmTypeChangeRule> FilmTypeChangeRules { get; }
 
-        Task SetName(ProductionLineName name);
+    Task SetName(ProductionLineName name);
 
-        void SetHourCost(ProductionLineHourCost hourCost);
+    void SetHourCost(ProductionLineHourCost hourCost);
 
-        void SetProductionLineMaxProductionSpeed(ProductionLineMaxProductionSpeed maxProductionSpeed);
+    void SetProductionLineMaxProductionSpeed(ProductionLineMaxProductionSpeed maxProductionSpeed);
 
-        void SetProductionLineWidthRange(ProductionLineWidthRange widthRange);
+    void SetProductionLineWidthRange(ProductionLineWidthRange widthRange);
 
-        void SetProductionLineThicknessRange(ProductionLineThicknessRange thicknessRange);
+    void SetProductionLineThicknessRange(ProductionLineThicknessRange thicknessRange);
 
-        void SetProductionLineChangeThicknessRule(ProductionLineChangeThicknessRule thicknessChangeRule);
+    void SetProductionLineChangeThicknessRule(ProductionLineChangeThicknessRule thicknessChangeRule);
 
-        void SetProductionLineChangeWidthRule(ProductionLineChangeWidthRule widthChangeRule);
+    void SetProductionLineChangeWidthRule(ProductionLineChangeWidthRule widthChangeRule);
 
-        void SetProductionLineSetupTime(ProductionLineSetupTime setupTime);
+    void SetProductionLineSetupTime(ProductionLineSetupTime setupTime);
 
-        void SetNozzleChangeRules(IReadOnlyCollection<NozzleChangeRule> nozzleChangeRules);
+    void SetNozzleChangeRules(IReadOnlyCollection<NozzleChangeRule> nozzleChangeRules);
 
-        void SetCalibratoinChangeRules(IReadOnlyCollection<CalibratoinChangeRule> calibratoinChangeRules);
+    void SetCalibratoinChangeRules(IReadOnlyCollection<CalibratoinChangeRule> calibratoinChangeRules);
 
-        void SetCoolingLipChangeRules(IReadOnlyCollection<CoolingLipChangeRule> coolingLipChangeRules);
+    void SetCoolingLipChangeRules(IReadOnlyCollection<CoolingLipChangeRule> coolingLipChangeRules);
 
-        void SetFilmTypeChangeRules(IReadOnlyCollection<FilmTypeChangeRule> filmTypeChangeRules);
-    }
+    void SetFilmTypeChangeRules(IReadOnlyCollection<FilmTypeChangeRule> filmTypeChangeRules);
 }
