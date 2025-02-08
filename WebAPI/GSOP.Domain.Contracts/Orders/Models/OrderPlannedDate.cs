@@ -2,14 +2,14 @@
 
 public record OrderPlannedDate
 {
-    private readonly DateTime _plannedDate;
+    private readonly DateTime? _plannedDate;
 
-    public OrderPlannedDate(DateTime plannedDate)
+    public OrderPlannedDate(DateTime? plannedDate)
     {
         _plannedDate = plannedDate;
     }
 
-    public static implicit operator DateTime(OrderPlannedDate plannedDate) => plannedDate._plannedDate;
+    public static implicit operator DateTime?(OrderPlannedDate plannedDate) => plannedDate._plannedDate;
 
-    public static explicit operator OrderPlannedDate(DateTime plannedDate) => new(plannedDate);
+    public static explicit operator OrderPlannedDate(DateTime? plannedDate) => new(plannedDate);
 }

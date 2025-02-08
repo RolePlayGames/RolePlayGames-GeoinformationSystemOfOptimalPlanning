@@ -2,11 +2,13 @@
 using GSOP.Application.Contracts.FilmRecipes;
 using GSOP.Application.Contracts.FilmTypes;
 using GSOP.Application.Contracts.Orders;
+using GSOP.Application.Contracts.ProductionData;
 using GSOP.Application.Contracts.ProductionLines;
 using GSOP.Application.Customers;
 using GSOP.Application.FilmRecipes;
 using GSOP.Application.FilmTypes;
 using GSOP.Application.Orders;
+using GSOP.Application.ProductionData;
 using GSOP.Application.ProductionLines;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,6 +26,7 @@ public static class ServiceCollectionExtensions
             .AddFilmTypeComponents()
             .AddOrderComponents()
             .AddProductionLineComponents()
+            .AddProductionDataComponents()
             ;
 
     internal static IServiceCollection AddCustomerComponents(this IServiceCollection serviceCollection)
@@ -45,4 +48,8 @@ public static class ServiceCollectionExtensions
     internal static IServiceCollection AddProductionLineComponents(this IServiceCollection serviceCollection)
         => serviceCollection
             .AddScoped<IProductionLineService, ProductionLineService>();
+
+    internal static IServiceCollection AddProductionDataComponents(this IServiceCollection serviceCollection)
+        => serviceCollection
+            .AddScoped<IProductionDataService, ProductionDataService>();
 }
