@@ -33,7 +33,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "yarn lint --fix && react-scripts build",
     "test": "set TZ=UTC && react-scripts test --watchAll=false --forceExit",
     "dev-test": "set TZ=UTC && react-scripts test --updateSnapshot",
     "eject": "react-scripts eject",
