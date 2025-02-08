@@ -62,6 +62,7 @@ export interface IconButtonProps extends ButtonProps {
 export const StartIconButton = (props: IconButtonProps) => (
 	<Button
 		variant="contained"
+		loadingPosition="start"
 		startIcon={props.icon}
 		sx={{
 			marginLeft: '1vw',
@@ -83,6 +84,7 @@ export const StartIconButton = (props: IconButtonProps) => (
 export const EndIconButton = (props: IconButtonProps) => (
 	<Button
 		variant="contained"
+		loadingPosition="end"
 		endIcon={props.icon}
 		sx={{
 			marginLeft: '1vw',
