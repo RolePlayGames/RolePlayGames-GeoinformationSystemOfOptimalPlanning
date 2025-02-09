@@ -55,7 +55,6 @@ export const AddItemButton = (props: ButtonProps) => (
 );
 
 export interface IconButtonProps extends ButtonProps {
-	text: string,
 	icon: React.ReactNode,
 }
 
@@ -76,9 +75,7 @@ export const StartIconButton = (props: IconButtonProps) => (
 			},
 		}}
 		{...props}
-	>
-		{props.text}
-	</Button>
+	/>
 );
 
 export const EndIconButton = (props: IconButtonProps) => (
@@ -98,9 +95,7 @@ export const EndIconButton = (props: IconButtonProps) => (
 			},
 		}}
 		{...props}
-	>
-		{props.text}
-	</Button>
+	/>
 );
 
 export const ItemsList = styled(List)({

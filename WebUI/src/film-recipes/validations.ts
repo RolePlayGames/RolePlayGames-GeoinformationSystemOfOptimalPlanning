@@ -76,8 +76,8 @@ export const validateCalibration = (value: string) => {
 	if (number <= 0)
 		return 'Калибровка должна быть положительной';
 
-	if (number > 300)
-		return 'Калибровка не должна быть больше 300';
+	if (number > 600)
+		return 'Калибровка не должна быть больше 600';
 
 	return undefined;
 }

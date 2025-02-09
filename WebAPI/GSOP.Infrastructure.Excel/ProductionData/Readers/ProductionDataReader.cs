@@ -37,6 +37,8 @@ public class ProductionDataReader : IProductionDataReader
         _coolingLipChangeRuleReader = coolingLipChangeRuleReader;
         _filmTypeChangeRuleReader = filmTypeChangeRuleReader;
         _nozzleChangeRuleReader = nozzleChangeRuleReader;
+
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
     }
 
     public Application.Contracts.ProductionData.ProductionData ReadProductionData(Stream fileStream)

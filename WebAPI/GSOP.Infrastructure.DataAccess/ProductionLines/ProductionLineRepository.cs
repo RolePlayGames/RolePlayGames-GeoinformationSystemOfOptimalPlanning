@@ -4,6 +4,7 @@ using GSOP.Domain.Contracts.ProductionLines.Models;
 using GSOP.Domain.Contracts.ProductionLines.ProductionRules;
 using GSOP.Infrastructure.DataAccess.ProductionLines.ProductionRules;
 using LinqToDB;
+using LinqToDB.Data;
 
 namespace GSOP.Infrastructure.DataAccess.ProductionLines;
 
@@ -20,72 +21,86 @@ public class ProductionLineRepository : IProductionLineRepository
     /// <inheritdoc/>
     public async Task<long> Create(IProductionLine productionLine)
     {
-        using var transaction = await _connection.BeginTransactionAsync();
+        DataConnectionTransaction? transaction = null;
 
-        var productionLineId = await _connection.InsertWithInt64IdentityAsync(new ProductionLinePOCO
+        if (_connection.Transaction is null)
         {
-            Name = productionLine.Name,
-            HourCost = productionLine.HourCost,
-            MaxProductionSpeed = productionLine.MaxProductionSpeed,
-            WidthMin = productionLine.WidthRange.MinWidth,
-            WidthMax = productionLine.WidthRange.MaxWidth,
-            ThicknessMin = productionLine.ThicknessRange.MinThickness,
-            ThicknessMax = productionLine.ThicknessRange.MaxThickness,
-            ThicknessChangeTime = productionLine.ThicknessChangeRule.ChangeTime,
-            ThicknessChangeConsumption = productionLine.ThicknessChangeRule.ChangeConsumption,
-            WidthChangeTime = productionLine.WidthChangeRule.ChangeTime,
-            WidthChangeConsumption = productionLine.WidthChangeRule.ChangeConsumption,
-            SetupTime = productionLine.SetupTime,
-        });
-
-        foreach (var cailbrationChangeRule in productionLine.CalibratoinChangeRules)
-        {
-            await _connection.InsertWithInt64IdentityAsync(new CalibrationChangeRulePOCO
-            {
-                ProductionLineID = productionLineId,
-                CalibrationTo = cailbrationChangeRule.CalibrationTo,
-                ChangeTime = cailbrationChangeRule.ChangeValueRule.ChangeTime,
-                ChangeConsumption = cailbrationChangeRule.ChangeValueRule.ChangeConsumption,
-            });
+            transaction = await _connection.BeginTransactionAsync();
         }
 
-        foreach (var coolingLipChangeRule in productionLine.CoolingLipChangeRules)
+        try
         {
-            await _connection.InsertWithInt64IdentityAsync(new CoolingLipChangeRulePOCO
+            var productionLineId = await _connection.InsertWithInt64IdentityAsync(new ProductionLinePOCO
             {
-                ProductionLineID = productionLineId,
-                CoolingLipTo = coolingLipChangeRule.CoolingLipTo,
-                ChangeTime = coolingLipChangeRule.ChangeValueRule.ChangeTime,
-                ChangeConsumption = coolingLipChangeRule.ChangeValueRule.ChangeConsumption,
+                Name = productionLine.Name,
+                HourCost = productionLine.HourCost,
+                MaxProductionSpeed = productionLine.MaxProductionSpeed,
+                WidthMin = productionLine.WidthRange.MinWidth,
+                WidthMax = productionLine.WidthRange.MaxWidth,
+                ThicknessMin = productionLine.ThicknessRange.MinThickness,
+                ThicknessMax = productionLine.ThicknessRange.MaxThickness,
+                ThicknessChangeTime = productionLine.ThicknessChangeRule.ChangeTime,
+                ThicknessChangeConsumption = productionLine.ThicknessChangeRule.ChangeConsumption,
+                WidthChangeTime = productionLine.WidthChangeRule.ChangeTime,
+                WidthChangeConsumption = productionLine.WidthChangeRule.ChangeConsumption,
+                SetupTime = productionLine.SetupTime,
             });
-        }
 
-        foreach (var filmTypeChangeRule in productionLine.FilmTypeChangeRules)
+            foreach (var cailbrationChangeRule in productionLine.CalibratoinChangeRules)
+            {
+                await _connection.InsertWithInt64IdentityAsync(new CalibrationChangeRulePOCO
+                {
+                    ProductionLineID = productionLineId,
+                    CalibrationTo = cailbrationChangeRule.CalibrationTo,
+                    ChangeTime = cailbrationChangeRule.ChangeValueRule.ChangeTime,
+                    ChangeConsumption = cailbrationChangeRule.ChangeValueRule.ChangeConsumption,
+                });
+            }
+
+            foreach (var coolingLipChangeRule in productionLine.CoolingLipChangeRules)
+            {
+                await _connection.InsertWithInt64IdentityAsync(new CoolingLipChangeRulePOCO
+                {
+                    ProductionLineID = productionLineId,
+                    CoolingLipTo = coolingLipChangeRule.CoolingLipTo,
+                    ChangeTime = coolingLipChangeRule.ChangeValueRule.ChangeTime,
+                    ChangeConsumption = coolingLipChangeRule.ChangeValueRule.ChangeConsumption,
+                });
+            }
+
+            foreach (var filmTypeChangeRule in productionLine.FilmTypeChangeRules)
+            {
+                await _connection.InsertWithInt64IdentityAsync(new FilmTypeChangeRulePOCO
+                {
+                    ProductionLineID = productionLineId,
+                    FilmTypeFromID = filmTypeChangeRule.FilmRecipeFromID,
+                    FilmTypeToID = filmTypeChangeRule.FilmRecipeToID,
+                    ChangeTime = filmTypeChangeRule.ChangeValueRule.ChangeTime,
+                    ChangeConsumption = filmTypeChangeRule.ChangeValueRule.ChangeConsumption,
+                });
+            }
+
+            foreach (var nozzleChangeRule in productionLine.NozzleChangeRules)
+            {
+                await _connection.InsertWithInt64IdentityAsync(new NozzleChangeRulePOCO
+                {
+                    ProductionLineID = productionLineId,
+                    NozzleTo = nozzleChangeRule.NozzleTo,
+                    ChangeTime = nozzleChangeRule.ChangeValueRule.ChangeTime,
+                    ChangeConsumption = nozzleChangeRule.ChangeValueRule.ChangeConsumption,
+                });
+            }
+
+            if (transaction is not null)
+                await transaction.CommitAsync();
+
+            return productionLineId;
+        }
+        finally
         {
-            await _connection.InsertWithInt64IdentityAsync(new FilmTypeChangeRulePOCO
-            {
-                ProductionLineID = productionLineId,
-                FilmTypeFromID = filmTypeChangeRule.FilmRecipeFromID,
-                FilmTypeToID = filmTypeChangeRule.FilmRecipeToID,
-                ChangeTime = filmTypeChangeRule.ChangeValueRule.ChangeTime,
-                ChangeConsumption = filmTypeChangeRule.ChangeValueRule.ChangeConsumption,
-            });
+            if (transaction is not null)
+                await transaction.DisposeAsync();
         }
-
-        foreach (var nozzleChangeRule in productionLine.NozzleChangeRules)
-        {
-            await _connection.InsertWithInt64IdentityAsync(new NozzleChangeRulePOCO
-            {
-                ProductionLineID = productionLineId,
-                NozzleTo = nozzleChangeRule.NozzleTo,
-                ChangeTime = nozzleChangeRule.ChangeValueRule.ChangeTime,
-                ChangeConsumption = nozzleChangeRule.ChangeValueRule.ChangeConsumption,
-            });
-        }
-
-        await transaction.CommitAsync();
-
-        return productionLineId;
     }
 
     /// <inheritdoc/>

@@ -2,7 +2,9 @@ import { Box, Stack, ButtonProps, styled } from "@mui/material";
 import { HeaderLabel, PageContainer, StartIconButton } from "../common/controls";
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { importProductionData } from "./importExportClient";
+import { LoadingProgress } from "../common/LoadingProgress";
 
 const ImportExportContianer = styled(Box)({
 	display: 'flex',
@@ -12,27 +14,79 @@ const ImportExportContianer = styled(Box)({
 	height: '100vh',
 });
 
-const ImportButton = (props: ButtonProps) => (
+const VisuallyHiddenInput = styled('input')({
+	clip: 'rect(0 0 0 0)',
+	clipPath: 'inset(50%)',
+	height: 1,
+	overflow: 'hidden',
+	position: 'absolute',
+	bottom: 0,
+	left: 0,
+	whiteSpace: 'nowrap',
+	width: 1,
+});
+
+interface ImportButtonProps extends ButtonProps {
+	uploadFiles: (files: FileList | null) => void,
+}
+
+const ImportButton = (props: ImportButtonProps) => (
 	<StartIconButton
-		text='Импорт'
-		icon={<FileUploadOutlinedIcon/>}
-		{...props}
-	/>
+		component="label"
+		icon={<FileUploadOutlinedIcon />}
+	>
+		Импорт
+		<VisuallyHiddenInput
+			type='file'
+			onChange={(event) => props.uploadFiles(event.target.files)}
+			accept='.xlsx'
+		/>
+	</StartIconButton>
 );
 
 const ExportButton = (props: ButtonProps) => (
 	<StartIconButton
-		text='Экспорт'
 		icon={<FileDownloadOutlinedIcon/>}
 		{...props}
-	/>
+	>
+		Экспорт
+	</StartIconButton>
 );
 
 export const ImportExportPage = () => {
 	const [isActionsDisabled, SetIsActionDisabled] = useState(false);
+	const [formData, SetFormData] = useState<FormData>();
 
-	const onImport = () => {
+	const uploadFile = useCallback(async (formData: FormData) => {
+		try {
+			await importProductionData(formData);
+		} catch(error: any) {
+			console.log(`Got an error while uploading file: ${error}`);
+		}
+		finally {
+			SetIsActionDisabled(false);
+		}
+	}, [formData]);
+
+	useEffect(() => {
+		if (formData)
+			uploadFile(formData);
+	}, [formData]);
+
+	const onImport = (files: FileList | null) => {
+		if (!files)
+			return;
+
+		const file = files[0];
+
+		if (!file)
+			return;
+
+		const formData = new FormData();
+		formData.append('file', file);
+
 		SetIsActionDisabled(true);
+		SetFormData(formData);
 	}
     
 	const onExport = () => {
@@ -43,10 +97,14 @@ export const ImportExportPage = () => {
 		<PageContainer>
 			<HeaderLabel>Импорт / Экспорт</HeaderLabel>
 			<ImportExportContianer>
-				<Stack direction="column" spacing={5}>
-					<ImportButton loading={isActionsDisabled} onClick={onImport}/>
-					<ExportButton loading={isActionsDisabled} onClick={onExport}/>
-				</Stack>
+				{ isActionsDisabled ? (
+					<LoadingProgress/>
+				) : (
+					<Stack direction="column" spacing={5}>
+						<ImportButton loading={isActionsDisabled} uploadFiles={onImport}/>
+						<ExportButton loading={isActionsDisabled} onClick={onExport}/>
+					</Stack>
+				)}
 			</ImportExportContianer>
 		</PageContainer>
 	)}

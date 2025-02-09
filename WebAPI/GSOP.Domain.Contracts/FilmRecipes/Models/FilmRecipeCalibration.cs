@@ -3,7 +3,7 @@
 public record FilmRecipeCalibration
 {
     public const int Min = 0;
-    public const int Max = 300;
+    public const int Max = 600;
 
     private readonly double _calibration;
 

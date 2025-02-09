@@ -14,15 +14,15 @@ public class ProductionDataRepository : IProductionDataRepository
 
     public async Task DeleteProductionData()
     {
-        await _connection.FilmTypes.DeleteAsync();
-        await _connection.FilmRecipes.DeleteAsync();
-        await _connection.Customers.DeleteAsync();
-        await _connection.Orders.DeleteAsync();
         await _connection.CalibrationChangeRules.DeleteAsync();
         await _connection.CoolingLipChangeRules.DeleteAsync();
         await _connection.FilmTypeChangeRules.DeleteAsync();
         await _connection.NozzleChangeRules.DeleteAsync();
         await _connection.ProductionLines.DeleteAsync();
+        await _connection.Orders.DeleteAsync();
+        await _connection.Customers.DeleteAsync();
+        await _connection.FilmRecipes.DeleteAsync();
+        await _connection.FilmTypes.DeleteAsync();
     }
 
     public async Task EndImport()
