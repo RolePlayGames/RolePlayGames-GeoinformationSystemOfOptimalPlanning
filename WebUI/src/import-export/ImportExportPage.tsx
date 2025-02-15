@@ -3,7 +3,7 @@ import { HeaderLabel, PageContainer, StartIconButton } from "../common/controls"
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import { useCallback, useEffect, useState } from "react";
-import { importProductionData } from "./importExportClient";
+import { exportProductionData, importProductionData } from "./importExportClient";
 import { LoadingProgress } from "../common/LoadingProgress";
 
 const ImportExportContianer = styled(Box)({
@@ -53,6 +53,12 @@ const ExportButton = (props: ButtonProps) => (
 	</StartIconButton>
 );
 
+const generateExportFileName = () => {
+	const now = new Date();
+	const formattedDateTime = now.toISOString().replace(/[-:T.]/g, '_').slice(0, 14);
+	return `ProductionData_${formattedDateTime}.xlsx`;
+}
+
 export const ImportExportPage = () => {
 	const [isActionsDisabled, SetIsActionDisabled] = useState(false);
 	const [formData, SetFormData] = useState<FormData>();
@@ -62,8 +68,7 @@ export const ImportExportPage = () => {
 			await importProductionData(formData);
 		} catch(error: any) {
 			console.log(`Got an error while uploading file: ${error}`);
-		}
-		finally {
+		} finally {
 			SetIsActionDisabled(false);
 		}
 	}, [formData]);
@@ -89,8 +94,25 @@ export const ImportExportPage = () => {
 		SetFormData(formData);
 	}
     
-	const onExport = () => {
+	const onExport = async () => {
 		SetIsActionDisabled(true);
+
+		try {
+			const data = await exportProductionData();
+			const url = window.URL.createObjectURL(data);
+
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', generateExportFileName());
+
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		} catch(error: any) {
+			console.log(`Got an error while exporting file: ${error}`);
+		} finally {
+			SetIsActionDisabled(false);
+		}
 	}
 
 	return (

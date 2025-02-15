@@ -10,17 +10,17 @@ public class ProductionLineReader : ModelReader<ProductionLineModel>
     protected override ProductionLineModel? ReadModel(ExcelRange cells, int rowNum)
     {
         var name = cells[rowNum, 1].Value?.ToString();
-        var hourCost = cells[rowNum, 3].Value?.ToString();
-        var maxProductionSpeed = cells[rowNum, 4].Value?.ToString();
-        var widthMin = cells[rowNum, 5].Value?.ToString();
-        var widthMax = cells[rowNum, 6].Value?.ToString();
-        var thicknessMin = cells[rowNum, 7].Value?.ToString();
-        var thicknessMax = cells[rowNum, 8].Value?.ToString();
-        var thicknessChangeTime = cells[rowNum, 13].Value?.ToString();
-        var thicknessChangeConsumption = cells[rowNum, 14].Value?.ToString();
-        var widthChangeTime = cells[rowNum, 15].Value?.ToString();
-        var widthChangeConsumption = cells[rowNum, 16].Value?.ToString();
-        var setupTime = cells[rowNum, 17].Value?.ToString();
+        var hourCost = cells[rowNum, 2].Value?.ToString();
+        var maxProductionSpeed = cells[rowNum, 3].Value?.ToString();
+        var widthMin = cells[rowNum, 4].Value?.ToString();
+        var widthMax = cells[rowNum, 5].Value?.ToString();
+        var thicknessMin = cells[rowNum, 6].Value?.ToString();
+        var thicknessMax = cells[rowNum, 7].Value?.ToString();
+        var thicknessChangeTime = cells[rowNum, 8].Value?.ToString();
+        var thicknessChangeConsumption = cells[rowNum, 9].Value?.ToString();
+        var widthChangeTime = cells[rowNum, 10].Value?.ToString();
+        var widthChangeConsumption = cells[rowNum, 11].Value?.ToString();
+        var setupTime = cells[rowNum, 12].Value?.ToString();
 
         return name is null
             || name == string.Empty
