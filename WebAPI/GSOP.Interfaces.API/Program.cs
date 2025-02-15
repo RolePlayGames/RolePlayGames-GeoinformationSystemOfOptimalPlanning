@@ -1,7 +1,9 @@
 using GSOP.Application.DI;
 using GSOP.Domain.DI;
 using GSOP.Infrastructure.DataAccess.DI;
+using GSOP.Infrastructure.Excel.DI;
 using GSOP.Interfaces.API.Extensions;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +17,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDomainServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddDataAccessComponents();
+builder.Services.AddExcelComponents();
 builder.Services.AddWebApiComponents();
-//builder.Services.AddNewtonsoftJson();
+
 #endregion
 
 var app = builder.Build();

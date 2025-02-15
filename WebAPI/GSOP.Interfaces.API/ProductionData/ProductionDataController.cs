@@ -32,12 +32,12 @@ public class ProductionDataController : ControllerBase
 
     [HttpPost]
     [Route("excel/import")]
-    public Task Import([FromForm] IFormFile file, [FromQuery] bool shouldClearProductionData = false)
+    public Task Import(IFormFile file)
     {
         using var steam = file.OpenReadStream();
 
         var data = _productionDataReader.ReadProductionData(steam);
 
-        return _productionDataService.Import(data, shouldClearProductionData);
+        return _productionDataService.Import(data, true);
     }
 }

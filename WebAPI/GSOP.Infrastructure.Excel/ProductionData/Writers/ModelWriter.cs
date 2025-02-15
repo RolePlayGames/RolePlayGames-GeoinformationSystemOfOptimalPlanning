@@ -43,7 +43,7 @@ public abstract class ModelWriter<TModel> : IModelWriter<TModel>
 
     private static IEnumerable<string> GenerateExcelCellNames(int count)
     {
-        for (var i = 0; i < count; i++)
+        for (var i = 1; i < count + 1; i++)
         {
             yield return GetExcelColumnName(i);
         }
@@ -60,6 +60,6 @@ public abstract class ModelWriter<TModel> : IModelWriter<TModel>
             columnName = Convert.ToChar(65 + modulo) + columnName;
             dividend = (dividend - modulo) / 26;
         }
-        return columnName + "1"; // Adding "1" to make it A1, B1 etc.
+        return columnName + "1"; // adding "1" to make it A1, B1 etc.
     }
 }

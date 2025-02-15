@@ -2,12 +2,13 @@ import { SideMenu } from './menu/SideMenu';
 import { Box, styled } from '@mui/material';
 import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import { CUSTOMERS, FILM_RECIPES, FILM_TYPES, ORDERS, PRODUCTION_LINES } from './routes/routes';
+import { CUSTOMERS, FILM_RECIPES, FILM_TYPES, IMPORT_EXPORT, ORDERS, PRODUCTION_LINES } from './routes/routes';
 import { CustomersPage } from './customers/CustomersPage';
 import { FilmTypesPage } from './film-types/FilmTypesPage';
 import { FilmRecipesPage } from './film-recipes/FilmRecipesPage';
 import { OrdersPage } from './orders/OrdersPage';
 import { ProductionLinesPage } from './production-lines/ProductionLinesPage';
+import { ImportExportPage } from './import-export/ImportExportPage';
 
 const AppContainer = styled(Box)({
 	backgroundColor: '#F3F7FA',
@@ -52,6 +53,7 @@ export const App = () => (
 				<Route path={`${ORDERS}/:id`} element={<OrdersPage/>}/>
 				<Route path={PRODUCTION_LINES} element={<ProductionLinesPage/>}/>
 				<Route path={`${PRODUCTION_LINES}/:id`} element={<ProductionLinesPage/>}/>
+				<Route path={IMPORT_EXPORT} element={<ImportExportPage/>}/>
 			</Routes>
 		</WorkspaceContainer>
 	</AppContainer>

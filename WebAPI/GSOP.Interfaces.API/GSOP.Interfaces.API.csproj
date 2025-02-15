@@ -21,6 +21,7 @@
     <ProjectReference Include="..\GSOP.Domain.DI\GSOP.Domain.DI.csproj" />
     <ProjectReference Include="..\GSOP.Infrastructure.DataAccess.DI\GSOP.Infrastructure.DataAccess.DI.csproj" />
     <ProjectReference Include="..\GSOP.Infrastructure.Excel.Contracts\GSOP.Infrastructure.Excel.Contracts.csproj" />
+    <ProjectReference Include="..\GSOP.Infrastructure.Excel.DI\GSOP.Infrastructure.Excel.DI.csproj" />
   </ItemGroup>
 
 	<ItemGroup>
