@@ -5,5 +5,5 @@ namespace GSOP.Domain.Optimization.TargetFunctionCalculators.Cost;
 
 public class OrderCostCalculator : IOrderCostCalculator
 {
-    public double Calculate(IOrder order) => (order.Waste + order.FinishedGoods) * order.FilmRecipe.MaterialCost;
+    public double Calculate(IOrder order) => (order.Waste + order.FinishedGoods) * order.RollsCount * order.FilmRecipe.MaterialCost;
 }
