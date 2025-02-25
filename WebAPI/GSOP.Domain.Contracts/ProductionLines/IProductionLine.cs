@@ -1,5 +1,4 @@
 ﻿using GSOP.Domain.Contracts.ProductionLines.Models;
-using GSOP.Domain.Contracts.ProductionLines.ProductionRules;
 
 namespace GSOP.Domain.Contracts.ProductionLines;
 

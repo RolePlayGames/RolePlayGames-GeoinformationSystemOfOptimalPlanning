@@ -1,4 +1,5 @@
 ﻿using GSOP.Domain.Contracts.FilmRecipes.Models;
+using GSOP.Domain.Contracts.Orders.Models;
 
 namespace GSOP.Domain.Contracts.FilmRecipes;
 
@@ -7,6 +8,8 @@ namespace GSOP.Domain.Contracts.FilmRecipes;
 /// </summary>
 public interface IFilmRecipe
 {
+    ID ID { get; }
+
     FilmRecipeName Name { get; }
 
     FilmTypeID FilmTypeID { get; }

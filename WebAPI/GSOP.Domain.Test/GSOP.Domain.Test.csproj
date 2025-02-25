@@ -33,4 +33,9 @@
     <ProjectReference Include="..\GSOP.Domain\GSOP.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="FilmRecipes\" />
+    <Folder Include="Orders\" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,5 @@
 ﻿using GSOP.Domain.Contracts;
+using GSOP.Domain.Contracts.FilmRecipes;
 using GSOP.Domain.Contracts.Orders;
 using GSOP.Domain.Contracts.Orders.Exceptions;
 using GSOP.Domain.Contracts.Orders.Models;
@@ -9,10 +10,12 @@ namespace GSOP.Domain.Orders;
 public class OrderFactory : IOrderFactory
 {
     private readonly IOrderRepository _orderRepository;
+    private readonly IFilmRecipeFactory _filmRecipeFactory;
 
-    public OrderFactory(IOrderRepository orderRepository)
+    public OrderFactory(IOrderRepository orderRepository, IFilmRecipeFactory filmRecipeFactory)
     {
         _orderRepository = orderRepository;
+        _filmRecipeFactory = filmRecipeFactory;
     }
 
     /// <inheritdoc/>
@@ -25,6 +28,7 @@ public class OrderFactory : IOrderFactory
         var number = new OrderNumber(order.Number);
         var customerID = new CustomerID(order.CustomerID);
         var filmRecipeID = new FilmRecipeID(order.FilmRecipeID);
+        var filmRecipe = await _filmRecipeFactory.Create(filmRecipeID);
         var width = new OrderWidth(order.Width);
         var quantityInRunningMeter = new OrderQuantityInRunningMeter(order.QuantityInRunningMeter);
         var finishedGoods = new OrderFinishedGoods(order.FinishedGoods);
@@ -36,7 +40,7 @@ public class OrderFactory : IOrderFactory
         return new Order(
             number,
             customerID,
-            filmRecipeID,
+            filmRecipe,
             width,
             quantityInRunningMeter,
             finishedGoods,
@@ -65,11 +69,7 @@ public class OrderFactory : IOrderFactory
             throw new CustomerDoesNotExistsException(customerID);
 
         var filmRecipeID = new FilmRecipeID(order.FilmRecipeID);
-
-        var isFilmRecipeExists = await _orderRepository.IsFilmRecipeExists(filmRecipeID);
-
-        if (!isFilmRecipeExists)
-            throw new FilmRecipeDoesNotExistsException(filmRecipeID);
+        var filmRecipe = await _filmRecipeFactory.Create(filmRecipeID);
 
         var width = new OrderWidth(order.Width);
         var quantityInRunningMeter = new OrderQuantityInRunningMeter(order.QuantityInRunningMeter);
@@ -82,7 +82,7 @@ public class OrderFactory : IOrderFactory
         return new Order(
             number,
             customerID,
-            filmRecipeID,
+            filmRecipe,
             width,
             quantityInRunningMeter,
             finishedGoods,

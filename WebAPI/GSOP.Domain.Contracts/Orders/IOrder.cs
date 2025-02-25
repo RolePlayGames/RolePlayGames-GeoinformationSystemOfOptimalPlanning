@@ -1,4 +1,5 @@
-﻿using GSOP.Domain.Contracts.Orders.Models;
+﻿using GSOP.Domain.Contracts.FilmRecipes;
+using GSOP.Domain.Contracts.Orders.Models;
 
 namespace GSOP.Domain.Contracts.Orders;
 
@@ -11,7 +12,7 @@ public interface IOrder
 
     CustomerID CustomerID { get; }
 
-    FilmRecipeID FilmRecipeID { get; }
+    IFilmRecipe FilmRecipe { get; }
 
     OrderWidth Width { get; }
 
@@ -31,7 +32,7 @@ public interface IOrder
 
     Task SetCustomerID(CustomerID customerID);
 
-    Task SetFilmRecipeID(FilmRecipeID filmRecipeID);
+    void SetFilmRecipe(IFilmRecipe filmRecipe);
 
     void SetWidth(OrderWidth width);
 

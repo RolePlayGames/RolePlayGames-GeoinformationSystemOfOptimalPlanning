@@ -1,13 +1,16 @@
-﻿using GSOP.Domain.Contracts.FilmRecipes;
+﻿using GSOP.Domain.Contracts;
+using GSOP.Domain.Contracts.FilmRecipes;
 using GSOP.Domain.Contracts.FilmRecipes.Exceptions;
 using GSOP.Domain.Contracts.FilmRecipes.Models;
 
 namespace GSOP.Domain.FilmRecipes;
 
 /// <inheritdoc/>
-public class FilmRecipe : IFilmRecipe
+public record FilmRecipe : IFilmRecipe
 {
     private readonly IFilmRecipeRepository _filmRecipeRepository;
+
+    public ID ID { get; }
 
     public FilmRecipeName Name { get; protected set; }
 
@@ -26,6 +29,7 @@ public class FilmRecipe : IFilmRecipe
     public FilmRecipeCoolingLip CoolingLip { get; protected set; }
 
     public FilmRecipe(
+        ID id,
         FilmRecipeName name,
         FilmTypeID filmTypeID,
         FilmRecipeThickness thickness,
@@ -36,6 +40,7 @@ public class FilmRecipe : IFilmRecipe
         FilmRecipeCoolingLip coolingLip,
         IFilmRecipeRepository filmRecipeRepository)
     {
+        ID = id;
         Name = name;
         FilmTypeID = filmTypeID;
         Thickness = thickness;

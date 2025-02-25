@@ -1,7 +1,6 @@
 ﻿using GSOP.Domain.Contracts.Orders.Models;
-using GSOP.Domain.Contracts.ProductionLines.Models;
 
-namespace GSOP.Domain.Contracts.ProductionLines.ProductionRules;
+namespace GSOP.Domain.Contracts.ProductionLines.Models;
 
 public class FilmTypeChangeRule
 {
