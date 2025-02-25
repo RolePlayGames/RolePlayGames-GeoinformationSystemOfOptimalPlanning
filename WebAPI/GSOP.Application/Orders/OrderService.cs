@@ -3,6 +3,7 @@ using GSOP.Domain.Contracts.Orders.Exceptions;
 using GSOP.Domain.Contracts.Orders.Models;
 using GSOP.Domain.Contracts.Orders;
 using GSOP.Domain.Contracts;
+using GSOP.Domain.Contracts.FilmRecipes;
 
 namespace GSOP.Application.Orders;
 
@@ -11,11 +12,13 @@ public class OrderService : IOrderService
 {
     private readonly IOrderFactory _orderFactory;
     private readonly IOrderRepository _orderRepository;
+    private readonly IFilmRecipeFactory _filmRecipeFactory;
 
-    public OrderService(IOrderFactory orderFactory, IOrderRepository orderRepository)
+    public OrderService(IOrderFactory orderFactory, IOrderRepository orderRepository, IFilmRecipeFactory filmRecipeFactory)
     {
         _orderFactory = orderFactory;
         _orderRepository = orderRepository;
+        _filmRecipeFactory = filmRecipeFactory;
     }
 
     /// <inheritdoc/>
@@ -57,6 +60,7 @@ public class OrderService : IOrderService
         var number = new OrderNumber(order.Number);
         var customerID = new CustomerID(order.CustomerID);
         var filmRecipeID = new FilmRecipeID(order.FilmRecipeID);
+        var filmRecipe = await _filmRecipeFactory.Create(filmRecipeID);
         var width = new OrderWidth(order.Width);
         var quantityInRunningMeter = new OrderQuantityInRunningMeter(order.QuantityInRunningMeter);
         var finishedGoods = new OrderFinishedGoods(order.FinishedGoods);
@@ -69,7 +73,7 @@ public class OrderService : IOrderService
 
         await existingOrder.SetNumber(number);
         await existingOrder.SetCustomerID(customerID);
-        await existingOrder.SetFilmRecipeID(filmRecipeID);
+        existingOrder.SetFilmRecipe(filmRecipe);
         existingOrder.SetWidth(width);
         existingOrder.SetQuantityInRunningMeter(quantityInRunningMeter);
         existingOrder.SetFinishedGoods(finishedGoods);

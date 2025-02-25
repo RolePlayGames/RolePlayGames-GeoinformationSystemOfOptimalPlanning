@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GSOP.Domain.Algorithms.Contracts\GSOP.Domain.Algorithms.Contracts.csproj" />
+    <ProjectReference Include="..\GSOP.Domain.Algorithms\GSOP.Domain.Algorithms.csproj" />
     <ProjectReference Include="..\GSOP.Domain.Contracts\GSOP.Domain.Contracts.csproj" />
   </ItemGroup>
 

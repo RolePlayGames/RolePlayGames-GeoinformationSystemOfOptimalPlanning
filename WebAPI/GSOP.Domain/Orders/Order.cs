@@ -1,11 +1,12 @@
-﻿using GSOP.Domain.Contracts.Orders;
+﻿using GSOP.Domain.Contracts.FilmRecipes;
+using GSOP.Domain.Contracts.Orders;
 using GSOP.Domain.Contracts.Orders.Exceptions;
 using GSOP.Domain.Contracts.Orders.Models;
 
 namespace GSOP.Domain.Orders;
 
 /// <inheritdoc/>
-public class Order : IOrder
+public record Order : IOrder
 {
     private readonly IOrderRepository _orderRepository;
 
@@ -13,7 +14,7 @@ public class Order : IOrder
 
     public CustomerID CustomerID { get; protected set; }
 
-    public FilmRecipeID FilmRecipeID { get; protected set; }
+    public IFilmRecipe FilmRecipe { get; protected set; }
 
     public OrderWidth Width { get; protected set; }
 
@@ -32,7 +33,7 @@ public class Order : IOrder
     public Order(
         OrderNumber number,
         CustomerID customerID,
-        FilmRecipeID filmRecipeID,
+        IFilmRecipe filmRecipe,
         OrderWidth width,
         OrderQuantityInRunningMeter quantityInRunningMeter,
         OrderFinishedGoods finishedGoods,
@@ -44,7 +45,7 @@ public class Order : IOrder
     {
         Number = number;
         CustomerID = customerID;
-        FilmRecipeID = filmRecipeID;
+        FilmRecipe = filmRecipe;
         Width = width;
         QuantityInRunningMeter = quantityInRunningMeter;
         FinishedGoods = finishedGoods;
@@ -81,16 +82,11 @@ public class Order : IOrder
         }
     }
 
-    public async Task SetFilmRecipeID(FilmRecipeID filmRecipeID)
+    public void SetFilmRecipe(IFilmRecipe filmRecipe)
     {
-        if (FilmRecipeID != filmRecipeID)
+        if (FilmRecipe != filmRecipe)
         {
-            var isFilmRecipeExists = await _orderRepository.IsFilmRecipeExists(filmRecipeID);
-
-            if (!isFilmRecipeExists)
-                throw new FilmRecipeDoesNotExistsException(filmRecipeID);
-
-            FilmRecipeID = filmRecipeID;
+            FilmRecipe = filmRecipe;
         }
     }
 

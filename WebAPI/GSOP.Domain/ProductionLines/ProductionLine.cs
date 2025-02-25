@@ -1,7 +1,6 @@
 ﻿using GSOP.Domain.Contracts.ProductionLines;
 using GSOP.Domain.Contracts.ProductionLines.Exceptions;
 using GSOP.Domain.Contracts.ProductionLines.Models;
-using GSOP.Domain.Contracts.ProductionLines.ProductionRules;
 
 namespace GSOP.Domain.ProductionLines;
 

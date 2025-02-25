@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GSOP.Domain.Algorithms.Contracts\GSOP.Domain.Algorithms.Contracts.csproj" />
+    <ProjectReference Include="..\GSOP.Domain.Algorithms\GSOP.Domain.Algorithms.csproj" />
+  </ItemGroup>
+
 </Project>

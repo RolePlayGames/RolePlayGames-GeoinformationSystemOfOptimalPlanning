@@ -2,6 +2,7 @@
 using GSOP.Domain.Contracts.FilmRecipes;
 using GSOP.Domain.Contracts.FilmRecipes.Models;
 using GSOP.Domain.Contracts.FilmRecipes.Exceptions;
+using GSOP.Domain.Contracts.Orders.Models;
 
 namespace GSOP.Domain.FilmRecipes;
 
@@ -32,6 +33,7 @@ public class FilmRecipeFactory : IFilmRecipeFactory
         var coolingLip = new FilmRecipeCoolingLip(filmRecipe.CoolingLip);
 
         return new FilmRecipe(
+            filmRecipeID,
             name,
             filmTypeID,
             thickness,
@@ -68,6 +70,7 @@ public class FilmRecipeFactory : IFilmRecipeFactory
         var coolingLip = new FilmRecipeCoolingLip(filmRecipe.CoolingLip);
 
         return new FilmRecipe(
+            new ID(0),
             name,
             filmTypeID,
             thickness,

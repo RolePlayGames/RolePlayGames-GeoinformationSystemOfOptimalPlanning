@@ -21,7 +21,7 @@ public class OrderRepository : IOrderRepository
         {
             Number = order.Number,
             CustomerID = order.CustomerID,
-            FilmRecipeID = order.FilmRecipeID,
+            FilmRecipeID = order.FilmRecipe.ID,
             Width = order.Width,
             QuantityInRunningMeter = order.QuantityInRunningMeter,
             FinishedGoods = order.FinishedGoods,
@@ -94,7 +94,7 @@ public class OrderRepository : IOrderRepository
             .Where(x => x.ID == id)
             .Set(x => x.Number, order.Number)
             .Set(x => x.CustomerID, order.CustomerID)
-            .Set(x => x.FilmRecipeID, order.FilmRecipeID)
+            .Set(x => x.FilmRecipeID, order.FilmRecipe.ID)
             .Set(x => x.Width, order.Width)
             .Set(x => x.QuantityInRunningMeter, order.QuantityInRunningMeter)
             .Set(x => x.FinishedGoods, order.FinishedGoods)
