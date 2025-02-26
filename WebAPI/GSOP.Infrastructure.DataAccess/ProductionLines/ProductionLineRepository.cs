@@ -73,8 +73,8 @@ public class ProductionLineRepository : IProductionLineRepository
                 await _connection.InsertWithInt64IdentityAsync(new FilmTypeChangeRulePOCO
                 {
                     ProductionLineID = productionLineId,
-                    FilmTypeFromID = filmTypeChangeRule.FilmRecipeFromID,
-                    FilmTypeToID = filmTypeChangeRule.FilmRecipeToID,
+                    FilmTypeFromID = filmTypeChangeRule.FilmTypeFromID,
+                    FilmTypeToID = filmTypeChangeRule.FilmTypeToID,
                     ChangeTime = filmTypeChangeRule.ChangeValueRule.ChangeTime,
                     ChangeConsumption = filmTypeChangeRule.ChangeValueRule.ChangeConsumption,
                 });
@@ -214,8 +214,8 @@ public class ProductionLineRepository : IProductionLineRepository
             await _connection.InsertWithInt64IdentityAsync(new FilmTypeChangeRulePOCO
             {
                 ProductionLineID = id,
-                FilmTypeFromID = filmTypeChangeRule.FilmRecipeFromID,
-                FilmTypeToID = filmTypeChangeRule.FilmRecipeToID,
+                FilmTypeFromID = filmTypeChangeRule.FilmTypeFromID,
+                FilmTypeToID = filmTypeChangeRule.FilmTypeToID,
                 ChangeTime = filmTypeChangeRule.ChangeValueRule.ChangeTime,
                 ChangeConsumption = filmTypeChangeRule.ChangeValueRule.ChangeConsumption,
             });

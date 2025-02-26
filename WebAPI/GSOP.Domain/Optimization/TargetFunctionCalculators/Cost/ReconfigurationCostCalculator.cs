@@ -1,4 +1,4 @@
-﻿using GSOP.Domain.Contracts.Optimization.Genetic.Models;
+﻿using GSOP.Domain.Contracts.Optimization.Models;
 using GSOP.Domain.Optimization.TargetFunctionCalculators.Cost.Base;
 
 namespace GSOP.Domain.Optimization.TargetFunctionCalculators.Cost;

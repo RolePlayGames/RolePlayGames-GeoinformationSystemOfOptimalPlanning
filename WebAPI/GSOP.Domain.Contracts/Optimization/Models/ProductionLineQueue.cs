@@ -1,7 +1,7 @@
 ﻿using GSOP.Domain.Contracts.Orders;
 using GSOP.Domain.Contracts.ProductionLines;
 
-namespace GSOP.Domain.Contracts.Optimization.Genetic.Models;
+namespace GSOP.Domain.Contracts.Optimization.Models;
 
 public record ProductionLineQueue
 {
