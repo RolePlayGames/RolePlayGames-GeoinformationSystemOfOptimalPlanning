@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GSOP.Application.Contracts\GSOP.Application.Contracts.csproj" />
     <ProjectReference Include="..\GSOP.Domain.Contracts\GSOP.Domain.Contracts.csproj" />
+    <ProjectReference Include="..\GSOP.Domain\GSOP.Domain.csproj" />
   </ItemGroup>
 
 </Project>

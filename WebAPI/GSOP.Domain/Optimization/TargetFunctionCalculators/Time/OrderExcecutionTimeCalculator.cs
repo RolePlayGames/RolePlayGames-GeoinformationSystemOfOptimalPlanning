@@ -1,5 +1,5 @@
-﻿using GSOP.Domain.Contracts.Orders;
-using GSOP.Domain.Optimization.TargetFunctionCalculators.Time.Base;
+﻿using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Time;
+using GSOP.Domain.Contracts.Orders;
 
 namespace GSOP.Domain.Optimization.TargetFunctionCalculators.Time;
 

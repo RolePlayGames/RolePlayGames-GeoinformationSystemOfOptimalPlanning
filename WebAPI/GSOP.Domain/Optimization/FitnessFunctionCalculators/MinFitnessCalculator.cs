@@ -1,18 +1,18 @@
 ﻿using GSOP.Domain.Algorithms.Contracts;
-using GSOP.Domain.Algorithms.Contracts.Genetic.Models;
+using GSOP.Domain.Contracts.Optimization.Models;
 
 namespace GSOP.Domain.Optimization.FitnessFunctionCalculators;
 
-public class MinFitnessCalculator<TGene> : IFitnessCalculator<IIndividual<TGene>> where TGene : IGene
+public class MinFitnessCalculator : IFitnessCalculator<ProductionPlan>
 {
-    private readonly ITargetFunctionCalculator<IIndividual<TGene>> _targetFunctionCalculator;
+    private readonly ITargetFunctionCalculator<ProductionPlan> _targetFunctionCalculator;
 
-    public MinFitnessCalculator(ITargetFunctionCalculator<IIndividual<TGene>> targetFunctionCalculator)
+    public MinFitnessCalculator(ITargetFunctionCalculator<ProductionPlan> targetFunctionCalculator)
     {
         _targetFunctionCalculator = targetFunctionCalculator ?? throw new ArgumentNullException(nameof(targetFunctionCalculator));
     }
 
-    public double Calculate(IIndividual<TGene> individual)
+    public double Calculate(ProductionPlan individual)
     {
         return -_targetFunctionCalculator.Calculate(individual);
     }

@@ -45,7 +45,7 @@ public static class RandomExtensions
     /// <param name="random">Extension parameter</param>
     /// <param name="collection">Collection to choose element</param>
     /// <returns>Random element of collection</returns>
-    public static T NextElement<T>(this Random random, ICollection<T> collection)
+    public static T NextElement<T>(this Random random, IReadOnlyCollection<T> collection)
     {
         if (collection is null)
             throw new ArgumentNullException(nameof(collection), "Collection should not be null");
@@ -63,7 +63,7 @@ public static class RandomExtensions
     /// <param name="collection">Collection to choose elements</param>
     /// <param name="count">Count of elements to choose</param>
     /// <returns>Pointed count of collection's elements in random order</returns>
-    public static IEnumerable<T> NextElements<T>(this Random random, ICollection<T> collection, int count)
+    public static IEnumerable<T> NextElements<T>(this Random random, IReadOnlyCollection<T> collection, int count)
     {
         if (collection is null)
             throw new ArgumentNullException(nameof(collection), "Collection should not be null");
@@ -90,7 +90,7 @@ public static class RandomExtensions
     /// <param name="random">Extension parameter</param>
     /// <param name="collection"></param>
     /// <returns>Elements of collection in random order</returns>
-    public static IEnumerable<T> NextElements<T>(this Random random, ICollection<T> collection)
+    public static IEnumerable<T> NextElements<T>(this Random random, IReadOnlyCollection<T> collection)
     {
         if (collection is null)
             throw new ArgumentNullException(nameof(collection), "Collection should not be null");

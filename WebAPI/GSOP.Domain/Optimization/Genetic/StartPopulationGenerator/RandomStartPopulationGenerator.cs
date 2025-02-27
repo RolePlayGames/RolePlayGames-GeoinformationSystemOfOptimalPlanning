@@ -14,8 +14,8 @@ namespace GSOP.Domain.Optimization.Genetic.StartPopulationGenerator;
 public class RandomStartPopulationGenerator : IStartPopulationFactory<OrderPosition>
 {
     private readonly Random _random;
-    private readonly ICollection<IProductionLine> _extruders;
-    private readonly ICollection<IOrder> _orders;
+    private readonly IReadOnlyCollection<IProductionLine> _productionLines;
+    private readonly IReadOnlyCollection<IOrder> _orders;
 
     private readonly IIndividualsSelector<OrderPosition> _mutationOperatorSelector;
     private readonly ICrossoverOperatorSelector<OrderPosition> _crossoverOperatorSelector;
@@ -31,8 +31,8 @@ public class RandomStartPopulationGenerator : IStartPopulationFactory<OrderPosit
 
     public RandomStartPopulationGenerator(
         Random random,
-        ICollection<IProductionLine> extruders,
-        ICollection<IOrder> orders,
+        IReadOnlyCollection<IProductionLine> productionLines,
+        IReadOnlyCollection<IOrder> orders,
         IIndividualsSelector<OrderPosition> mutationOperatorSelector,
         ICrossoverOperatorSelector<OrderPosition> crossoverOperatorSelector,
         IPopulationSelector<OrderPosition> populationSelector,
@@ -44,7 +44,7 @@ public class RandomStartPopulationGenerator : IStartPopulationFactory<OrderPosit
         int count)
     {
         _random = random;
-        _extruders = extruders;
+        _productionLines = productionLines;
         _orders = orders;
         _mutationOperatorSelector = mutationOperatorSelector;
         _crossoverOperatorSelector = crossoverOperatorSelector;
@@ -71,11 +71,11 @@ public class RandomStartPopulationGenerator : IStartPopulationFactory<OrderPosit
 
     private IIndividual<OrderPosition> GenerateRandomIndividual()
     {
-        var productionLinesQueue = _extruders.ToFrozenDictionary(x => x, x => new List<IOrder>(_orders.Count));
+        var productionLinesQueue = _productionLines.ToFrozenDictionary(x => x, x => new List<IOrder>(_orders.Count));
 
         foreach (var order in _random.NextElements(_orders))
         {
-            var productionLine = _random.NextElement(_extruders);
+            var productionLine = _random.NextElement(_productionLines);
             productionLinesQueue[productionLine].Add(order);
         }
 

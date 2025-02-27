@@ -65,7 +65,7 @@ public class ProductionLineService : IProductionLineService
         var nozzleChangeRules = productionLine.NozzleChangeRules.Select(x => new NozzleChangeRule { NozzleTo = new(x.NozzleTo), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
         var calibratoinChangeRules = productionLine.CalibratoinChangeRules.Select(x => new CalibratoinChangeRule { CalibrationTo = new(x.CalibrationTo), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
         var coolingLipChangeRules = productionLine.CoolingLipChangeRules.Select(x => new CoolingLipChangeRule { CoolingLipTo = new(x.CoolingLipTo), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
-        var filmTypeChangeRules = productionLine.FilmTypeChangeRules.Select(x => new FilmTypeChangeRule { FilmRecipeFromID = new(x.FilmRecipeFromID), FilmRecipeToID = new(x.FilmRecipeToID), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
+        var filmTypeChangeRules = productionLine.FilmTypeChangeRules.Select(x => new FilmTypeChangeRule { FilmTypeFromID = new(x.FilmRecipeFromID), FilmTypeToID = new(x.FilmRecipeToID), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
 
         var existingProductionLine = await _productionLineFactory.Create(id);
 

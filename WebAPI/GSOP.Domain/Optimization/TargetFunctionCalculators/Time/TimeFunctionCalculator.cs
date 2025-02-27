@@ -1,14 +1,10 @@
 ﻿using GSOP.Domain.Algorithms.Contracts;
-using GSOP.Domain.Algorithms.Contracts.Genetic.Models;
-using GSOP.Domain.Contracts.Optimization.Genetic.Models;
-using GSOP.Domain.Contracts.Orders;
-using GSOP.Domain.Contracts.ProductionLines;
-using GSOP.Domain.Optimization.Genetic.Operators.Crossovers;
-using GSOP.Domain.Optimization.TargetFunctionCalculators.Time.Base;
+using GSOP.Domain.Contracts.Optimization.Models;
+using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Time;
 
 namespace GSOP.Domain.Optimization.TargetFunctionCalculators.Time;
 
-public class TimeFunctionCalculator : ITargetFunctionCalculator<IIndividual<OrderPosition>>
+public class TimeFunctionCalculator : ITargetFunctionCalculator<ProductionPlan>
 {
     private readonly IProductionLineQueueTimeCalculator _productionLineQueueTimeCalculator;
 
@@ -17,15 +13,8 @@ public class TimeFunctionCalculator : ITargetFunctionCalculator<IIndividual<Orde
         _productionLineQueueTimeCalculator = productionLineQueueTimeCalculator ?? throw new ArgumentNullException(nameof(productionLineQueueTimeCalculator));
     }
 
-    public double Calculate(IIndividual<OrderPosition> individual)
+    public double Calculate(ProductionPlan individual)
     {
-        var lineQueues = new Dictionary<IProductionLine, SortedList<int, IOrder>>();
-
-        foreach (var gene in individual.Genes)
-        {
-            lineQueues.GetOrCreate(gene.ProductionLine).Add(gene.Position, gene.Order);
-        }
-
-        return lineQueues.Max(x => _productionLineQueueTimeCalculator.Calculate(new() { ProductionLine = x.Key, Orders = x.Value.Values }));
+        return individual.ProductionLineQueues.Max(_productionLineQueueTimeCalculator.Calculate);
     }
 }

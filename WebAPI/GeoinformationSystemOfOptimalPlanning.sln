@@ -56,6 +56,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSOP.Domain.Algorithms", "G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSOP.Domain.Algorithms.Contracts", "GSOP.Domain.Algorithms.Contracts\GSOP.Domain.Algorithms.Contracts.csproj", "{6ED1CFB2-3AA5-4701-AC56-C31278230EE7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSOP.Domain.Algorithms.Test", "GSOP.Domain.Algorithms.Test\GSOP.Domain.Algorithms.Test.csproj", "{1F1B944D-A953-4A1C-BCD9-CBEA3AAF97E9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -130,6 +132,10 @@ Global
 		{6ED1CFB2-3AA5-4701-AC56-C31278230EE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6ED1CFB2-3AA5-4701-AC56-C31278230EE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6ED1CFB2-3AA5-4701-AC56-C31278230EE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F1B944D-A953-4A1C-BCD9-CBEA3AAF97E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F1B944D-A953-4A1C-BCD9-CBEA3AAF97E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F1B944D-A953-4A1C-BCD9-CBEA3AAF97E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F1B944D-A953-4A1C-BCD9-CBEA3AAF97E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -155,6 +161,7 @@ Global
 		{E5BDDD08-57E9-4B9E-AC78-3E2346918695} = {BE7155A2-754C-422C-B050-3563602E5C52}
 		{E6A8F2B0-EC9E-48A4-8E09-76498BB7F1D4} = {E5BDDD08-57E9-4B9E-AC78-3E2346918695}
 		{6ED1CFB2-3AA5-4701-AC56-C31278230EE7} = {E5BDDD08-57E9-4B9E-AC78-3E2346918695}
+		{1F1B944D-A953-4A1C-BCD9-CBEA3AAF97E9} = {E5BDDD08-57E9-4B9E-AC78-3E2346918695}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AA3147E1-2764-452A-9D62-971DFC94E779}

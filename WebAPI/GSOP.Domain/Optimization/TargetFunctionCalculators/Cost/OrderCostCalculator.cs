@@ -1,5 +1,5 @@
-﻿using GSOP.Domain.Contracts.Orders;
-using GSOP.Domain.Optimization.TargetFunctionCalculators.Cost.Base;
+﻿using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Cost;
+using GSOP.Domain.Contracts.Orders;
 
 namespace GSOP.Domain.Optimization.TargetFunctionCalculators.Cost;
 
