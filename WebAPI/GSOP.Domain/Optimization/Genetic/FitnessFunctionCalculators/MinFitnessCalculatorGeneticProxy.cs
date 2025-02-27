@@ -3,7 +3,7 @@ using GSOP.Domain.Algorithms.Contracts.Genetic.Models;
 
 namespace GSOP.Domain.Optimization.Genetic.FitnessFunctionCalculators;
 
-public class MinFitnessCalculator<TGene> : IFitnessCalculator<IIndividual<TGene>> where TGene : IGene
+public class MinFitnessCalculatorGeneticProxy<TGene> : IFitnessCalculator<IIndividual<TGene>> where TGene : IGene
 {
     public double Calculate(IIndividual<TGene> individual)
     {

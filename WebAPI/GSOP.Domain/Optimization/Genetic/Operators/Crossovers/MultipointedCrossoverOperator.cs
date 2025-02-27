@@ -1,5 +1,4 @@
-﻿using GSOP.Domain.Algorithms.Contracts.Genetic.Models;
-using GSOP.Domain.Contracts.Optimization.Genetic.Models;
+﻿using GSOP.Domain.Contracts.Optimization.Genetic.Models;
 using GSOP.Domain.Contracts.Orders;
 using GSOP.Domain.Contracts.ProductionLines;
 using GSOP.Domain.Algorithms.Contracts.Genetic.Operators;

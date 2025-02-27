@@ -1,6 +1,6 @@
 ﻿using GSOP.Domain.Contracts.Orders;
 
-namespace GSOP.Domain.Optimization.TargetFunctionCalculators.Time.Base;
+namespace GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Time;
 
 public interface IOrderExcecutionTimeCalculator
 {

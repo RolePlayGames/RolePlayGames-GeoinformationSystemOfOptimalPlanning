@@ -3,23 +3,24 @@ using GSOP.Domain.Contracts.ProductionLines;
 using GSOP.Domain.Algorithms.Contracts;
 using GSOP.Domain.Algorithms.Contracts.Bruteforce;
 using GSOP.Domain.Algorithms.Genetic.Extensions;
+using GSOP.Domain.Contracts.Optimization.Models;
 
 namespace OPTEL.Optimization.Algorithms.Bruteforce;
 
-public class BruteforceAlgorithm : IOptimizationAlgorithm<IReadOnlyDictionary<IProductionLine, List<IOrder>>>, IOptimizationAlgorithmDecisions<IReadOnlyDictionary<IProductionLine, List<IOrder>>>
+public class BruteforceAlgorithm : IOptimizationAlgorithm<ProductionPlan>, IOptimizationAlgorithmDecisions<ProductionPlan>
 {
-    private readonly IBruteforeDistributor _bruteforeDistributor;
+    private readonly IBruteforceDistributor _bruteforeDistributor;
     private readonly IReadOnlyCollection<IOrder> _orders;
     private readonly IReadOnlyCollection<IProductionLine> _productionLines;
-    private readonly IReadOnlyCollection<IFinalConditionChecker<IReadOnlyDictionary<IProductionLine, List<IOrder>>>> _finalConditionCheckers;
-    private readonly IFitnessCalculator<IReadOnlyDictionary<IProductionLine, List<IOrder>>> _fitnessCalculator;
+    private readonly IReadOnlyCollection<IFinalConditionChecker<ProductionPlan>> _finalConditionCheckers;
+    private readonly IFitnessCalculator<ProductionPlan> _fitnessCalculator;
 
     public BruteforceAlgorithm(
-        IBruteforeDistributor bruteforeDistributor,
+        IBruteforceDistributor bruteforeDistributor,
         IReadOnlyCollection<IOrder> orders,
         IReadOnlyCollection<IProductionLine> productionLines,
-        IReadOnlyCollection<IFinalConditionChecker<IReadOnlyDictionary<IProductionLine, List<IOrder>>>> finalConditionCheckers,
-        IFitnessCalculator<IReadOnlyDictionary<IProductionLine, List<IOrder>>> fitnessCalculator)
+        IReadOnlyCollection<IFinalConditionChecker<ProductionPlan>> finalConditionCheckers,
+        IFitnessCalculator<ProductionPlan> fitnessCalculator)
     {
         _bruteforeDistributor = bruteforeDistributor;
         _orders = orders;
@@ -28,15 +29,15 @@ public class BruteforceAlgorithm : IOptimizationAlgorithm<IReadOnlyDictionary<IP
         _fitnessCalculator = fitnessCalculator;
     }
 
-    IReadOnlyDictionary<IProductionLine, List<IOrder>> IOptimizationAlgorithm<IReadOnlyDictionary<IProductionLine, List<IOrder>>>.GetResolve()
+    ProductionPlan IOptimizationAlgorithm<ProductionPlan>.GetResolve()
     {
-        return ((IOptimizationAlgorithmDecisions<IReadOnlyDictionary<IProductionLine, List<IOrder>>>)this).GetResolve().LastOrDefault();
+        return ((IOptimizationAlgorithmDecisions<ProductionPlan>)this).GetResolve().LastOrDefault();
     }
 
-    public IEnumerable<IReadOnlyDictionary<IProductionLine, List<IOrder>>> GetResolve()
+    public IEnumerable<ProductionPlan> GetResolve()
     {
         var bestFintess = double.MinValue;
-        IReadOnlyDictionary<IProductionLine, List<IOrder>>? bestResolve = null;
+        ProductionPlan? bestResolve = null;
 
         foreach (var resolve in GetResolvesInternal())
         {
@@ -51,7 +52,7 @@ public class BruteforceAlgorithm : IOptimizationAlgorithm<IReadOnlyDictionary<IP
         }
     }
 
-    private IEnumerable<IReadOnlyDictionary<IProductionLine, List<IOrder>>> GetResolvesInternal()
+    private IEnumerable<ProductionPlan> GetResolvesInternal()
     {
         _finalConditionCheckers.ForEach(x => x.Begin());
 
@@ -66,15 +67,15 @@ public class BruteforceAlgorithm : IOptimizationAlgorithm<IReadOnlyDictionary<IP
         }
     }
 
-    private IReadOnlyDictionary<IProductionLine, List<IOrder>> ConvertDecision(List<List<int>> combinations)
+    private ProductionPlan ConvertDecision(List<List<int>> combinations)
     {
-        var result = new Dictionary<IProductionLine, List<IOrder>>(combinations.Count);
+        var queues = new List<ProductionLineQueue>(combinations.Count);
 
         for (var i = 0; i < combinations.Count; i++)
         {
-            result[_productionLines.ElementAt(i)] = combinations[i].Select(x => _orders.ElementAt(x)).ToList();
+            queues.Add(new() { ProductionLine = _productionLines.ElementAt(i), Orders = combinations[i].Select(x => _orders.ElementAt(x)).ToList() });
         }
 
-        return result;
+        return new() { ProductionLineQueues = queues };
     }
 }

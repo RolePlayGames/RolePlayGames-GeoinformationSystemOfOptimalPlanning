@@ -1,6 +1,6 @@
 ﻿using GSOP.Domain.Contracts.Orders;
 
-namespace GSOP.Domain.Optimization.TargetFunctionCalculators.Cost.Base;
+namespace GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Cost;
 
 public interface IOrderCostCalculator
 {

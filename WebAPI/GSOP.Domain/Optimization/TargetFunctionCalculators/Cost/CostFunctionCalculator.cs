@@ -1,14 +1,10 @@
 ﻿using GSOP.Domain.Algorithms.Contracts;
-using GSOP.Domain.Algorithms.Contracts.Genetic.Models;
-using GSOP.Domain.Contracts.Optimization.Genetic.Models;
-using GSOP.Domain.Contracts.Orders;
-using GSOP.Domain.Contracts.ProductionLines;
-using GSOP.Domain.Optimization.Genetic.Operators.Crossovers;
-using GSOP.Domain.Optimization.TargetFunctionCalculators.Cost.Base;
+using GSOP.Domain.Contracts.Optimization.Models;
+using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Cost;
 
 namespace GSOP.Domain.Optimization.TargetFunctionCalculators.Cost;
 
-public class CostFunctionCalculator : ITargetFunctionCalculator<IIndividual<OrderPosition>>
+public class CostFunctionCalculator : ITargetFunctionCalculator<ProductionPlan>
 {
     private readonly IProductionLineQueueCostCalculator _productionLineQueueCostCalculator;
 
@@ -17,15 +13,8 @@ public class CostFunctionCalculator : ITargetFunctionCalculator<IIndividual<Orde
         _productionLineQueueCostCalculator = productionLineQueueCostCalculator ?? throw new ArgumentNullException(nameof(productionLineQueueCostCalculator));
     }
 
-    public double Calculate(IIndividual<OrderPosition> individual)
+    public double Calculate(ProductionPlan individual)
     {
-        var lineQueues = new Dictionary<IProductionLine, SortedList<int, IOrder>>();
-
-        foreach (var gene in individual.Genes)
-        {
-            lineQueues.GetOrCreate(gene.ProductionLine).Add(gene.Position, gene.Order);
-        }
-
-        return lineQueues.Sum(x => _productionLineQueueCostCalculator.Calculate(new() { ProductionLine = x.Key, Orders = x.Value.Values }));
+        return individual.ProductionLineQueues.Sum(_productionLineQueueCostCalculator.Calculate);
     }
 }

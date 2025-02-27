@@ -3,9 +3,9 @@ using GSOP.Domain.Algorithms.Contracts.Genetic.Models;
 
 namespace GSOP.Domain.Algorithms.Genetic.Operators.Crossovers.Selectors;
 
-public class InbreedinganCrossoverOperatorSelector<TGene> : CrossoverOperatorSelector<TGene> where TGene : IGene
+public class InbreedingCrossoverOperatorSelector<TGene> : CrossoverOperatorSelector<TGene> where TGene : IGene
 {
-    public InbreedinganCrossoverOperatorSelector(IIndividualsSelector<TGene> individualsSelector) : base(individualsSelector)
+    public InbreedingCrossoverOperatorSelector(IIndividualsSelector<TGene> individualsSelector) : base(individualsSelector)
     {
 
     }

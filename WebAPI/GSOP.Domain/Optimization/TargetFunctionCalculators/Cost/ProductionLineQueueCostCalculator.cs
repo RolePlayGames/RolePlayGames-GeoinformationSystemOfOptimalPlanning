@@ -1,6 +1,6 @@
 ﻿using GSOP.Domain.Contracts.Optimization.Models;
-using GSOP.Domain.Optimization.TargetFunctionCalculators.Cost.Base;
-using GSOP.Domain.Optimization.TargetFunctionCalculators.Time.Base;
+using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Cost;
+using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Time;
 
 namespace GSOP.Domain.Optimization.TargetFunctionCalculators.Cost;
 

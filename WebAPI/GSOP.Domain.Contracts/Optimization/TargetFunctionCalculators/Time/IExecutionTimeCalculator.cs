@@ -1,8 +1,8 @@
 ﻿using GSOP.Domain.Contracts.Optimization.Models;
 
-namespace GSOP.Domain.Optimization.TargetFunctionCalculators.Cost.Base;
+namespace GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Time;
 
-public interface IReconfigurationCostCalculator
+public interface IExecutionTimeCalculator
 {
     double Calculate(ProductionLineQueue productionLineQueue);
 }

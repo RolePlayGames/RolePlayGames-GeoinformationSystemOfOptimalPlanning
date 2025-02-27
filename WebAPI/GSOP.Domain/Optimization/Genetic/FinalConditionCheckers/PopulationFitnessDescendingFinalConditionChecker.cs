@@ -5,17 +5,17 @@ namespace GSOP.Domain.Optimization.Genetic.FinalConditionCheckers;
 
 public class PopulationFitnessDescendingFinalConditionChecker<TGene> : IFinalConditionChecker<IPopulation<TGene>> where TGene : IGene
 {
-    protected int GenerationCount { get; }
+    private readonly int _generationsCount;
 
     private int _currentGeneration;
     private double _bestFitness;
 
-    public PopulationFitnessDescendingFinalConditionChecker(int generationCount)
+    public PopulationFitnessDescendingFinalConditionChecker(int generationsCount)
     {
-        if (generationCount < 1)
-            throw new ArgumentOutOfRangeException(nameof(generationCount), "Generation coune should be greater than 1");
+        if (generationsCount < 1)
+            throw new ArgumentOutOfRangeException(nameof(generationsCount), "Generation coune should be greater than 1");
 
-        GenerationCount = generationCount;
+        _generationsCount = generationsCount;
     }
 
     public void Begin()
@@ -38,6 +38,6 @@ public class PopulationFitnessDescendingFinalConditionChecker<TGene> : IFinalCon
             _currentGeneration++;
         }
 
-        return _currentGeneration >= GenerationCount;
+        return _currentGeneration >= _generationsCount;
     }
 }

@@ -1,7 +1,7 @@
 ﻿using GSOP.Domain.Contracts.Orders;
 using GSOP.Domain.Contracts.ProductionLines;
 
-namespace GSOP.Domain.Optimization.TargetFunctionCalculators.Time.Base;
+namespace GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Time;
 
 public interface IOrdersReconfigurationTimeCalculator
 {

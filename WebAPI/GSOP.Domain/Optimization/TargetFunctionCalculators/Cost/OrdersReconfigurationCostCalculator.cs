@@ -1,8 +1,8 @@
 ﻿using GSOP.Domain.Contracts.FilmRecipes.Models;
-using GSOP.Domain.Contracts.FilmRecipes;
+using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Cost;
 using GSOP.Domain.Contracts.Orders;
 using GSOP.Domain.Contracts.ProductionLines;
-using GSOP.Domain.Optimization.TargetFunctionCalculators.Cost.Base;
+using System.Collections.Frozen;
 
 namespace GSOP.Domain.Optimization.TargetFunctionCalculators.Cost;
 
@@ -10,12 +10,12 @@ public class OrdersReconfigurationCostCalculator : IOrdersReconfigurationCostCal
 {
     private const double _epsilon = 1e-9;
 
-    private readonly IReadOnlyDictionary<IProductionLine, IReadOnlyDictionary<FilmTypeID, IReadOnlyDictionary<FilmTypeID, double>>> _filmTypeChanges = new Dictionary<IProductionLine, IReadOnlyDictionary<FilmTypeID, IReadOnlyDictionary<FilmTypeID, double>>>();
-    private readonly IReadOnlyDictionary<IProductionLine, IReadOnlyDictionary<FilmRecipeCoolingLip, IReadOnlyDictionary<FilmRecipeCoolingLip, double>>> _coolingLipChanges = new Dictionary<IProductionLine, IReadOnlyDictionary<FilmRecipeCoolingLip, IReadOnlyDictionary<FilmRecipeCoolingLip, double>>>();
-    private readonly IReadOnlyDictionary<IProductionLine, IReadOnlyDictionary<FilmRecipeCalibration, IReadOnlyDictionary<FilmRecipeCalibration, double>>> _calibrationChanges = new Dictionary<IProductionLine, IReadOnlyDictionary<FilmRecipeCalibration, IReadOnlyDictionary<FilmRecipeCalibration, double>>>();
-    private readonly IReadOnlyDictionary<IProductionLine, IReadOnlyDictionary<FilmRecipeNozzle, IReadOnlyDictionary<FilmRecipeNozzle, double>>> _nozzleChanges = new Dictionary<IProductionLine, IReadOnlyDictionary<FilmRecipeNozzle, IReadOnlyDictionary<FilmRecipeNozzle, double>>>();
+    private readonly Dictionary<IProductionLine, FrozenDictionary<FilmTypeID, FrozenDictionary<FilmTypeID, double>>> _filmTypeChanges = new Dictionary<IProductionLine, FrozenDictionary<FilmTypeID, FrozenDictionary<FilmTypeID, double>>>();
+    private readonly Dictionary<IProductionLine, FrozenDictionary<FilmRecipeCoolingLip, double>> _coolingLipChanges = new Dictionary<IProductionLine, FrozenDictionary<FilmRecipeCoolingLip, double>>();
+    private readonly Dictionary<IProductionLine, FrozenDictionary<FilmRecipeCalibration, double>> _calibrationChanges = new Dictionary<IProductionLine, FrozenDictionary<FilmRecipeCalibration, double>>();
+    private readonly Dictionary<IProductionLine, FrozenDictionary<FilmRecipeNozzle, double>> _nozzleChanges = new Dictionary<IProductionLine, FrozenDictionary<FilmRecipeNozzle, double>>();
 
-    private readonly IDictionary<IOrder, IDictionary<IOrder, double>> _ordersReconfiguration = new Dictionary<IOrder, IDictionary<IOrder, double>>();
+    private readonly Dictionary<IOrder, Dictionary<IOrder, double>> _ordersReconfiguration = new Dictionary<IOrder, Dictionary<IOrder, double>>();
 
     public double Calculate(IProductionLine productionLine, IOrder orderFrom, IOrder orderTo)
     {
@@ -26,22 +26,42 @@ public class OrdersReconfigurationCostCalculator : IOrdersReconfigurationCostCal
 
         if (orderFrom.FilmRecipe.FilmTypeID != orderTo.FilmRecipe.FilmTypeID)
         {
-            result += _filmTypeChanges[productionLine].TryGetValue(orderFrom.FilmRecipe.FilmTypeID, out var changes) ? changes.TryGetValue(orderTo.FilmRecipe.FilmTypeID, out var change) ? change : 0 : 0;
+            if (!_filmTypeChanges.TryGetValue(productionLine, out var value))
+            {
+                _filmTypeChanges[productionLine] = value = productionLine.FilmTypeChangeRules.GroupBy(x => x.FilmTypeFromID).ToFrozenDictionary(x => x.Key, x => x.ToFrozenDictionary(x => x.FilmTypeToID, x => x.ChangeValueRule.ChangeConsumption));
+            }
+
+            result += value.TryGetValue(orderFrom.FilmRecipe.FilmTypeID, out var changes) ? changes.TryGetValue(orderTo.FilmRecipe.FilmTypeID, out var change) ? change : 0 : 0;
         }
 
         if (AreNotEqual(orderFrom.FilmRecipe.CoolingLip, orderTo.FilmRecipe.CoolingLip))
         {
-            result += _coolingLipChanges[productionLine].TryGetValue(orderFrom.FilmRecipe.CoolingLip, out var changes) ? changes.TryGetValue(orderTo.FilmRecipe.CoolingLip, out var change) ? change : 0 : 0;
+            if (!_coolingLipChanges.TryGetValue(productionLine, out var value))
+            {
+                _coolingLipChanges[productionLine] = value = productionLine.CoolingLipChangeRules.ToFrozenDictionary(x => x.CoolingLipTo, x => x.ChangeValueRule.ChangeConsumption);
+            }
+
+            result += value.TryGetValue(orderTo.FilmRecipe.CoolingLip, out var change) ? change : 0;
         }
 
         if (AreNotEqual(orderFrom.FilmRecipe.Calibration, orderTo.FilmRecipe.Calibration))
         {
-            result += _calibrationChanges[productionLine].TryGetValue(orderFrom.FilmRecipe.Calibration, out var changes) ? changes.TryGetValue(orderTo.FilmRecipe.Calibration, out var change) ? change : 0 : 0;
+            if (!_calibrationChanges.TryGetValue(productionLine, out var value))
+            {
+                _calibrationChanges[productionLine] = value = productionLine.CalibratoinChangeRules.ToFrozenDictionary(x => x.CalibrationTo, x => x.ChangeValueRule.ChangeConsumption);
+            }
+
+            result += value.TryGetValue(orderTo.FilmRecipe.Calibration, out var change) ? change : 0;
         }
 
         if (AreNotEqual(orderFrom.FilmRecipe.Nozzle, orderTo.FilmRecipe.Nozzle))
         {
-            result += _nozzleChanges[productionLine].TryGetValue(orderFrom.FilmRecipe.Nozzle, out var changes) ? changes.TryGetValue(orderTo.FilmRecipe.Nozzle, out var change) ? change : 0 : 0;
+            if (!_nozzleChanges.TryGetValue(productionLine, out var value))
+            {
+                _nozzleChanges[productionLine] = value = productionLine.NozzleChangeRules.ToFrozenDictionary(x => x.NozzleTo, x => x.ChangeValueRule.ChangeConsumption);
+            }
+
+            result += value.TryGetValue(orderTo.FilmRecipe.Nozzle, out var change) ? change : 0;
         }
 
         if (AreNotEqual(orderFrom.Width, orderTo.Width))

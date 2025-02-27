@@ -4,13 +4,11 @@ namespace GSOP.Domain.Optimization.FinalConditionChecker;
 
 public class CancellationTokenFinalConditionChecker<T> : IFinalConditionChecker<T>
 {
-    private readonly CancellationTokenSource _cancellationTokenSource;
+    private readonly CancellationToken _cancellationToken;
 
-    private CancellationToken CancellationToken => _cancellationTokenSource.Token;
-
-    public CancellationTokenFinalConditionChecker(CancellationTokenSource cancellationTokenSource)
+    public CancellationTokenFinalConditionChecker(CancellationToken cancellationToken)
     {
-        _cancellationTokenSource = cancellationTokenSource ?? throw new ArgumentNullException(nameof(cancellationTokenSource));
+        _cancellationToken = cancellationToken;
     }
 
     public void Begin()
@@ -20,6 +18,6 @@ public class CancellationTokenFinalConditionChecker<T> : IFinalConditionChecker<
 
     public bool IsStateFinal(T state)
     {
-        return CancellationToken.IsCancellationRequested;
+        return _cancellationToken.IsCancellationRequested;
     }
 }

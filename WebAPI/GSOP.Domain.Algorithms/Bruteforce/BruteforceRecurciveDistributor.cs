@@ -3,7 +3,7 @@ using GSOP.Domain.Algorithms.Contracts.Bruteforce;
 
 namespace GSOP.Domain.Algorithms.Bruteforce;
 
-public class BruteforceRecurciveDistributor : IBruteforeDistributor
+public class BruteforceRecurciveDistributor : IBruteforceDistributor
 {
     private readonly ICombinationsGenerator _combinationsGenerator;
 

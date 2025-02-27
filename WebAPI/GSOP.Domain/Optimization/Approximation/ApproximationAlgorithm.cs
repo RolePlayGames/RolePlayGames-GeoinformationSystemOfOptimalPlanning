@@ -1,9 +1,9 @@
 ﻿using GSOP.Domain.Algorithms.Contracts;
 using GSOP.Domain.Contracts.Optimization.Models;
+using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Time;
 using GSOP.Domain.Contracts.Orders;
 using GSOP.Domain.Contracts.ProductionLines;
 using GSOP.Domain.Contracts.ProductionLines.Models;
-using GSOP.Domain.Optimization.TargetFunctionCalculators.Time.Base;
 
 namespace GSOP.Domain.Optimization.Approximation;
 

@@ -7,5 +7,5 @@ public record ProductionLineQueue
 {
     public required IProductionLine ProductionLine { get; init; }
 
-    public required ICollection<IOrder> Orders { get; init; }
+    public required IReadOnlyCollection<IOrder> Orders { get; init; }
 }
