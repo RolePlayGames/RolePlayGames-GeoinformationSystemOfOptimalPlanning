@@ -5,7 +5,7 @@ namespace GSOP.Infrastructure.Excel.ProductionData.Readers;
 
 public class CalibratoinChangeRuleReader : ModelReader<CalibratoinChangeRuleModel>
 {
-    protected override int WorkSheetNum => 7;
+    protected override int WorkSheetNum => 5;
 
     protected override CalibratoinChangeRuleModel? ReadModel(ExcelRange cells, int rowNum)
     {

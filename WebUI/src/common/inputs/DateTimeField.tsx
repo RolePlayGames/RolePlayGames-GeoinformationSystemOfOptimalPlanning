@@ -1,6 +1,6 @@
 
 import styled from "@emotion/styled";
-import { DateTimePicker, DateTimePickerProps } from "@mui/x-date-pickers";
+import { DateTimePicker, DateTimePickerProps } from "@mui/x-date-pickers-pro";
 import { Dayjs } from "dayjs";
 import { inputFieldStyle } from "./inputFieldStyle";
 

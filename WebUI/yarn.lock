@@ -1877,10 +1877,24 @@
     prop-types "^15.8.1"
     react-is "^19.0.0"
 
-"@mui/x-date-pickers@^7.26.0":
-  version "7.26.0"
-  resolved "https://registry.yarnpkg.com/@mui/x-date-pickers/-/x-date-pickers-7.26.0.tgz#f6d928db771a81d2e53e79ec7ff5b134b60a908b"
-  integrity sha512-bhSDce1b5MBYYlCdHQJBThe10LGTE3D/u53TDQ41+IRj+iiNCun8jivw3DxKhmoBxlB+hVdkcltpTtIGlPjQZQ==
+"@mui/x-date-pickers-pro@^7.27.1":
+  version "7.27.1"
+  resolved "https://registry.yarnpkg.com/@mui/x-date-pickers-pro/-/x-date-pickers-pro-7.27.1.tgz#3baeaf8203e5e5171e729a57ffeae9b490fbe1a4"
+  integrity sha512-7U6t17o11tE1bfcHG817KYAYVQ+qHkPY2AxYB1kxSeGuvnUVBqDGf+bT1N4ha+WYnBPjRJLoxPxZQXb/cBj85A==
+  dependencies:
+    "@babel/runtime" "^7.25.7"
+    "@mui/utils" "^5.16.6 || ^6.0.0"
+    "@mui/x-date-pickers" "7.27.1"
+    "@mui/x-internals" "7.26.0"
+    "@mui/x-license" "7.26.0"
+    clsx "^2.1.1"
+    prop-types "^15.8.1"
+    react-transition-group "^4.4.5"
+
+"@mui/x-date-pickers@7.27.1":
+  version "7.27.1"
+  resolved "https://registry.yarnpkg.com/@mui/x-date-pickers/-/x-date-pickers-7.27.1.tgz#5c9769744598b1e10c1919ce0589b8d235131a17"
+  integrity sha512-2YPhTM9TM39dmIkEQdSB6P6NASePB9LuhXXKQqq0PX4FXGymYEPz/acQXkk617zwfxJJaDhJZ6g8SAv5pklTJQ==
   dependencies:
     "@babel/runtime" "^7.25.7"
     "@mui/utils" "^5.16.6 || ^6.0.0"
@@ -1897,6 +1911,15 @@
   dependencies:
     "@babel/runtime" "^7.25.7"
     "@mui/utils" "^5.16.6 || ^6.0.0"
+
+"@mui/x-license@7.26.0":
+  version "7.26.0"
+  resolved "https://registry.yarnpkg.com/@mui/x-license/-/x-license-7.26.0.tgz#c208ec244176b60ebb1bd6e6b98bf02a10a750b7"
+  integrity sha512-WxwBGk6xXF0vi4IGCCojMHjQsAXvltjP+YgFTTgWVFhIpDFDu89xLOwRnSWrhCwD6dlK/BwKgn2UgxTE8BZGFQ==
+  dependencies:
+    "@babel/runtime" "^7.25.7"
+    "@mui/utils" "^5.16.6 || ^6.0.0"
+    "@mui/x-internals" "7.26.0"
 
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
   version "5.1.1-v1"
@@ -5212,6 +5235,11 @@ functions-have-names@^1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/functions-have-names/-/functions-have-names-1.2.3.tgz#0404fe4ee2ba2f607f0e0ec3c80bae994133b834"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
+
+gantt-task-react@^0.3.9:
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/gantt-task-react/-/gantt-task-react-0.3.9.tgz#f538c1a92f617af929b93cb5cd28237bf5f60ce1"
+  integrity sha512-ged2OGrAJJ+ATrfVVkd4/8cUu4jOu1mXi0NaBeKx4uoGP6YhyryL+Snr2OY48AXdFelUAg7BbqylSej9X6PCCQ==
 
 gensync@^1.0.0-beta.2:
   version "1.0.0-beta.2"

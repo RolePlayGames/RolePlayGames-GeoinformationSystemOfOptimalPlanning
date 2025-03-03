@@ -5,7 +5,7 @@ namespace GSOP.Infrastructure.Excel.ProductionData.Readers;
 
 public class NozzleChangeRuleReader : ModelReader<NozzleChangeRuleModel>
 {
-    protected override int WorkSheetNum => 6;
+    protected override int WorkSheetNum => 8;
 
     protected override NozzleChangeRuleModel? ReadModel(ExcelRange cells, int rowNum)
     {

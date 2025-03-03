@@ -13,11 +13,11 @@ public class CombinationsGeneratorTest
     }
 
     [Fact]
-    public void GenerateCombinations_For3Numbers_Returns6ResultsWith()
+    public void GenerateCombinations_For4Numbers_Returns24UniqueCombinations()
     {
         // Arrange
-        var expectedCount = 6;
-        var variations = new List<int> { 1, 2, 3 };
+        var expectedCount = 24;
+        var variations = new List<int> { 1, 2, 3, 4 };
 
         // Act
         var result = _combinationsGenerator.GenerateCombinations(variations).ToList();

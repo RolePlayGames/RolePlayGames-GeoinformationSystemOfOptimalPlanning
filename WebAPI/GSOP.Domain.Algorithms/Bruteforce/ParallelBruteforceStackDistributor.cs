@@ -1,13 +1,14 @@
 ﻿using GSOP.Domain.Algorithms.Bruteforce.CombinationsGenerators;
 using GSOP.Domain.Algorithms.Contracts.Bruteforce;
+using System.Collections.Concurrent;
 
 namespace GSOP.Domain.Algorithms.Bruteforce;
 
-public class BruteforceRecurciveDistributor : IBruteforceDistributor
+public class ParallelBruteforceStackDistributor : IBruteforceDistributor
 {
     private readonly ICombinationsGenerator _combinationsGenerator;
 
-    public BruteforceRecurciveDistributor(ICombinationsGenerator combinationsGenerator)
+    public ParallelBruteforceStackDistributor(ICombinationsGenerator combinationsGenerator)
     {
         _combinationsGenerator = combinationsGenerator;
     }
@@ -37,7 +38,20 @@ public class BruteforceRecurciveDistributor : IBruteforceDistributor
         }
     }
 
-    private IEnumerable<List<List<TItem>>> PermuteBuckets<TItem>(List<List<TItem>> distribution)
+
+    private ConcurrentQueue<List<List<TItem>>> PermuteBuckets<TItem>(List<List<TItem>> distribution)
+    {
+        var resultsQueue = new ConcurrentQueue<List<List<TItem>>>();
+        var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount / 2 };
+
+        // Распараллеливаем перестановку корзин
+        Parallel.ForEach(GenerateBucketPermutations(distribution), parallelOptions, resultsQueue.Enqueue);
+
+        return resultsQueue;
+    }
+
+    // Перемещена логика из PermuteBuckets в GenerateBucketPermutations
+    private IEnumerable<List<List<TItem>>> GenerateBucketPermutations<TItem>(List<List<TItem>> distribution)
     {
         if (distribution.Count == 0)
         {
@@ -56,9 +70,8 @@ public class BruteforceRecurciveDistributor : IBruteforceDistributor
             var newDistribution = new List<List<TItem>> { permutation };
 
             // Рекурсивно генерируем все перестановки элементов в остальных корзинах
-            foreach (var permutedRemainingBuckets in PermuteBuckets(remainingBuckets))
+            foreach (var permutedRemainingBuckets in GenerateBucketPermutations(remainingBuckets))
             {
-                // Объединяем перестановку первой корзины с перестановками остальных корзин
                 yield return newDistribution.Concat(permutedRemainingBuckets).ToList();
             }
         }
@@ -90,12 +103,27 @@ public class BruteforceRecurciveDistributor : IBruteforceDistributor
             yield break;
         }
 
-        foreach (var partialAssignment in GenerateAllPossibleAssignments(numItems - 1, numBuckets))
+        // Создаем очередь для хранения частичных назначений
+        var queue = new Queue<List<int>>();
+        queue.Enqueue([]);
+
+        while (queue.Count > 0)
         {
-            for (var i = 0; i < numBuckets; i++)
+            var partialAssignment = queue.Dequeue();
+
+            // Если длина частичного назначения равна numItems, то это полное назначение
+            if (partialAssignment.Count == numItems)
             {
-                var assignment = new List<int>(partialAssignment) { i };
-                yield return assignment;
+                yield return partialAssignment;
+            }
+            else
+            {
+                // В противном случае, добавляем все возможные варианты назначения для следующего элемента
+                for (var i = 0; i < numBuckets; i++)
+                {
+                    var newAssignment = new List<int>(partialAssignment) { i };
+                    queue.Enqueue(newAssignment);
+                }
             }
         }
     }

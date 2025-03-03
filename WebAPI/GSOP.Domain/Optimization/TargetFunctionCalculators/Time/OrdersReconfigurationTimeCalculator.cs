@@ -92,6 +92,6 @@ public class OrdersReconfigurationTimeCalculator : IOrdersReconfigurationTimeCal
     {
         var difference = Math.Abs(value1 * _epsilon);
 
-        return Math.Abs(value1 - value2) <= difference;
+        return Math.Abs(value1 - value2) > difference;
     }
 }

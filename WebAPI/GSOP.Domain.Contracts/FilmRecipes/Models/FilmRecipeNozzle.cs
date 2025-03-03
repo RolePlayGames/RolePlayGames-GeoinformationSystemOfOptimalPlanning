@@ -1,18 +1,25 @@
 ﻿namespace GSOP.Domain.Contracts.FilmRecipes.Models;
 
-public record FilmRecipeNozzle
+public record FilmRecipeNozzle : IComparable<FilmRecipeNozzle>
 {
     public const int Min = 0;
-    public const int Max = 300;
 
     private readonly double _nozzle;
 
     public FilmRecipeNozzle(double nozzle)
     {
-        if (nozzle <= Min || nozzle > Max)
-            throw new ArgumentOutOfRangeException(nameof(nozzle), $"Nozzle should be greater than {Min} and lesser than {Max}");
+        if (nozzle <= Min)
+            throw new ArgumentOutOfRangeException(nameof(nozzle), $"Nozzle should be greater than {Min} ");
 
         _nozzle = nozzle;
+    }
+
+    public int CompareTo(FilmRecipeNozzle? other)
+    {
+        if (other is null)
+            return -1;
+
+        return _nozzle.CompareTo(other._nozzle);
     }
 
     public static implicit operator double(FilmRecipeNozzle nozzle) => nozzle._nozzle;

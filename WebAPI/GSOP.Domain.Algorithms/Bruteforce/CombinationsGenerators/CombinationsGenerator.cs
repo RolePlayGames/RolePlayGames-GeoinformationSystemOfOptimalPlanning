@@ -5,7 +5,8 @@ public class CombinationsGenerator : ICombinationsGenerator
     public IEnumerable<List<int>> GenerateCombinations(List<int> variations)
     {
         var controlled = new int[variations.Count];
-        yield return variations;
+
+        yield return variations.ToList();
 
         var i = 0;
 

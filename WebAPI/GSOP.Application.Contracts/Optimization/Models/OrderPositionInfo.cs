@@ -6,5 +6,5 @@ public record OrderPositionInfo
 
     public required DateTime OrderProductionStartDateTime { get; init; }
 
-    public required TimeSpan OrderProductionDuration { get; init; }
+    public required DateTime OrderProductionEndDateTime { get; init; }
 }
