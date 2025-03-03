@@ -67,13 +67,13 @@ public class BruteforceAlgorithm : IOptimizationAlgorithm<ProductionPlan>, IOpti
         }
     }
 
-    private ProductionPlan ConvertDecision(List<List<int>> combinations)
+    private ProductionPlan ConvertDecision(List<List<IOrder>> combinations)
     {
         var queues = new List<ProductionLineQueue>(combinations.Count);
 
         for (var i = 0; i < combinations.Count; i++)
         {
-            queues.Add(new() { ProductionLine = _productionLines.ElementAt(i), Orders = combinations[i].Select(x => _orders.ElementAt(x)).ToList() });
+            queues.Add(new() { ProductionLine = _productionLines.ElementAt(i), Orders = combinations[i] });
         }
 
         return new() { ProductionLineQueues = queues };

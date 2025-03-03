@@ -14,95 +14,115 @@ public class BruteforeStackDistributor : IBruteforceDistributor
 
     public IEnumerable<List<List<TItem>>> DistributeAllItemsBetweenAllBuckets<TItem, TBucket>(IReadOnlyCollection<TBucket> buckets, IReadOnlyCollection<TItem> items)
     {
-        foreach (var bucketDistributions in GenerateAllDistributionsIterative(items.Count, buckets.Count))
+        var numBuckets = buckets.Count;
+        var numItems = items.Count;
+
+        // Генерируем все возможные распределения индексов
+        foreach (var assignment in GenerateAllPossibleAssignments(numItems, numBuckets))
         {
-            foreach (var distribution in GetAllPermutationsIterative([.. items], bucketDistributions))
+            // Создаем список корзин для текущего распределения
+            var distribution = Enumerable.Range(0, numBuckets).Select(_ => new List<TItem>()).ToList();
+
+            // Заполняем корзины элементами на основе индексов
+            for (var i = 0; i < numItems; i++)
             {
-                yield return distribution;
+                distribution[assignment[i]].Add(items.ElementAt(i));
+            }
+
+            // Генерируем все перестановки элементов в каждой корзине
+            foreach (var permutedDistribution in PermuteBuckets(distribution))
+            {
+                yield return permutedDistribution;
             }
         }
     }
 
-    private static IEnumerable<List<List<int>>> GenerateAllDistributionsIterative(int ordersCount, int productionLinesCount)
+    private IEnumerable<List<List<TItem>>> PermuteBuckets<TItem>(List<List<TItem>> distribution)
     {
-        Stack<(int index, int line, List<List<int>> currentDistribution)> stack = new();
-        stack.Push((0, 0, Enumerable.Range(0, productionLinesCount).Select(_ => new List<int>()).ToList()));
+        // Создаем стек для хранения состояния обработки
+        Stack<(List<List<TItem>> currentDistribution, int bucketIndex)> stack = new();
 
+        // Начинаем с исходного распределения и первой корзины (индекс 0)
+        stack.Push((distribution, 0));
+
+        // Пока стек не пуст
         while (stack.Count > 0)
         {
-            (var index, var line, var currentDistribution) = stack.Pop();
+            // Извлекаем текущее состояние из стека
+            (var currentDistribution, var bucketIndex) = stack.Pop();
 
-            if (index == ordersCount)
+            // Если мы обработали все корзины, то возвращаем текущее распределение
+            if (bucketIndex == currentDistribution.Count)
             {
                 yield return currentDistribution;
+                continue;
             }
-            else
+
+            // Получаем текущую корзину
+            var currentBucket = currentDistribution[bucketIndex];
+
+            // Генерируем все перестановки элементов в текущей корзине
+            foreach (var permutation in GenerateBucketPermutations(currentBucket))
             {
-                for (var i = line; i < productionLinesCount; i++)
-                {
-                    var newDistribution = currentDistribution.Select(x => x.ToList()).ToList();
+                // Создаем новое распределение, в котором текущая корзина содержит перестановку элементов
+                var newDistribution = currentDistribution.Select(x => x.ToList()).ToList(); // Create a copy
+                newDistribution[bucketIndex] = permutation;
 
-                    newDistribution[i].Add(index);
-
-                    if (i == productionLinesCount - 1)
-                    {
-                        stack.Push((index + 1, 0, newDistribution));
-                    }
-                    else
-                    {
-                        stack.Push((index, i + 1, newDistribution));
-                    }
-                }
+                // Добавляем новое состояние в стек для обработки следующей корзины
+                stack.Push((newDistribution, bucketIndex + 1));
             }
         }
     }
 
-    private IEnumerable<List<List<TItem>>> GetAllPermutationsIterative<TItem>(List<TItem> items, List<List<int>> originalDistributions)
+    private IEnumerable<List<TItem>> GenerateBucketPermutations<TItem>(List<TItem> bucket)
     {
-        var numBuckets = originalDistributions.Count;
-
-        Stack<(int index, List<List<TItem>> currentDistributions, IEnumerator<List<int>>? enumerator)> stack = new();
-
-        stack.Push((0, Enumerable.Range(0, numBuckets).Select(_ => new List<TItem>()).ToList(), (originalDistributions.Count > 0 && originalDistributions[0].Count > 0) ? _combinationsGenerator.GenerateCombinations(originalDistributions[0]).GetEnumerator() : null));
-
-        while (stack.Count > 0)
+        // Получаем все перестановки индексов элементов в корзине
+        foreach (var permutation in _combinationsGenerator.GenerateCombinations(Enumerable.Range(0, bucket.Count).ToList()))
         {
-            (var index, var currentDistributions, var enumerator) = stack.Peek();
+            // Создаем новую корзину, в которой элементы переставлены в соответствии с перестановкой
+            var permutedBucket = new List<TItem>();
 
-            if (enumerator is null || index == numBuckets)
+            foreach (var index in permutation)
             {
-                yield return currentDistributions;
-                stack.Pop();
+                permutedBucket.Add(bucket[index]);
             }
-            else if (enumerator.MoveNext())
+
+            yield return permutedBucket;
+        }
+    }
+
+    // Вспомогательная функция для генерации всех возможных назначений элементов корзинам
+    private static IEnumerable<List<int>> GenerateAllPossibleAssignments(int numItems, int numBuckets)
+    {
+        if (numItems == 0)
+        {
+            yield return new();
+            yield break;
+        }
+
+        // Создаем очередь для хранения частичных назначений
+        var queue = new Queue<List<int>>();
+        queue.Enqueue([]); // Начинаем с пустого назначения
+
+        // Пока очередь не пуста
+        while (queue.Count > 0)
+        {
+            // Извлекаем частичное назначение из очереди
+            var partialAssignment = queue.Dequeue();
+
+            // Если длина частичного назначения равна numItems, то это полное назначение
+            if (partialAssignment.Count == numItems)
             {
-                var newDistributions = currentDistributions.Select(x => x.ToList()).ToList();
-
-                for (var i = 0; i < numBuckets; i++)
-                {
-                    newDistributions[i].Clear();
-
-                    foreach (var itemIndex in originalDistributions[i])
-                    {
-                        newDistributions[i].Add(items[itemIndex]);
-                    }
-                }
-
-                var nextIndex = index + 1;
-
-                if (nextIndex < numBuckets)
-                {
-                    stack.Push((nextIndex, newDistributions, (originalDistributions.Count > nextIndex && originalDistributions[nextIndex].Count > 0) ? _combinationsGenerator.GenerateCombinations(originalDistributions[nextIndex]).GetEnumerator() : null));
-                }
-                else
-                {
-                    stack.Push((nextIndex, newDistributions, null));
-                }
+                yield return partialAssignment;
             }
             else
             {
-                enumerator.Dispose();
-                stack.Pop();
+                // В противном случае, добавляем все возможные варианты назначения для следующего элемента
+                for (var i = 0; i < numBuckets; i++)
+                {
+                    var newAssignment = new List<int>(partialAssignment) { i };
+                    queue.Enqueue(newAssignment);
+                }
             }
         }
     }
