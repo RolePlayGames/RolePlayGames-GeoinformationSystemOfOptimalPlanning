@@ -1,0 +1,39 @@
+version: '3.9'
+
+networks:
+  gsop-network:
+    driver: bridge
+
+services:
+  gsop-db:
+    container_name: 'gsop-db'
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_HOST_AUTH_METHOD: md5
+    ports:
+      - "7984:5432"
+    networks:
+      - gsop-network
+    volumes:
+      - gsop-data:/var/lib/postgresql/data
+
+  gsop-app:
+    container_name: 'gsop-app'
+    build:
+      context: .
+      dockerfile: WebAPI\GSOP.Interfaces.API\Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:80;
+    ports:
+     - "8080:80"
+    depends_on:
+     - gsop-db
+    networks:
+      - gsop-network
+  
+volumes:
+  gsop-data:

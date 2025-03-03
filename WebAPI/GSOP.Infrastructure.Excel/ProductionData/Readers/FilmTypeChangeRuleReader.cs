@@ -5,7 +5,7 @@ namespace GSOP.Infrastructure.Excel.ProductionData.Readers;
 
 public class FilmTypeChangeRuleReader : ModelReader<FilmTypeChangeRuleModel>
 {
-    protected override int WorkSheetNum => 5;
+    protected override int WorkSheetNum => 7;
 
     protected override FilmTypeChangeRuleModel? ReadModel(ExcelRange cells, int rowNum)
     {

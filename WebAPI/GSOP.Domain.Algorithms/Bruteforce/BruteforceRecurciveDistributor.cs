@@ -12,18 +12,18 @@ public class BruteforceRecurciveDistributor : IBruteforceDistributor
         _combinationsGenerator = combinationsGenerator;
     }
 
-    public IEnumerable<List<List<int>>> DistributeAllItemsBetweenAllBuckets<TItem, TBucket>(IReadOnlyCollection<TBucket> buckets, IReadOnlyCollection<TItem> items)
+    public IEnumerable<List<List<TItem>>> DistributeAllItemsBetweenAllBuckets<TItem, TBucket>(IReadOnlyCollection<TBucket> buckets, IReadOnlyCollection<TItem> items)
     {
         foreach (var lineDistributions in GenerateAllDistributions(items.Count, buckets.Count))
         {
-            foreach (var distribution in GetAllDistributions(lineDistributions, 0, lineDistributions.Select(x => new List<int>(x.Count)).ToList()))
+            foreach (var distribution in GetAllDistributions(items.ToList(), lineDistributions, 0, Enumerable.Range(0, buckets.Count).Select(_ => new List<TItem>()).ToList()))
             {
                 yield return distribution;
             }
         }
     }
 
-    private IEnumerable<List<List<int>>> GetAllDistributions(List<List<int>> originalDistributions, int index, List<List<int>> currentDistributions)
+    private IEnumerable<List<List<TItem>>> GetAllDistributions<TItem>(List<TItem> items, List<List<int>> originalDistributions, int index, List<List<TItem>> currentDistributions)
     {
         if (originalDistributions.Count <= index)
         {
@@ -31,11 +31,24 @@ public class BruteforceRecurciveDistributor : IBruteforceDistributor
         }
         else
         {
-            foreach (var distributionCombination in _combinationsGenerator.GenerateCombinations(originalDistributions[index]))
+            var bucketItems = new List<TItem>();
+            foreach (var itemIndex in originalDistributions[index])
             {
-                currentDistributions[index] = distributionCombination;
+                bucketItems.Add(items[itemIndex]);
+            }
 
-                foreach (var distribution in GetAllDistributions(originalDistributions, index + 1, currentDistributions))
+            foreach (var permutation in _combinationsGenerator.GenerateCombinations(bucketItems.Select((item, i) => i).ToList()))
+            {
+                var permutedBucket = new List<TItem>();
+                foreach (var itemIndex in permutation)
+                {
+                    permutedBucket.Add(bucketItems[itemIndex]);
+                }
+
+                var nextCurrentDistributions = currentDistributions.Select(x => x.ToList()).ToList();
+                nextCurrentDistributions[index] = permutedBucket;
+
+                foreach (var distribution in GetAllDistributions(items, originalDistributions, index + 1, nextCurrentDistributions))
                 {
                     yield return distribution;
                 }
@@ -43,14 +56,14 @@ public class BruteforceRecurciveDistributor : IBruteforceDistributor
         }
     }
 
-    public IEnumerable<List<List<int>>> GenerateAllDistributions(int ordersCount, int productionLinesCount)
+    public static IEnumerable<List<List<int>>> GenerateAllDistributions(int ordersCount, int productionLinesCount)
     {
         var initialDistribution = Enumerable.Range(0, productionLinesCount).Select(_ => new List<int>()).ToList();
 
         return Distribute(0, ordersCount, initialDistribution);
     }
 
-    private IEnumerable<List<List<int>>> Distribute(int index, int ordersCount, List<List<int>> currentDistribution)
+    private static IEnumerable<List<List<int>>> Distribute(int index, int ordersCount, List<List<int>> currentDistribution)
     {
         if (ordersCount <= index)
         {

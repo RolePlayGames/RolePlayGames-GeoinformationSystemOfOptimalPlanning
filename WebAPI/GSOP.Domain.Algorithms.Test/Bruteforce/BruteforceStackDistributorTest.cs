@@ -19,16 +19,15 @@ public class BruteforceStackDistributorTest
     public void DistributeAllItemsBetweenAllBuckets_With1BucketAnd3Items_ReturnsUniqueDistributionFor1Bcuket()
     {
         // Arrange
-        var expectedCount = 6;
-        var buckets = new object[1];
-        var items = new object[3];
-        var result = new List<List<List<int>>>(expectedCount);
+        //var expectedCount = 6;
+        var buckets = new List<string> { "Bucket 1" };
+        var items = new List<int> { 1, 2, 3 };
 
         // Act & Assert
         foreach (var distribution in _bruteforeStackDistributor.DistributeAllItemsBetweenAllBuckets(buckets, items))
         {
             var materializeDistribution = distribution.ToList();
-            materializeDistribution.Should().HaveCount(buckets.Length);
+            materializeDistribution.Should().HaveCount(buckets.Count);
 
             foreach (var combination in materializeDistribution)
             {
@@ -38,7 +37,6 @@ public class BruteforceStackDistributorTest
                 {
                     combination.Should().NotContainInOrder(differCombination);
                 }
-
             }
         }
     }

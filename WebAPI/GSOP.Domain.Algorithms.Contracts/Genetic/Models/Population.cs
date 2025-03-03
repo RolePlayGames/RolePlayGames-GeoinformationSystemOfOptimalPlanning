@@ -26,6 +26,11 @@ public class Population<TGene> : IPopulation<TGene> where TGene : IGene
 
     public IIndividual<TGene>? Best => _bestSelector.SelectBestIndividual(_population);
 
+    public IPopulation<TGene> IncludeApproximation(IIndividual<TGene> appriximation)
+    {
+        return new Population<TGene>(_mutationOperatorSelector, _crossoverOperatorSelector, _populationSelector, _bestSelector, _population.Concat([appriximation]).ToList());
+    }
+
     public IPopulation<TGene> Mutation()
     {
         var newPopulation = _population.ToList();

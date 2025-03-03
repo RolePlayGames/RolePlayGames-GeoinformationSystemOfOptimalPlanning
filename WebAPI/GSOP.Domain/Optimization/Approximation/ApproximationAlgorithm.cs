@@ -40,41 +40,44 @@ public class ApproximationAlgorithm : IOptimizationAlgorithm<ProductionPlan>
                 orders.Add(ordersByTime[j]);
             }
 
-            if (ordersByTime.Count % _productionLines.Count != 0 && ordersByTime.Count % _productionLines.Count() <= i)
+            if (ordersByTime.Count % _productionLines.Count != 0 && ordersByTime.Count % _productionLines.Count <= i)
             {
                 var index = ordersByTime.Count / _productionLines.Count;
 
                 orders.Add(ordersByTime[index + i]);
             }
 
-            productionLineQueues.Add(BestProductionPlan(_productionLines.ElementAt(i), orders));
+            productionLineQueues.Add(SpreadOrdersOnProductionLine(_productionLines.ElementAt(i), orders));
         }
 
         return new ProductionPlan { ProductionLineQueues = productionLineQueues };
     }
 
-    private ProductionLineQueue BestProductionPlan(IProductionLine productionLine, List<IOrder> orders)
+    private ProductionLineQueue SpreadOrdersOnProductionLine(IProductionLine productionLine, List<IOrder> orders)
     {
         var orderedOrders = new List<IOrder>();
         var extruderRecipeChange = _filmTypeChanges[productionLine].OrderByDescending(x => x.ChangeValueRule.ChangeTime).ToList();
 
         foreach (var change in extruderRecipeChange)
         {
-            if (orders.Where(order => order.FilmRecipe.ID == change.FilmTypeToID).Any())
+            if (orders.Where(order => order.FilmRecipe.FilmTypeID == change.FilmTypeToID).Any())
             {
-                foreach (var order in orders.Where(or => or.FilmRecipe.ID == change.FilmTypeToID)
+                foreach (var order in orders.Where(or => or.FilmRecipe.FilmTypeID == change.FilmTypeToID)
                     .OrderBy(order => order.FilmRecipe.Nozzle)
                     .ThenBy(order => order.FilmRecipe.Calibration)
                     .ThenBy(order => order.FilmRecipe.CoolingLip))
                 {
                     orderedOrders.Add(order);
                 }
+
+                orders.RemoveAll(orderedOrders.Contains);
+                break;
             }
         }
 
         var i = 0;
 
-        while (orderedOrders.Count < orders.Count && i < 2000)
+        while (0 < orders.Count && i < 2000)
         {
             var lastFilmRecipe = orderedOrders.Last().FilmRecipe;
             var recipeChanges = extruderRecipeChange.Where(change => change.FilmTypeFromID == lastFilmRecipe.ID).OrderBy(change => change.ChangeValueRule.ChangeTime);
@@ -91,8 +94,10 @@ public class ApproximationAlgorithm : IOptimizationAlgorithm<ProductionPlan>
                             .ThenBy(order => order.FilmRecipe.CoolingLip))
                         {
                             orderedOrders.Add(order);
+                            orders.Remove(order);
                         }
 
+                        orders.RemoveAll(x => orderedOrders.Contains(x));
                         break;
                     }
                 }

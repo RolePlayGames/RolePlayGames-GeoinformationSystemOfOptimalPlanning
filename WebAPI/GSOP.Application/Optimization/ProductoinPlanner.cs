@@ -102,10 +102,10 @@ public class ProductoinPlanner : IProductionPlanner
         var orderModels = await GetOrders(planningData.Orders);
         var productionLineModels = await GetProductionLines(planningData.ProductionLines);
 
-        return _geneticAlgorithmFactory.CreateAlgorithm(productionLineModels, orderModels, targetFunctionCalculatorProxy, fitnessCalculatorProxy, planningData.Options, planningData.Conditions)
+        return _geneticAlgorithmFactory.CreateAlgorithm(productionLineModels, orderModels, targetFunctionCalculatorProxy, fitnessCalculatorProxy, planningData.Options, planningData.Conditions, _approximationAlgorithmFactory, _orderExcecutionTimeCalculator)
             .GetResolve()
             .Select(_individualConverter.ConvertToProductionPlan)
-            //.Concat([_approximationAlgorithmFactory.CreateAlgorithm(productionLineModels, orderModels, _orderExcecutionTimeCalculator).GetResolve()])
+            .Concat([_approximationAlgorithmFactory.CreateAlgorithm(productionLineModels, orderModels, _orderExcecutionTimeCalculator).GetResolve()])
             .Select(x => ConvertProductionPlan(planningData.StartDateTime, targetFunctionCalculator, x))
             .ToList();
     }
@@ -160,18 +160,16 @@ public class ProductoinPlanner : IProductionPlanner
                 currentDateTime += TimeSpan.FromMinutes(_ordersReconfigurationTimeCalculator.Calculate(productionLineQueue.ProductionLine, previousOrder, order));
             }
 
-            var duration = TimeSpan.FromHours(_orderExcecutionTimeCalculator.Calculate(order));
+            var duration = TimeSpan.FromMinutes(_orderExcecutionTimeCalculator.Calculate(order));
 
             var orderPosition = new OrderPositionInfo()
             {
                 OrderNumber = order.Number,
                 OrderProductionStartDateTime = currentDateTime,
-                OrderProductionDuration = duration,
+                OrderProductionEndDateTime = currentDateTime += duration,
             };
 
             orderPositions.Add(orderPosition);
-
-            currentDateTime += duration;
         }
 
         return new()

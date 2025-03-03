@@ -5,7 +5,7 @@ namespace GSOP.Infrastructure.Excel.ProductionData.Readers;
 
 public class CoolingLipChangeRuleReader : ModelReader<CoolingLipChangeRuleModel>
 {
-    protected override int WorkSheetNum => 8;
+    protected override int WorkSheetNum => 6;
 
     protected override CoolingLipChangeRuleModel? ReadModel(ExcelRange cells, int rowNum)
     {

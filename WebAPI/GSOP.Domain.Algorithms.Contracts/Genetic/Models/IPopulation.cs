@@ -9,4 +9,6 @@ public interface IPopulation<TGene> where TGene : IGene
     IPopulation<TGene> Mutation();
 
     IPopulation<TGene> Selection();
+
+    IPopulation<TGene> IncludeApproximation(IIndividual<TGene> appriximation);
 }

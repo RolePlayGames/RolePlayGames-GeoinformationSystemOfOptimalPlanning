@@ -4,8 +4,9 @@ import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
 import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
 import PrecisionManufacturingOutlinedIcon from '@mui/icons-material/PrecisionManufacturingOutlined';
 import ImportExportOutlinedIcon from '@mui/icons-material/ImportExportOutlined';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import { white } from "../styles/colors";
-import { CUSTOMERS, FILM_RECIPES, FILM_TYPES, IMPORT_EXPORT, ORDERS, PRODUCTION_LINES } from "../routes/routes";
+import { CUSTOMERS, FILM_RECIPES, FILM_TYPES, IMPORT_EXPORT, OPTIMAL_PLANNING, ORDERS, PRODUCTION_LINES } from "../routes/routes";
 
 export const menuItems = [
 	{
@@ -37,5 +38,10 @@ export const menuItems = [
 		header: 'Импорт / Экспорт',
 		icon: <ImportExportOutlinedIcon sx={{ color: white }}/>,
 		path: IMPORT_EXPORT,
+	},
+	{
+		header: 'Оптимальное планирование',
+		icon: <CalendarMonthOutlinedIcon sx={{ color: white }}/>,
+		path: OPTIMAL_PLANNING,
 	},
 ];

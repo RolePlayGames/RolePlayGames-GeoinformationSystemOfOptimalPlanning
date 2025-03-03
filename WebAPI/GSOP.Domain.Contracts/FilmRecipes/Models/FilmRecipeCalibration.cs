@@ -1,6 +1,6 @@
 ﻿namespace GSOP.Domain.Contracts.FilmRecipes.Models;
 
-public record FilmRecipeCalibration
+public record FilmRecipeCalibration : IComparable<FilmRecipeCalibration>
 {
     public const int Min = 0;
     public const int Max = 600;
@@ -13,6 +13,14 @@ public record FilmRecipeCalibration
             throw new ArgumentOutOfRangeException(nameof(calibration), $"Calibration should be greater than {Min} and lesser than {Max}");
 
         _calibration = calibration;
+    }
+
+    public int CompareTo(FilmRecipeCalibration? other)
+    {
+        if (other is null)
+            return -1;
+
+        return _calibration.CompareTo(other._calibration);
     }
 
     public static implicit operator double(FilmRecipeCalibration calibration) => calibration._calibration;
