@@ -54,7 +54,7 @@ export const CoolingLipChangeRuleComponent = ({ rule, index, onDelete, rules, on
 		<RuleContainer>
 			<BigFieldContainer>
 				<InputField
-					label='Зазор охлаждающих роликов'
+					label='Зазор охлаждающих роликов, мм'
 					value={coolingLipTo}
 					onChange={setCoolingLipTo}
 					errorText={coolingLipToError}/>
@@ -68,7 +68,7 @@ export const CoolingLipChangeRuleComponent = ({ rule, index, onDelete, rules, on
 			</FieldContainer>
 			<FieldContainer>
 				<InputField
-					label='Расход при перенастройке'
+					label='Расход при перенастройке, кг/ч'
 					value={changeConsumption}
 					onChange={setChangeConsumption}
 					errorText={changeConsumptionError}/>

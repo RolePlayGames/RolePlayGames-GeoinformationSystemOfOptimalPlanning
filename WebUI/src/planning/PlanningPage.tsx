@@ -20,13 +20,13 @@ import { convertToInt, convertToNumber } from "../utils/number-converters/number
 import { InputField } from "../common/inputs";
 import { planningByBruteforce, planningByGenetic, ProductionPlanInfo } from "./planningClient";
 import { convertToTimeSpan } from "../production-lines/timespanConverter";
-import { validateMaxIterationsCount, validateGenerationsCount, validateMutationCoefficient, validateMutationSelectionCount, validateCrossoverSelectionCount, validateIndividualsInPopulationCount, validateCrossoverPointsCount, validatePointedMutationProbability, validateStartPopulationsCount } from "./validations";
+import { validateMaxIterationsCount, validateGenerationsCount, validateMutationCoefficient, validateMutationSelectionCount, validateCrossoverSelectionCount, validateIndividualsInPopulationCount, validateCrossoverPointsCount, validatePointedMutationProbability, validateStartPopulationsCount, validateDegradingGenerationsCount } from "./validations";
 import { oldPlanOrderNumbers, oldPlanProductionLinesNames } from "./oldPlanProductionData";
 import { steps } from "./steps";
 import { Gantt, Task, ViewMode } from "gantt-task-react";
 import { convertProductionPlanToTasks } from "./productionPlanConverter";
 import "gantt-task-react/dist/index.css";
-import 'dayjs/locale/ru'; // Import your desired locale (Russian in this case)
+import 'dayjs/locale/ru';
 
 const PlanningStepContainer = styled(FormControl)({
 	width: 'fill-available',
@@ -114,14 +114,15 @@ export const PlanningPage = () => {
 	const [algorithmType, setAlgorithmType] = useState<AlgorithmType>('Bruteforce')
 	const [timeoutDelay, setTimeoutDelay, timeoutDelayError, setTimeoutDelayError] = useFieldWithValidation<Dayjs | null>(null, () => '')
 	const [iterationsCount, setIterationsCount, iterationsCountError, setIterationsCountError] = useFieldWithValidation<string>('', validateMaxIterationsCount)
-	const [generationsCount, setGeneratinosCount, generationsCountError] = useFieldWithValidation<string>('1000', validateGenerationsCount)
-	const [mutationCoefficient, setMutationCoefficient, mutationCoefficientError] = useFieldWithValidation<string>('0.06', validateMutationCoefficient)
+	const [generationsCount, setGenerationsCount, generationsCountError] = useFieldWithValidation<string>('1000', validateGenerationsCount)
+	const [degradingGenerationsCount, setDegradingGenerationsCount, degradingGenerationsCountError] = useFieldWithValidation<string>('', validateDegradingGenerationsCount)
+	const [mutationCoefficient, setMutationCoefficient, mutationCoefficientError] = useFieldWithValidation<string>('0.3', validateMutationCoefficient)
 	const [mutationSelectionCount, setMutationSelectionCount, mutationSelectionCountError] = useFieldWithValidation<string>('25', validateMutationSelectionCount)
 	const [crossoverSelectionCount, setCrossoverSelectionCount, crossoverSelectionCountError] = useFieldWithValidation<string>('100', validateCrossoverSelectionCount)
-	const [individualsInPopulationCount, setIndividualsInPopulationCount, individualsInPopulationCountError] = useFieldWithValidation<string>('3', validateIndividualsInPopulationCount)
-	const [crossoverPointsCount, setCrossoverPointsCount, crossoverPointsCountError] = useFieldWithValidation<string>('30', validateCrossoverPointsCount)
-	const [pointedMutationProbability, setPointedMutationProbability, pointedMutationProbabilityError] = useFieldWithValidation<string>('0,15', validatePointedMutationProbability)
-	const [startPopulationsCount, setStartPopulationsCount, startPopulationsCountError] = useFieldWithValidation<string>('200', validateStartPopulationsCount)
+	const [individualsInPopulationCount, setIndividualsInPopulationCount, individualsInPopulationCountError] = useFieldWithValidation<string>('200', validateIndividualsInPopulationCount)
+	const [crossoverPointsCount, setCrossoverPointsCount, crossoverPointsCountError] = useFieldWithValidation<string>('2', validateCrossoverPointsCount)
+	const [pointedMutationProbability, setPointedMutationProbability, pointedMutationProbabilityError] = useFieldWithValidation<string>('0,35', validatePointedMutationProbability)
+	const [startPopulationsCount, setStartPopulationsCount, startPopulationsCountError] = useFieldWithValidation<string>('400', validateStartPopulationsCount)
 
 	const [planInfos, setPlanInfos] = useState<ProductionPlanInfo[]>();
 	const [tasks, setTasks] = useState<Task[]>();
@@ -203,7 +204,7 @@ export const PlanningPage = () => {
 
 	const selectOldPlanOrders = () => {
 		if (orders !== undefined) {
-			const newSelectedOrders = orders/*.filter(order => oldPlanOrderNumbers.includes(order.name))*/.map(order => order.id);
+			const newSelectedOrders = orders.filter(order => oldPlanOrderNumbers.includes(order.name)).map(order => order.id);
 			setSelectedOrders(newSelectedOrders);
 		}
 	};
@@ -296,6 +297,7 @@ export const PlanningPage = () => {
 					const crossoverPointsCountNum = convertToInt(crossoverPointsCount);
 					const pointedMutationProbabilityNum = convertToNumber(pointedMutationProbability);
 					const startPopulationsCountNum = convertToInt(startPopulationsCount);
+					const degradingGenerationsCountNum = convertToInt(degradingGenerationsCount);
 	
 					if (startDateTime
 						&& generationsCountNum
@@ -314,8 +316,8 @@ export const PlanningPage = () => {
 								functionType: functionType,
 								conditions: {
 									timeoutDelay: timeoutDelay === null ? undefined : convertToTimeSpan(timeoutDelay),
-									iterationsCount: undefined,
-									generationsCount: generationsCountNum,
+									iterationsCount: generationsCountNum,
+									generationsCount: degradingGenerationsCountNum,
 								},
 								options : {
 									mutationCoefficient: mutationCoefficientNum,
@@ -349,6 +351,7 @@ export const PlanningPage = () => {
 		functionType,
 		timeoutDelay,
 		generationsCount,
+		degradingGenerationsCount,
 		mutationCoefficient,
 		mutationSelectionCount,
 		crossoverSelectionCount,
@@ -506,7 +509,7 @@ export const PlanningPage = () => {
 						<Box sx={{ margin: '20px', width: '-webkit-fill-available' }}>
 							{activeStep === 0 && (
 								<PlanningStepContainer>
-									<BlackLabel>Выберите критерий оптимального планирования</BlackLabel>
+									<BlackLabel>Выберите метод оптимального планирования</BlackLabel>
 									<RadioGroup value={functionType} onChange={handleFunctionTypeChange}>
 										<FormControlLabel value={0} control={<Radio />} label="Время производства" />
 										<FormControlLabel value={1} control={<Radio />} label="Стоимость производства" />
@@ -702,8 +705,13 @@ export const PlanningPage = () => {
 												<InputField
 													label='Количество поколений'
 													value={generationsCount}
-													onChange={setGeneratinosCount}
+													onChange={setGenerationsCount}
 													errorText={generationsCountError}/>
+												<InputField
+													label='Количество деградирующих поколений для остановки'
+													value={degradingGenerationsCount}
+													onChange={setDegradingGenerationsCount}
+													errorText={degradingGenerationsCountError}/>
 												<FieldContainer>
 													<TimeWithoutSelectField
 														label='Максимальное время работы алгоритма'

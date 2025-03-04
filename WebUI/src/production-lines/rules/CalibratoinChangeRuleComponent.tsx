@@ -54,7 +54,7 @@ export const CalibratoinChangeRuleComponent = ({ rule, index, onDelete, rules, o
 		<RuleContainer>
 			<BigFieldContainer>
 				<InputField
-					label='Калибровка'
+					label='Калибровка, мм'
 					value={calibrationTo}
 					onChange={setCalibrationTo}
 					errorText={calibrationToError}/>
@@ -68,7 +68,7 @@ export const CalibratoinChangeRuleComponent = ({ rule, index, onDelete, rules, o
 			</FieldContainer>
 			<FieldContainer>
 				<InputField
-					label='Расход при перенастройке'
+					label='Расход при перенастройке, кг/ч'
 					value={changeConsumption}
 					onChange={setChangeConsumption}
 					errorText={changeConsumptionError}/>

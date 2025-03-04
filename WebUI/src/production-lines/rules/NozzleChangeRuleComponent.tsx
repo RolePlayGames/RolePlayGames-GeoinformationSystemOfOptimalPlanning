@@ -54,7 +54,7 @@ export const NozzleChangeRuleComponent = ({ rule, index, onDelete, rules, onValu
 		<RuleContainer>
 			<BigFieldContainer>
 				<InputField
-					label='Диаметр сопла'
+					label='Диаметр сопла, мм'
 					value={nozzleTo}
 					onChange={setNozzleTo}
 					errorText={nozzleToError}/>
@@ -68,7 +68,7 @@ export const NozzleChangeRuleComponent = ({ rule, index, onDelete, rules, onValu
 			</FieldContainer>
 			<FieldContainer>
 				<InputField
-					label='Расход при перенастройке'
+					label='Расход при перенастройке, кг/ч'
 					value={changeConsumption}
 					onChange={setChangeConsumption}
 					errorText={changeConsumptionError}/>

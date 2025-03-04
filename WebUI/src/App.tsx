@@ -15,6 +15,10 @@ const AppContainer = styled(Box)({
 	backgroundColor: '#F3F7FA',
 	background: '#11101d',
 	minHeight: '100vh',
+});
+
+
+const AppElementsContainer = styled(Box)({
 	display: 'flex',
 });
 
@@ -41,22 +45,24 @@ const WorkspaceContainer = styled(Box)({
 export const App = () => (
 	<AppContainer>
 		<ToastHost/>
-		<SideMenu/>
-		<WorkspaceContainer>
-			<Routes>
-				<Route path={CUSTOMERS} element={<CustomersPage/>}/>
-				<Route path={`${CUSTOMERS}/:id`} element={<CustomersPage/>}/>
-				<Route path={FILM_TYPES} element={<FilmTypesPage/>}/>
-				<Route path={`${FILM_TYPES}/:id`} element={<FilmTypesPage/>}/>
-				<Route path={FILM_RECIPES} element={<FilmRecipesPage/>}/>
-				<Route path={`${FILM_RECIPES}/:id`} element={<FilmRecipesPage/>}/>
-				<Route path={ORDERS} element={<OrdersPage/>}/>
-				<Route path={`${ORDERS}/:id`} element={<OrdersPage/>}/>
-				<Route path={PRODUCTION_LINES} element={<ProductionLinesPage/>}/>
-				<Route path={`${PRODUCTION_LINES}/:id`} element={<ProductionLinesPage/>}/>
-				<Route path={IMPORT_EXPORT} element={<ImportExportPage/>}/>
-				<Route path={OPTIMAL_PLANNING} element={<PlanningPage/>}/>
-			</Routes>
-		</WorkspaceContainer>
+		<AppElementsContainer>
+			<SideMenu/>
+			<WorkspaceContainer>
+				<Routes>
+					<Route path={CUSTOMERS} element={<CustomersPage/>}/>
+					<Route path={`${CUSTOMERS}/:id`} element={<CustomersPage/>}/>
+					<Route path={FILM_TYPES} element={<FilmTypesPage/>}/>
+					<Route path={`${FILM_TYPES}/:id`} element={<FilmTypesPage/>}/>
+					<Route path={FILM_RECIPES} element={<FilmRecipesPage/>}/>
+					<Route path={`${FILM_RECIPES}/:id`} element={<FilmRecipesPage/>}/>
+					<Route path={ORDERS} element={<OrdersPage/>}/>
+					<Route path={`${ORDERS}/:id`} element={<OrdersPage/>}/>
+					<Route path={PRODUCTION_LINES} element={<ProductionLinesPage/>}/>
+					<Route path={`${PRODUCTION_LINES}/:id`} element={<ProductionLinesPage/>}/>
+					<Route path={IMPORT_EXPORT} element={<ImportExportPage/>}/>
+					<Route path={OPTIMAL_PLANNING} element={<PlanningPage/>}/>
+				</Routes>
+			</WorkspaceContainer>
+		</AppElementsContainer>
 	</AppContainer>
 )

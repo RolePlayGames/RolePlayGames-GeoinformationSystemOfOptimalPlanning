@@ -122,32 +122,32 @@ export const FilmRecipeElement = ({ id, item, apiPath, filmTypes }: FilmRecipeEl
 				value={filmTypeID}
 			/>
 			<InputField
-				label='Толщина'
+				label='Толщина, мк'
 				value={thickness}
 				onChange={setThickness}
 				errorText={thicknessError}/>
 			<InputField
-				label='Скорость производства'
+				label='Скорость производства, м/ч'
 				value={productionSpeed}
 				onChange={setProductionSpeed}
 				errorText={productionSpeedError}/>
 			<InputField
-				label='Стоимость материала'
+				label='Стоимость материала, у.е./кг'
 				value={materialCost}
 				onChange={setMaterialCost}
 				errorText={materialCostError}/>
 			<InputField
-				label='Размер сопла'
+				label='Размер сопла, мм'
 				value={nozzle}
 				onChange={setNozzle}
 				errorText={nozzleError}/>
 			<InputField
-				label='Калибровка'
+				label='Калибровка, мм'
 				value={calibration}
 				onChange={setCalibration}
 				errorText={calibrationError}/>
 			<InputField
-				label='Расстояние между валиками'
+				label='Расстояние между валиками, мм'
 				value={coolingLip}
 				onChange={setCoolingLip}
 				errorText={coolingLipError}/>
