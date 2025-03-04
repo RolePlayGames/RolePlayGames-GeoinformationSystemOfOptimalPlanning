@@ -21,6 +21,18 @@ export const validateGenerationsCount = (value: string) => {
 	return '';
 }
 
+export const validateDegradingGenerationsCount = (value: string) => {
+	if (value === '')
+		return '';
+	
+	const num = convertToInt(value);
+
+	if (num === undefined || num < 1)
+		return 'Введите положительное число';
+
+	return '';
+}
+
 export const validateMutationCoefficient = (value: string) => {
 	const num = convertToNumber(value);
 

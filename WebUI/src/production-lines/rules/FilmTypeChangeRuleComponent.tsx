@@ -79,7 +79,7 @@ export const FilmTypeChangeRuleComponent = ({ rule, index, onDelete, filmTypes, 
 			</FieldContainer>
 			<FieldContainer>
 				<InputField
-					label='Расход при перенастройке'
+					label='Расход при перенастройке, кг/ч'
 					value={changeConsumption}
 					onChange={setChangeConsumption}
 					errorText={changeConsumptionError}/>
