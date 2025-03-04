@@ -18,11 +18,6 @@ public class OrdersReconfigurationCalculator : IOrdersReconfigurationTimeCalcula
     private readonly ConcurrentDictionary<IProductionLine, IDictionary<FilmRecipeCalibration, ProductionLineChangeValueRule>> _calibrationChanges = [];
     private readonly ConcurrentDictionary<IProductionLine, IDictionary<FilmRecipeNozzle, ProductionLineChangeValueRule>> _nozzleChanges = [];
 
-    private readonly object _filmTypeChangesLock = new();
-    private readonly object _coolingLipChangesLock = new();
-    private readonly object _calibrationChangesLock = new();
-    private readonly object _nozzleChangesLock = new();
-
     private readonly ConcurrentDictionary<IOrder, ConcurrentDictionary<IOrder, double>> _ordersReconfigurationCost = [];
     private readonly ConcurrentDictionary<IOrder, ConcurrentDictionary<IOrder, double>> _ordersReconfigurationTime = [];
 
@@ -84,58 +79,42 @@ public class OrdersReconfigurationCalculator : IOrdersReconfigurationTimeCalcula
     {
         if (orderFrom.FilmRecipe.FilmTypeID != orderTo.FilmRecipe.FilmTypeID)
         {
-            if (!_filmTypeChanges.TryGetValue(productionLine, out var value))
-            {
-                lock (_filmTypeChangesLock)
-                {
-                    _filmTypeChanges.TryAdd(productionLine, value = productionLine.FilmTypeChangeRules.GroupBy(x => x.FilmTypeFromID).ToFrozenDictionary(x => x.Key, x => x.ToFrozenDictionary(x => x.FilmTypeToID, x => x.ChangeValueRule)));
-                }
-            }
+            var filmTypeChanges = _filmTypeChanges.GetOrAdd(productionLine, pl => pl.FilmTypeChangeRules.GroupBy(x => x.FilmTypeFromID).ToFrozenDictionary(x => x.Key,x => x.ToFrozenDictionary(y => y.FilmTypeToID, y => y.ChangeValueRule)));
 
-            if (_filmTypeChanges[productionLine].TryGetValue(orderFrom.FilmRecipe.FilmTypeID, out var changes) && changes.TryGetValue(orderTo.FilmRecipe.FilmTypeID, out var change))
+            if (filmTypeChanges.TryGetValue(orderFrom.FilmRecipe.FilmTypeID, out var changes) && changes.TryGetValue(orderTo.FilmRecipe.FilmTypeID, out var change))
+            {
                 yield return change;
+            }
         }
 
         if (AreNotEqual(orderFrom.FilmRecipe.CoolingLip, orderTo.FilmRecipe.CoolingLip))
         {
-            if (!_coolingLipChanges.TryGetValue(productionLine, out var value))
-            {
-                lock (_coolingLipChangesLock)
-                {
-                    _coolingLipChanges.TryAdd(productionLine, value = productionLine.CoolingLipChangeRules.ToFrozenDictionary(x => x.CoolingLipTo, x => x.ChangeValueRule));
-                }
-            }
+            var coolingLipChanges = _coolingLipChanges.GetOrAdd(productionLine, pl => pl.CoolingLipChangeRules.ToFrozenDictionary(x => x.CoolingLipTo, x => x.ChangeValueRule));
 
-            if (_coolingLipChanges[productionLine].TryGetValue(orderTo.FilmRecipe.CoolingLip, out var change))
+            if (coolingLipChanges.TryGetValue(orderTo.FilmRecipe.CoolingLip, out var change))
+            {
                 yield return change;
+            }
         }
 
         if (AreNotEqual(orderFrom.FilmRecipe.Calibration, orderTo.FilmRecipe.Calibration))
         {
-            if (!_calibrationChanges.TryGetValue(productionLine, out var value))
-            {
-                lock (_calibrationChangesLock)
-                {
-                    _calibrationChanges.TryAdd(productionLine, value = productionLine.CalibratoinChangeRules.ToFrozenDictionary(x => x.CalibrationTo, x => x.ChangeValueRule));
-                }
-            }
+            var calibrationChanges = _calibrationChanges.GetOrAdd(productionLine, pl => pl.CalibratoinChangeRules.ToFrozenDictionary(x => x.CalibrationTo, x => x.ChangeValueRule));
 
-            if (_calibrationChanges[productionLine].TryGetValue(orderTo.FilmRecipe.Calibration, out var change))
+            if (calibrationChanges.TryGetValue(orderTo.FilmRecipe.Calibration, out var change))
+            {
                 yield return change;
+            }
         }
 
         if (AreNotEqual(orderFrom.FilmRecipe.Nozzle, orderTo.FilmRecipe.Nozzle))
         {
-            if (!_nozzleChanges.TryGetValue(productionLine, out var value))
-            {
-                lock (_nozzleChangesLock)
-                {
-                    _nozzleChanges.TryAdd(productionLine, value = productionLine.NozzleChangeRules.ToFrozenDictionary(x => x.NozzleTo, x => x.ChangeValueRule));
-                }
-            }
+            var nozzleChanges = _nozzleChanges.GetOrAdd(productionLine, pl => pl.NozzleChangeRules.ToFrozenDictionary(x => x.NozzleTo, x => x.ChangeValueRule));
 
-            if (_nozzleChanges[productionLine].TryGetValue(orderTo.FilmRecipe.Nozzle, out var change))
+            if (nozzleChanges.TryGetValue(orderTo.FilmRecipe.Nozzle, out var change))
+            {
                 yield return change;
+            }
         }
 
         if (AreNotEqual(orderFrom.Width, orderTo.Width))
@@ -152,7 +131,6 @@ public class OrdersReconfigurationCalculator : IOrdersReconfigurationTimeCalcula
     private static bool AreNotEqual(double value1, double value2)
     {
         var difference = Math.Abs(value1 * _epsilon);
-
         return Math.Abs(value1 - value2) > difference;
     }
 }
