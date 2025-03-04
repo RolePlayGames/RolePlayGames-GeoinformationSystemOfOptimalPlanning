@@ -15,14 +15,18 @@ public abstract class CrossoverOperatorSelector<TGene> : ICrossoverOperatorSelec
 
     public IEnumerable<Parents<TGene>> SelectParents(IReadOnlyCollection<IIndividual<TGene>> individuals)
     {
-        var parentsPull = IndividualsSelector.SelectIndividuals(individuals).ToList();
+        var parentsPull = IndividualsSelector.SelectIndividuals(individuals).ToArray();
 
-        foreach (var individual in parentsPull)
+        var results = new Parents<TGene>[parentsPull.Length];
+        var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount / 2 };
+
+        Parallel.For(0, results.Length, parallelOptions, i =>
         {
-            var secondParent = SelectSecondParent(individual, parentsPull);
+            var secondParent = SelectSecondParent(parentsPull[i], parentsPull);
+            results[i] = new Parents<TGene> { FirstParent = parentsPull[i], SecondParent = secondParent };
+        });
 
-            yield return new Parents<TGene> { FirstParent = individual, SecondParent = secondParent };
-        }
+        return results;
     }
 
     protected abstract IIndividual<TGene> SelectSecondParent(IIndividual<TGene> firstParent, ICollection<IIndividual<TGene>> parentsPull);

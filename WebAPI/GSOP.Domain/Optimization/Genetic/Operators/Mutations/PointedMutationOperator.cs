@@ -29,6 +29,7 @@ public class PointedMutationOperator : IMutationOperator<OrderPosition>
         for (var i = 0; i < genes.Count; i++)
         {
             var gene = genes.ElementAt(i);
+            var queue = queues.GetOrCreate(gene.ProductionLine);
 
             if (_random.NextDouble() < _probability)
             {
@@ -36,8 +37,7 @@ public class PointedMutationOperator : IMutationOperator<OrderPosition>
             }
             else
             {
-                queues.GetOrCreate(gene.ProductionLine)
-                    .Add((gene.Position, gene.Order));
+                queue.Add((gene.Position, gene.Order));
             }
         }
 

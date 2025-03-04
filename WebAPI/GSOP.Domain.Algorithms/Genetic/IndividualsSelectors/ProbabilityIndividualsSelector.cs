@@ -22,9 +22,9 @@ public abstract class ProbabilityIndividualsSelector<TGene> : IndividualsSelecto
     {
         var collection = individuals.ToList();
 
-        for (var i = 0; i < SelectionCount; i++)
+        for (var i = 0; i < SelectionCount && collection.Count > 0; i++)
         {
-            var individualProbabilities = CalculateProbabilities(individuals);
+            var individualProbabilities = CalculateProbabilities(collection);
             var item = RandomProbabilityChecker.GetRandomItem(individualProbabilities);
 
             yield return item;

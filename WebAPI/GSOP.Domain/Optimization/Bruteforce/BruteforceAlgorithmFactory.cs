@@ -5,7 +5,6 @@ using GSOP.Domain.Contracts.Optimization.Bruteforce;
 using GSOP.Domain.Contracts.Optimization.Models;
 using GSOP.Domain.Contracts.Orders;
 using GSOP.Domain.Contracts.ProductionLines;
-using OPTEL.Optimization.Algorithms.Bruteforce;
 
 namespace GSOP.Domain.Optimization.Bruteforce;
 

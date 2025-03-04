@@ -33,24 +33,34 @@ public class Population<TGene> : IPopulation<TGene> where TGene : IGene
 
     public IPopulation<TGene> Mutation()
     {
-        var newPopulation = _population.ToList();
+        var individualsToMutate = _mutationOperatorSelector.SelectIndividuals(_population).ToList();
 
-        foreach (var individual in _mutationOperatorSelector.SelectIndividuals(_population))
+        var mutatedIndividuals = new IIndividual<TGene>[individualsToMutate.Count];
+        var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount / 2 };
+
+        Parallel.For(0, individualsToMutate.Count, parallelOptions, i =>
         {
-            newPopulation.Add(individual.Mutate());
-        }
+            mutatedIndividuals[i] = individualsToMutate[i].Mutate();
+        });
+
+        var newPopulation = _population.Concat(mutatedIndividuals).ToList();
 
         return new Population<TGene>(_mutationOperatorSelector, _crossoverOperatorSelector, _populationSelector, _bestSelector, newPopulation);
     }
 
     public IPopulation<TGene> Reproduction()
     {
-        var newPopulation = _population.ToList();
+        var parentsToCrossbreed = _crossoverOperatorSelector.SelectParents(_population).ToList();
 
-        foreach (var parents in _crossoverOperatorSelector.SelectParents(_population))
+        var newIndividuals = new IIndividual<TGene>[parentsToCrossbreed.Count];
+        var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount / 2 };
+
+        Parallel.For(0, parentsToCrossbreed.Count, parallelOptions, i =>
         {
-            newPopulation.Add(parents.FirstParent.Crossbreed(parents.SecondParent));
-        }
+            newIndividuals[i] = parentsToCrossbreed[i].FirstParent.Crossbreed(parentsToCrossbreed[i].SecondParent);
+        });
+
+        var newPopulation = _population.Concat(newIndividuals).ToList();
 
         return new Population<TGene>(_mutationOperatorSelector, _crossoverOperatorSelector, _populationSelector, _bestSelector, newPopulation);
     }

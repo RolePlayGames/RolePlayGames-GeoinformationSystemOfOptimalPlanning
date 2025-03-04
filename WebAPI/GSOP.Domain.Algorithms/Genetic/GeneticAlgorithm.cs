@@ -7,7 +7,7 @@ namespace GSOP.Domain.Algorithms.Genetic;
 
 public class GeneticAlgorithm<TGene> : IGeneticAlgorithm<TGene>, IGeneticAlgorithmsDecisions<TGene> where TGene : IGene
 {
-    private readonly int _approximationInclude = 1;
+    private readonly int _approximationInclude = 100;
     private readonly IStartPopulationFactory<TGene> _startPopulationFactory;
     private readonly IReadOnlyCollection<IFinalConditionChecker<IPopulation<TGene>>> _finalConditionCheckers;
     private readonly Func<IIndividual<TGene>> _approximationFactory;
