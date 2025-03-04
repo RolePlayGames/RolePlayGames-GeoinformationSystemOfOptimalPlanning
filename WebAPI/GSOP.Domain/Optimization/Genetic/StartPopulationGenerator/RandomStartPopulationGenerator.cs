@@ -60,16 +60,17 @@ public class RandomStartPopulationGenerator : IStartPopulationFactory<OrderPosit
     public IPopulation<OrderPosition> CreateStartPopulation()
     {
         var result = new IIndividual<OrderPosition>[_count];
+        var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount / 2 };
 
-        for (var i = 0; i < _count; i++)
+        Parallel.For(0, _count, parallelOptions, i =>
         {
             result[i] = GenerateRandomIndividual();
-        }
+        });
 
         return new Population<OrderPosition>(_mutationOperatorSelector, _crossoverOperatorSelector, _populationSelector, _bestSelector, result);
     }
 
-    private IIndividual<OrderPosition> GenerateRandomIndividual()
+    private Individual<OrderPosition> GenerateRandomIndividual()
     {
         var productionLinesQueue = _productionLines.ToFrozenDictionary(x => x, x => new List<IOrder>(_orders.Count));
 

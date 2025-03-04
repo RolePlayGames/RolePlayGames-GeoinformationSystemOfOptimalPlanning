@@ -5,7 +5,7 @@ using GSOP.Domain.Algorithms.Contracts.Bruteforce;
 using GSOP.Domain.Algorithms.Genetic.Extensions;
 using GSOP.Domain.Contracts.Optimization.Models;
 
-namespace OPTEL.Optimization.Algorithms.Bruteforce;
+namespace GSOP.Domain.Optimization.Bruteforce;
 
 public class BruteforceAlgorithm : IOptimizationAlgorithm<ProductionPlan>, IOptimizationAlgorithmDecisions<ProductionPlan>
 {

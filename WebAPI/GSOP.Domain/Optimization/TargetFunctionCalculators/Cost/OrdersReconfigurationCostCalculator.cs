@@ -2,6 +2,7 @@
 using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Cost;
 using GSOP.Domain.Contracts.Orders;
 using GSOP.Domain.Contracts.ProductionLines;
+using System.Collections.Concurrent;
 using System.Collections.Frozen;
 
 namespace GSOP.Domain.Optimization.TargetFunctionCalculators.Cost;
@@ -10,12 +11,12 @@ public class OrdersReconfigurationCostCalculator : IOrdersReconfigurationCostCal
 {
     private const double _epsilon = 1e-9;
 
-    private readonly Dictionary<IProductionLine, FrozenDictionary<FilmTypeID, FrozenDictionary<FilmTypeID, double>>> _filmTypeChanges = new Dictionary<IProductionLine, FrozenDictionary<FilmTypeID, FrozenDictionary<FilmTypeID, double>>>();
-    private readonly Dictionary<IProductionLine, FrozenDictionary<FilmRecipeCoolingLip, double>> _coolingLipChanges = new Dictionary<IProductionLine, FrozenDictionary<FilmRecipeCoolingLip, double>>();
-    private readonly Dictionary<IProductionLine, FrozenDictionary<FilmRecipeCalibration, double>> _calibrationChanges = new Dictionary<IProductionLine, FrozenDictionary<FilmRecipeCalibration, double>>();
-    private readonly Dictionary<IProductionLine, FrozenDictionary<FilmRecipeNozzle, double>> _nozzleChanges = new Dictionary<IProductionLine, FrozenDictionary<FilmRecipeNozzle, double>>();
+    private readonly ConcurrentDictionary<IProductionLine, FrozenDictionary<FilmTypeID, FrozenDictionary<FilmTypeID, double>>> _filmTypeChanges = [];
+    private readonly ConcurrentDictionary<IProductionLine, FrozenDictionary<FilmRecipeCoolingLip, double>> _coolingLipChanges = [];
+    private readonly ConcurrentDictionary<IProductionLine, FrozenDictionary<FilmRecipeCalibration, double>> _calibrationChanges = [];
+    private readonly ConcurrentDictionary<IProductionLine, FrozenDictionary<FilmRecipeNozzle, double>> _nozzleChanges = [];
 
-    private readonly Dictionary<IOrder, Dictionary<IOrder, double>> _ordersReconfiguration = new Dictionary<IOrder, Dictionary<IOrder, double>>();
+    private readonly ConcurrentDictionary<IOrder, Dictionary<IOrder, double>> _ordersReconfiguration = [];
 
     public double Calculate(IProductionLine productionLine, IOrder orderFrom, IOrder orderTo)
     {
@@ -80,7 +81,7 @@ public class OrdersReconfigurationCostCalculator : IOrdersReconfigurationCostCal
         }
         else
         {
-            _ordersReconfiguration.Add(orderFrom, new Dictionary<IOrder, double> { { orderTo, result } });
+            _ordersReconfiguration.TryAdd(orderFrom, new Dictionary<IOrder, double> { { orderTo, result } });
         }
 
         return result;

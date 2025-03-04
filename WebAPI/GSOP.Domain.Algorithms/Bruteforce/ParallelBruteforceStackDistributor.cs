@@ -38,7 +38,6 @@ public class ParallelBruteforceStackDistributor : IBruteforceDistributor
         }
     }
 
-
     private ConcurrentQueue<List<List<TItem>>> PermuteBuckets<TItem>(List<List<TItem>> distribution)
     {
         var resultsQueue = new ConcurrentQueue<List<List<TItem>>>();

@@ -78,7 +78,7 @@ public static class ServiceCollectionExtensions
         => serviceCollection
             .AddScoped<IApproximationAlgorithmFactory, ApproximationAlgorithmFactory>()
             .AddScoped<IBruteforceAlgorithmFactory, BruteforceAlgorithmFactory>()
-            .AddScoped<IBruteforceDistributor, BruteforeStackDistributor>()
+            .AddScoped<IBruteforceDistributor, ParallelBruteforceStackDistributor>()
             .AddScoped<ICombinationsGenerator, CombinationsGenerator>()
             .AddScoped<IExecutionTimeCalculator, ExecutionTimeCalculator>()
             .AddScoped<IFinalConditionCheckerFactory, FinalConditionCheckerFactory>()
