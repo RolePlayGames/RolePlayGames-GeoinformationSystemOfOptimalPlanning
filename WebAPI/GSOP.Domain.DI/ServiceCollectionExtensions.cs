@@ -31,6 +31,7 @@ using GSOP.Domain.Optimization.TargetFunctionCalculators.Cost;
 using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Time;
 using GSOP.Domain.Optimization.TargetFunctionCalculators.Time;
 using GSOP.Domain.Algorithms.Bruteforce.CombinationsGenerators;
+using GSOP.Domain.Optimization.TargetFunctionCalculators;
 
 namespace GSOP.Domain.DI;
 
@@ -87,9 +88,9 @@ public static class ServiceCollectionExtensions
             .AddScoped<IIndividualConverter, IndividualConverter>()
             .AddScoped<IOrderCostCalculator, OrderCostCalculator>()
             .AddScoped<IOrderExcecutionTimeCalculator, OrderExcecutionTimeCalculator>()
-            .AddScoped<IOrdersReconfigurationCostCalculator, OrdersReconfigurationCostCalculator>()
+            .AddScoped<IOrdersReconfigurationCostCalculator, OrdersReconfigurationCalculator>()
             .AddScoped<IProductionLineQueueCostCalculator, ProductionLineQueueCostCalculator>()
-            .AddScoped<IOrdersReconfigurationTimeCalculator, OrdersReconfigurationTimeCalculator>()
+            .AddScoped<IOrdersReconfigurationTimeCalculator, OrdersReconfigurationCalculator>()
             .AddScoped<IProductionLineQueueTimeCalculator, ProductionLineQueueTimeCalculator>()
             .AddScoped<IReconfigurationCostCalculator, ReconfigurationCostCalculator>()
             .AddScoped<IReconfigurationTimeCalculator, ReconfigurationTimeCalculator>()
