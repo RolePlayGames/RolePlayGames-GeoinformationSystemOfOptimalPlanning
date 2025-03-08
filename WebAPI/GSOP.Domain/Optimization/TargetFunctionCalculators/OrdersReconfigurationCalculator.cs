@@ -23,56 +23,36 @@ public class OrdersReconfigurationCalculator : IOrdersReconfigurationTimeCalcula
 
     double IOrdersReconfigurationTimeCalculator.Calculate(IProductionLine productionLine, IOrder orderFrom, IOrder orderTo)
     {
-        if (_ordersReconfigurationTime.TryGetValue(orderFrom, out var orderReconfiguration) && orderReconfiguration.TryGetValue(orderTo, out var reconfiguration))
-            return reconfiguration;
+        var orderReconfiguration = _ordersReconfigurationTime.GetOrAdd(orderFrom, (order) => new ConcurrentDictionary<IOrder, double>());
 
-        var result = TimeSpan.Zero;
-
-        foreach (var change in GetChanges(productionLine, orderFrom, orderTo))
+        return orderReconfiguration.GetOrAdd(orderTo, (order) =>
         {
-            result += change.ChangeTime;
-        }
+            var result = TimeSpan.Zero;
 
-        var resultMinutes = result.TotalMinutes;
+            foreach (var change in GetChanges(productionLine, orderFrom, orderTo))
+            {
+                result += change.ChangeTime;
+            }
 
-        if (_ordersReconfigurationTime.TryGetValue(orderFrom, out var reconfigurations))
-        {
-            reconfigurations.TryAdd(orderTo, resultMinutes);
-        }
-        else
-        {
-            var newOrderReconfiguration = new ConcurrentDictionary<IOrder, double>();
-            newOrderReconfiguration.TryAdd(orderTo, resultMinutes);
-            _ordersReconfigurationTime.TryAdd(orderFrom, newOrderReconfiguration);
-        }
-
-        return resultMinutes;
+            return result.TotalMinutes;
+        });
     }
 
     double IOrdersReconfigurationCostCalculator.Calculate(IProductionLine productionLine, IOrder orderFrom, IOrder orderTo)
     {
-        if (_ordersReconfigurationCost.TryGetValue(orderFrom, out var orderReconfiguration) && orderReconfiguration.TryGetValue(orderTo, out var reconfiguration))
-            return reconfiguration;
+        var orderReconfiguration = _ordersReconfigurationCost.GetOrAdd(orderFrom, (order) => new ConcurrentDictionary<IOrder, double>());
 
-        var result = 0.0;
-
-        foreach (var change in GetChanges(productionLine, orderFrom, orderTo))
+        return orderReconfiguration.GetOrAdd(orderTo, (order) =>
         {
-            result += change.ChangeConsumption;
-        }
+            var result = 0.0;
 
-        if (_ordersReconfigurationCost.TryGetValue(orderFrom, out var reconfigurations))
-        {
-            reconfigurations.TryAdd(orderTo, result);
-        }
-        else
-        {
-            var newOrderReconfiguration = new ConcurrentDictionary<IOrder, double>();
-            newOrderReconfiguration.TryAdd(orderTo, result);
-            _ordersReconfigurationCost.TryAdd(orderFrom, newOrderReconfiguration);
-        }
+            foreach (var change in GetChanges(productionLine, orderFrom, orderTo))
+            {
+                result += change.ChangeConsumption;
+            }
 
-        return result;
+            return result;
+        });
     }
 
     private IEnumerable<ProductionLineChangeValueRule> GetChanges(IProductionLine productionLine, IOrder orderFrom, IOrder orderTo)

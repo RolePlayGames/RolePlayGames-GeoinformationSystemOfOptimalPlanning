@@ -17,6 +17,10 @@ public class GeneticFinalConditionCheckerFactory : IGeneticFinalConditionChecker
         {
             result.Add(new TimeFinalConditionChecker<IPopulation<OrderPosition>>(conditions.TimeoutDelay.Value));
         }
+        else
+        {
+            result.Add(new TimeFinalConditionChecker<IPopulation<OrderPosition>>(TimeSpan.FromMinutes(3)));
+        }
 
         if (conditions.IterationsCount.HasValue)
         {
