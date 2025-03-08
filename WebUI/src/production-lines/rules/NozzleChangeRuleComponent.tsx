@@ -22,7 +22,7 @@ type NozzleChangeRuleComponentProps = {
 export const NozzleChangeRuleComponent = ({ rule, index, onDelete, rules, onValueChanged }: NozzleChangeRuleComponentProps) => {
 	const [nozzleTo, setNozzleTo, nozzleToError, setNozzleToError] = useItemFieldWithValidation<NozzleChangeRule, string>(rule, x => x.nozzleTo.toString(), validateCalibration);
 	const [changeTime, setChangeTime] = useItemField<NozzleChangeRule, Dayjs | null>(rule, x => convertFromTimeSpan(x.changeTime));
-	const [changeConsumption, setChangeConsumption, changeConsumptionError, setchangeConsumptionError] = useItemFieldWithValidation<NozzleChangeRule, string>(rule, x => x.changeConsumption.toString(), validateWidthChangeConsumption);
+	const [changeConsumption, setChangeConsumption, changeConsumptionError,] = useItemFieldWithValidation<NozzleChangeRule, string>(rule, x => x.changeConsumption.toString(), validateWidthChangeConsumption);
 
 	useEffect(() => {
 		const numberNozzleTo = convertToNumber(nozzleTo); 

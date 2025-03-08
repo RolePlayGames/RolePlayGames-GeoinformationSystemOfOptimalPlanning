@@ -7,6 +7,7 @@ import { ProductionLinePage } from "./ProductionLinePage";
 import { getProductionLinesInfo } from "./productionLinesClient";
 import { PRODUCTION_LINES } from "../routes/routes";
 import { AvaliableFilmType, getAvaliableFilmTypes } from "../film-recipes/filmRecipesClient";
+import { toast } from "react-toastify";
 
 const apiPath = PRODUCTION_LINES;
 
@@ -23,11 +24,15 @@ export const ProductionLinesPage = () => {
 	const navigate = useNavigate();
 
 	const loadItems = useCallback(async () => {
-		const items = await getProductionLinesInfo();      
-		setItems(items);
-		
-		const filmTypes = await getAvaliableFilmTypes();
-		setFilmTypes(filmTypes);
+		try {
+			const items = await getProductionLinesInfo();      
+			setItems(items);
+			
+			const filmTypes = await getAvaliableFilmTypes();
+			setFilmTypes(filmTypes);
+		} catch {
+			toast.error('Произошла ошибка при чтении данных');
+		}
 	}, []);
 
 	useEffect(() => {
@@ -52,7 +57,7 @@ export const ProductionLinesPage = () => {
 	return(
 		<PageContainer>
 			<HeaderLabel>Производственные линии</HeaderLabel>
-			{ items === undefined || filmTypes === undefined || filmTypes.length === 0 ? (
+			{ items === undefined || filmTypes === undefined ? (
 				<LoadingProgress/>
 			) : (
 				<ItemsContainer>

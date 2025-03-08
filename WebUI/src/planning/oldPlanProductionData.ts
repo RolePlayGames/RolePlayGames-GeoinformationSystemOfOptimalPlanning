@@ -60,5 +60,5 @@ export const oldPlanOrderNumbers = [
 ];
 
 export const oldPlanProductionLinesNames = [
-	'MEX'
+	'MEX 08'
 ];

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { LoadingProgress } from "../common/LoadingProgress";
 import { AvaliableFilmType, FilmRecipe, getFilmRecipe } from "./filmRecipesClient";
 import { FilmRecipeElement } from "./FilmRecipeElement";
+import { toast } from "react-toastify";
 
 type FilmRecipePageProps = {
     id: number,
@@ -19,20 +20,24 @@ export const FilmRecipePage = ({ id, apiPath, filmTypes }: FilmRecipePageProps) 
 	const loadItem = useCallback(async () => {
 
 		let item: FilmRecipe | undefined;
-
-		if (id > 0) 
-			item = await getFilmRecipe(id);
-		else 
-			item = {
-				name: '',
-				filmTypeID: 0,
-				thickness: 0,
-				productionSpeed: 0,
-				materialCost: 0,
-				nozzle: 0,
-				calibration: 0,
-				coolingLip: 0,
-			};        
+		
+		try {
+			if (id > 0) 
+				item = await getFilmRecipe(id);
+			else 
+				item = {
+					name: '',
+					filmTypeID: 0,
+					thickness: 0,
+					productionSpeed: 0,
+					materialCost: 0,
+					nozzle: 0,
+					calibration: 0,
+					coolingLip: 0,
+				};
+		} catch {
+			toast.error('Произошла ошибка при загрузке данных');
+		}
         
 		if (item)
 			setItem(item);

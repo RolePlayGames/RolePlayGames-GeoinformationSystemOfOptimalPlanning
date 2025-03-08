@@ -8,6 +8,7 @@ import { getOrdersInfo } from "./ordersClient";
 import { ORDERS } from "../routes/routes";
 import { CustomerInfo, getCustomersInfo } from "../customers/customersClient";
 import { FilmRecipeInfo, getFilmRecipesInfo } from "../film-recipes/filmRecipesClient";
+import { toast } from "react-toastify";
 
 const apiPath = ORDERS;
 
@@ -25,14 +26,24 @@ export const OrdersPage = () => {
 	const navigate = useNavigate();
 
 	const loadItems = useCallback(async () => {
-		const items = await getOrdersInfo();      
-		setItems(items);
+		try {
+			const items = await getOrdersInfo();      
+			setItems(items);
+	
+			const customers = await getCustomersInfo();
+			setCustomers(customers);
+	
+			const filmRecipes = await getFilmRecipesInfo();
+			setFilmRecipes(filmRecipes);
 
-		const customers = await getCustomersInfo();
-		setCustomers(customers);
+			if (customers?.length === 0)
+				toast.error('В системе отсутствуют заказчики. Для создания заказов создайте хотя бы одного заказчика');
 
-		const filmRecipes = await getFilmRecipesInfo();
-		setFilmRecipes(filmRecipes);
+			if (filmRecipes?.length === 0)
+				toast.error('В системе отсутствуют типы пленки. Для создания заказов создайте хотя бы один рецепт пленки');
+		} catch {
+			toast.error('Произошла ошибка при чтении данных');
+		}
 	}, []);
 
 	useEffect(() => {

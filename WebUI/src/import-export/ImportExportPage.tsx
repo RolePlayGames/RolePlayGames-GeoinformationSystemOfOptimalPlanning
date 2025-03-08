@@ -5,6 +5,7 @@ import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import { useCallback, useEffect, useState } from "react";
 import { exportProductionData, importProductionData } from "./importExportClient";
 import { LoadingProgress } from "../common/LoadingProgress";
+import { toast } from "react-toastify";
 
 const ImportExportContianer = styled(Box)({
 	display: 'flex',
@@ -66,7 +67,8 @@ export const ImportExportPage = () => {
 	const uploadFile = useCallback(async (formData: FormData) => {
 		try {
 			await importProductionData(formData);
-		} catch(error: any) {
+		} catch (error: any) {
+			toast.error('Произошла ошибка при загрузке данных. Проверьте корректность данных');
 			console.log(`Got an error while uploading file: ${error}`);
 		} finally {
 			SetIsActionDisabled(false);
@@ -109,6 +111,7 @@ export const ImportExportPage = () => {
 			link.click();
 			document.body.removeChild(link);
 		} catch(error: any) {
+			toast.error('Произошла ошибка при выгрузке данных');
 			console.log(`Got an error while exporting file: ${error}`);
 		} finally {
 			SetIsActionDisabled(false);

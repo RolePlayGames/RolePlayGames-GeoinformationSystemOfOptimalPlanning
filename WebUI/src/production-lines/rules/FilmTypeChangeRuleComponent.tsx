@@ -24,7 +24,7 @@ export const FilmTypeChangeRuleComponent = ({ rule, index, onDelete, filmTypes, 
 	const [filmRecipeFromId, setFilmRecipeFromId] = useItemField<FilmTypeChangeRule, number | undefined>(rule, item => filmTypes.findIndex(x => x.id === item.filmRecipeFromID) > -1 ? item.filmRecipeFromID : filmTypes[0].id);
 	const [filmRecipeToId, setFilmRecipeToId] = useItemField<FilmTypeChangeRule, number | undefined>(rule, item => filmTypes.findIndex(x => x.id === item.filmRecipeToID) > -1 ? item.filmRecipeToID : filmTypes[0].id);
 	const [changeTime, setChangeTime] = useItemField<FilmTypeChangeRule, Dayjs | null>(rule, x => convertFromTimeSpan(x.changeTime));
-	const [changeConsumption, setChangeConsumption, changeConsumptionError, setchangeConsumptionError] = useItemFieldWithValidation<FilmTypeChangeRule, string>(rule, x => x.changeConsumption.toString(), validateWidthChangeConsumption);
+	const [changeConsumption, setChangeConsumption, changeConsumptionError,] = useItemFieldWithValidation<FilmTypeChangeRule, string>(rule, x => x.changeConsumption.toString(), validateWidthChangeConsumption);
 
 	useEffect(() => {
 		if (filmRecipeFromId) {

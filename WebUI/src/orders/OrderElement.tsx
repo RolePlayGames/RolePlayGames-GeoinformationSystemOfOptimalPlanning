@@ -10,6 +10,7 @@ import { FilmRecipeInfo } from "../film-recipes/filmRecipesClient";
 import dayjs, { Dayjs } from "dayjs";
 import { IClientError } from "../common/clients/clientError";
 import { DateTimeField, InputField, SelectField } from "../common/inputs";
+import { toast } from "react-toastify";
 
 type OrderElementProps = {
     id: number,
@@ -37,9 +38,14 @@ export const OrderElement = ({ id, item, apiPath, customers, filmRecipes }: Orde
 		try {
 			await updateOrder(id, item);
 			navigate(apiPath);
+			toast.success(`Заказ ${number} был обновлен`);
 		} catch (error: unknown) {
-			if ((error as IClientError).errorCode === 'OrderNumberAlreadyExistsException')
+			if ((error as IClientError).errorCode === 'OrderNumberAlreadyExistsException') {
+				toast.error(`Произошла ошибка при обновлении: указанный номер уже используется в другом заказе`);
 				setNumberError('Указанный номер уже используется в системе');
+			} else 
+				toast.error(`Произошла ошибка при обновлении. Проверьте параметры`);
+			
 		}
 	};
 
@@ -47,9 +53,14 @@ export const OrderElement = ({ id, item, apiPath, customers, filmRecipes }: Orde
 		try {
 			await createOrder(item);
 			navigate(apiPath);
+			toast.success(`Заказ ${number} был создан`);
 		} catch (error: unknown) {
-			if ((error as IClientError).errorCode === 'OrderNumberAlreadyExistsException')
+			if ((error as IClientError).errorCode === 'OrderNumberAlreadyExistsException') {
+				toast.error(`Произошла ошибка при создании: указанный номер уже используется в другом заказе`);
 				setNumberError('Указанный номер уже используется в системе');
+			} else 
+				toast.error(`Произошла ошибка при создании. Проверьте параметры`);
+			
 		}
 	};
 

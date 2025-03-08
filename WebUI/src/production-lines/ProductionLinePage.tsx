@@ -4,6 +4,7 @@ import { LoadingProgress } from "../common/LoadingProgress";
 import { ProductionLine, getProductionLine } from "./productionLinesClient";
 import { ProductionLineElement } from "./ProductionLineElement";
 import { AvaliableFilmType } from "../film-recipes/filmRecipesClient";
+import { toast } from "react-toastify";
 
 type ProductionLinePageProps = {
     id: number,
@@ -20,28 +21,32 @@ export const ProductionLinePage = ({ id, apiPath, filmTypes }: ProductionLinePag
 	const loadItem = useCallback(async () => {
 
 		let item: ProductionLine | undefined;
-
-		if (id > 0) 
-			item = await getProductionLine(id);
-		else 
-			item = {
-				name: '',
-				hourCost: 0,
-				maxProductionSpeed: 0,
-				widthMin: 0,
-				widthMax: 0,
-				thicknessMin: 0,
-				thicknessMax: 0,
-				thicknessChangeTime: '00:00:00',
-				thicknessChangeConsumption: 0,
-				widthChangeTime: '00:00:00',
-				widthChangeConsumption: 0,
-				setupTime: '00:00:00',
-				calibratoinChangeRules: [],
-				coolingLipChangeRules: [],
-				filmTypeChangeRules: [],
-				nozzleChangeRules: [],
-			};        
+				
+		try {
+			if (id > 0) 
+				item = await getProductionLine(id);
+			else 
+				item = {
+					name: '',
+					hourCost: 0,
+					maxProductionSpeed: 0,
+					widthMin: 0,
+					widthMax: 0,
+					thicknessMin: 0,
+					thicknessMax: 0,
+					thicknessChangeTime: '00:00:00',
+					thicknessChangeConsumption: 0,
+					widthChangeTime: '00:00:00',
+					widthChangeConsumption: 0,
+					setupTime: '00:00:00',
+					calibratoinChangeRules: [],
+					coolingLipChangeRules: [],
+					filmTypeChangeRules: [],
+					nozzleChangeRules: [],
+				};
+		} catch {
+			toast.error('Произошла ошибка при загрузке данных');
+		}
         
 		if (item)
 			setItem(item);

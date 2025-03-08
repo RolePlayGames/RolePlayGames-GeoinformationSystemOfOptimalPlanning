@@ -7,6 +7,7 @@ import { convertToNumber } from "../utils/number-converters/numberConverter";
 import { useItemField, useItemFieldWithValidation } from "../common/useItemField";
 import { validateName, validateThickness, validateProductionSpeed, validateMaterialCost, validateNozzle, validateCalibration, validateCoolingLip } from "./validations";
 import { IClientError } from "../common/clients/clientError";
+import { toast } from "react-toastify";
 
 type FilmRecipeElementProps = {
     id: number,
@@ -31,9 +32,14 @@ export const FilmRecipeElement = ({ id, item, apiPath, filmTypes }: FilmRecipeEl
 		try {
 			await updateFilmRecipe(id, item);
 			navigate(apiPath);
+			toast.success(`Рецепт ${name} был обновлен`);
 		} catch (error: unknown) {
-			if ((error as IClientError).errorCode === 'FilmRecipeNameAlreadyExistsException')
+			if ((error as IClientError).errorCode === 'FilmRecipeNameAlreadyExistsException') {
+				toast.error(`Произошла ошибка при обновлении: указанное название уже используется в другом рецепте`);
 				setNameError('Указанное название уже используется в системе');
+			} else 
+				toast.error(`Произошла ошибка при обновлении. Проверьте параметры`);
+			
 		}
 	};
 
@@ -41,9 +47,14 @@ export const FilmRecipeElement = ({ id, item, apiPath, filmTypes }: FilmRecipeEl
 		try {
 			await createFilmRecipe(item);
 			navigate(apiPath);
+			toast.success(`Рецепт ${name} был создан`);
 		} catch (error: unknown) {
-			if ((error as IClientError).errorCode === 'FilmRecipeArticleAlreadyExistsException')
+			if ((error as IClientError).errorCode === 'FilmRecipeArticleAlreadyExistsException') {
+				toast.error(`Произошла ошибка при создании: указанное название уже используется в другом рецепте`);
 				setNameError('Указанное название уже используется в системе');
+			} else 
+				toast.error(`Произошла ошибка при создании. Проверьте параметры`);
+			
 		}
 	};
 

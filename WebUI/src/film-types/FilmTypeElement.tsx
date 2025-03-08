@@ -6,6 +6,7 @@ import { HeaderLabel } from "../common/controls";
 import { ElementContainer, ActionsBar, SaveButton, DeleteButton } from "../common/elementControls";
 import { useItemFieldWithValidation } from "../common/useItemField";
 import { IClientError } from "../common/clients/clientError";
+import { toast } from "react-toastify";
 
 const validateArticle = (article: string) => {
 	if (article.length == 0)
@@ -36,9 +37,14 @@ export const FilmTypeElement = ({ id, item, apiPath }: FilmTypeElementProps) => 
 		try {
 			await updateFilmType(id, { article });
 			navigate(apiPath);
+			toast.success(`Тип ${article} был обновлен`);
 		} catch (error: unknown) {
-			if ((error as IClientError).errorCode === 'FilmTypeArticleAlreadyExistsException')
+			if ((error as IClientError).errorCode === 'FilmTypeArticleAlreadyExistsException') {
+				toast.error(`Произошла ошибка при обновлении: указанное название уже используется в другом типом`);
 				setArticleError('Указанное название уже используется в системе');
+			} else 
+				toast.error(`Произошла ошибка при обновлении. Проверьте параметры`);
+			
 		}
 	};
 
@@ -46,9 +52,14 @@ export const FilmTypeElement = ({ id, item, apiPath }: FilmTypeElementProps) => 
 		try {
 			await createFilmType({ article });
 			navigate(apiPath);
+			toast.success(`Тип ${article} был создан`);
 		} catch (error: unknown) {
-			if ((error as IClientError).errorCode === 'FilmTypeArticleAlreadyExistsException')
+			if ((error as IClientError).errorCode === 'FilmTypeArticleAlreadyExistsException') {
+				toast.error(`Произошла ошибка при создании: указанное название уже используется в другим типом`);
 				setArticleError('Указанное название уже используется в системе');
+			} else 
+				toast.error(`Произошла ошибка при создании. Проверьте параметры`);
+			
 		}
 	};
 

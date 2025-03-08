@@ -6,6 +6,7 @@ import { Item, ListItem } from "../common/Item";
 import { FilmTypePage } from "./FilmTypePage";
 import { getFilmTypesInfo } from "./filmTypesClient";
 import { FILM_TYPES } from "../routes/routes";
+import { toast } from "react-toastify";
 
 const apiPath = FILM_TYPES;
 
@@ -21,8 +22,12 @@ export const FilmTypesPage = () => {
 	const navigate = useNavigate();
 
 	const loadItems = useCallback(async () => {
-		const result = await getFilmTypesInfo();      
-		setItems(result);
+		try {
+			const result = await getFilmTypesInfo();      
+			setItems(result);
+		} catch {
+			toast.error('Произошла ошибка при чтении данных');
+		}
 	}, []);
 
 	useEffect(() => {
