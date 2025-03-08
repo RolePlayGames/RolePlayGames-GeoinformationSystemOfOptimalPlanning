@@ -28,7 +28,7 @@ export const OrdersPage = () => {
 	const loadItems = useCallback(async () => {
 		try {
 			const items = await getOrdersInfo();      
-			setItems(items);
+			setItems(items?.sort((a, b) => a.id - b.id));
 	
 			const customers = await getCustomersInfo();
 			setCustomers(customers);

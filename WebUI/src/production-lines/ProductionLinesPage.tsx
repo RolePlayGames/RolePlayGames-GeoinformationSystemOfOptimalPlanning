@@ -26,7 +26,7 @@ export const ProductionLinesPage = () => {
 	const loadItems = useCallback(async () => {
 		try {
 			const items = await getProductionLinesInfo();      
-			setItems(items);
+			setItems(items?.sort((a, b) => a.id - b.id));
 			
 			const filmTypes = await getAvaliableFilmTypes();
 			setFilmTypes(filmTypes);

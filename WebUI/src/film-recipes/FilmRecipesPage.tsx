@@ -25,7 +25,7 @@ export const FilmRecipesPage = () => {
 	const loadItems = useCallback(async () => {
 		try {
 			const items = await getFilmRecipesInfo();
-			setItems(items);
+			setItems(items?.sort((a, b) => a.id - b.id));
 		
 			const filmTypes = await getAvaliableFilmTypes();
 			setFilmTypes(filmTypes);
