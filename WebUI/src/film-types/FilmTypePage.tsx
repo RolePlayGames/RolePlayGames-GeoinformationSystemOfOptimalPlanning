@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { LoadingProgress } from "../common/LoadingProgress";
 import { FilmType, getFilmType } from "./filmTypesClient";
 import { FilmTypeElement } from "./FilmTypeElement";
+import { toast } from "react-toastify";
 
 type FilmTypePageProps = {
     id: number,
@@ -18,14 +19,17 @@ export const FilmTypePage = ({ id, apiPath }: FilmTypePageProps) => {
 	const loadItem = useCallback(async () => {
 
 		let item: FilmType | undefined;
-
-		if (id > 0) 
-			item = await getFilmType(id);
-		else 
-			item = {
-				article: '',
-			}
-        
+				
+		try {
+			if (id > 0) 
+				item = await getFilmType(id);
+			else 
+				item = {
+					article: '',
+				};
+		} catch {
+			toast.error('Произошла ошибка при загрузке данных');
+		}
         
 		if (item)
 			setItem(item);

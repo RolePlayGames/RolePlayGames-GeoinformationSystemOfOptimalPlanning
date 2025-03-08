@@ -6,6 +6,7 @@ import { LoadingProgress } from "../common/LoadingProgress";
 import { AddItemButton, HeaderLabel, ItemsBlock, ItemsContainer, ItemsList, PageContainer } from "../common/controls";
 import { Item, ListItem } from "../common/Item";
 import { CUSTOMERS } from "../routes/routes";
+import { toast } from "react-toastify";
 
 const apiPath = CUSTOMERS;
 
@@ -21,8 +22,12 @@ export const CustomersPage = () => {
 	const navigate = useNavigate();
 
 	const loadItems = useCallback(async () => {
-		const result = await getCustomersInfo();      
-		setItems(result);
+		try {
+			const result = await getCustomersInfo();
+			setItems(result);
+		} catch {
+			toast.error('Произошла ошибка при чтении данных');
+		}
 	}, []);
 
 	useEffect(() => {

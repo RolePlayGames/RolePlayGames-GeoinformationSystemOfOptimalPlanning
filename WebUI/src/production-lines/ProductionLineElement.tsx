@@ -18,6 +18,7 @@ import { FilmTypeChangeRuleComponent } from "./rules/FilmTypeChangeRuleComponent
 import { NozzleChangeRuleComponent } from "./rules/NozzleChangeRuleComponent";
 import { AvaliableFilmType } from "../film-recipes/filmRecipesClient";
 import { ChangeRuleList, ChangeRuleHeader } from "./rules/ChangeRuleList";
+import { toast } from "react-toastify";
 
 const calibrationChangeRulesCheck = (rules: CalibratoinChangeRule[]) => rules.filter(checkRule => rules.filter(rule => checkRule !== rule && checkRule.calibrationTo === rule.calibrationTo).length > 0).length == 0;
 const coolingLipChangeRulesCheck = (rules: CoolingLipChangeRule[]) => rules.filter(checkRule => rules.filter(rule => checkRule !== rule && checkRule.coolingLipTo === rule.coolingLipTo).length > 0).length == 0;
@@ -58,9 +59,14 @@ export const ProductionLineElement = ({ id, item, apiPath, filmTypes }: Producti
 		try {
 			await updateProductionLine(id, item);
 			navigate(apiPath);
+			toast.success(`Производственная линия ${name} была обновлена`);
 		} catch (error: unknown) {
-			if ((error as IClientError).errorCode === 'ProductionLineNameAlreadyExistsException')
+			if ((error as IClientError).errorCode === 'ProductionLineNameAlreadyExistsException') {
+				toast.error(`Произошла ошибка при обновлении: указанное название уже используется в другой производственной линии`);
 				setNameError('Указанное название уже используется в системе');
+			} else 
+				toast.error(`Произошла ошибка при обновлении. Проверьте параметры`);
+			
 		}
 	};
 
@@ -68,9 +74,14 @@ export const ProductionLineElement = ({ id, item, apiPath, filmTypes }: Producti
 		try {
 			await createProductionLine(item);
 			navigate(apiPath);
+			toast.success(`Производственная линия ${name} была обновлена`);
 		} catch (error: unknown) {
-			if ((error as IClientError).errorCode === 'ProductionLineNameAlreadyExistsException')
+			if ((error as IClientError).errorCode === 'ProductionLineNameAlreadyExistsException') {
+				toast.error(`Произошла ошибка при создании: указанное название уже используется в другой производственной линии`);
 				setNameError('Указанное название уже используется в системе');
+			} else 
+				toast.error(`Произошла ошибка при создании. Проверьте параметры`);
+			
 		}
 	};
 

@@ -6,6 +6,7 @@ import { Item, ListItem } from "../common/Item";
 import { FilmRecipePage } from "./FilmRecipePage";
 import { AvaliableFilmType, getAvaliableFilmTypes, getFilmRecipesInfo } from "./filmRecipesClient";
 import { FILM_RECIPES } from "../routes/routes";
+import { toast } from "react-toastify";
 
 const apiPath = FILM_RECIPES;
 
@@ -22,11 +23,18 @@ export const FilmRecipesPage = () => {
 	const navigate = useNavigate();
 
 	const loadItems = useCallback(async () => {
-		const items = await getFilmRecipesInfo();      
-		setItems(items);
+		try {
+			const items = await getFilmRecipesInfo();
+			setItems(items);
+		
+			const filmTypes = await getAvaliableFilmTypes();
+			setFilmTypes(filmTypes);
 
-		const filmTypes = await getAvaliableFilmTypes();
-		setFilmTypes(filmTypes);
+			if (filmTypes?.length === 0)
+				toast.error('В системе отсутствуют типы пленки. Для создания рецептов создайте хотя бы один тип пленки');
+		} catch {
+			toast.error('Произошла ошибка при чтении данных');
+		}
 	}, []);
 
 	useEffect(() => {

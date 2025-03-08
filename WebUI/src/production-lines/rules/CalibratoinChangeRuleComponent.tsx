@@ -22,7 +22,7 @@ type CalibratoinChangeRuleComponentProps = {
 export const CalibratoinChangeRuleComponent = ({ rule, index, onDelete, rules, onValueChanged }: CalibratoinChangeRuleComponentProps) => {
 	const [calibrationTo, setCalibrationTo, calibrationToError, setCalibrationToError] = useItemFieldWithValidation<CalibratoinChangeRule, string>(rule, x => x.calibrationTo.toString(), validateCalibration);
 	const [changeTime, setChangeTime] = useItemField<CalibratoinChangeRule, Dayjs | null>(rule, x => convertFromTimeSpan(x.changeTime));
-	const [changeConsumption, setChangeConsumption, changeConsumptionError, setchangeConsumptionError] = useItemFieldWithValidation<CalibratoinChangeRule, string>(rule, x => x.changeConsumption.toString(), validateWidthChangeConsumption);
+	const [changeConsumption, setChangeConsumption, changeConsumptionError,] = useItemFieldWithValidation<CalibratoinChangeRule, string>(rule, x => x.changeConsumption.toString(), validateWidthChangeConsumption);
 
 	useEffect(() => {
 		const numberCalibrationTo = convertToNumber(calibrationTo); 

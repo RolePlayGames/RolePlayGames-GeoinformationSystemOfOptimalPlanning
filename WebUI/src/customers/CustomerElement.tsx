@@ -5,6 +5,7 @@ import { HeaderLabel } from "../common/controls";
 import { ActionsBar, SaveButton, DeleteButton, ElementContainer } from "../common/elementControls";
 import { useItemFieldWithValidation } from "../common/useItemField";
 import { IClientError } from "../common/clients/clientError";
+import { toast } from "react-toastify";
 
 const validateName = (name: string) => {
 	if (name.length == 0)
@@ -31,9 +32,14 @@ export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
 		try {
 			await updateCustomer(id, { name });
 			navigate(apiPath);
+			toast.success(`Заказчик ${name} был обновлен`);
 		} catch (error: unknown) {
-			if ((error as IClientError).errorCode === 'CustomerNameAlreadyExistsException')
+			if ((error as IClientError).errorCode === 'CustomerNameAlreadyExistsException') {
+				toast.error(`Произошла ошибка при обновлении: указанное имя уже используется другим заказчиком`);
 				setNameError('Указанное имя уже используется в системе');
+			} else 
+				toast.error(`Произошла ошибка при обновлении. Проверьте параметры`);
+			
 		}
 	};
 
@@ -41,9 +47,14 @@ export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
 		try {
 			await createCustomer({ name });
 			navigate(apiPath);
+			toast.success(`Заказчик ${name} был создан`);
 		} catch (error: unknown) {
-			if ((error as IClientError).errorCode === 'CustomerNameAlreadyExistsException')
+			if ((error as IClientError).errorCode === 'CustomerNameAlreadyExistsException') {
+				toast.error(`Произошла ошибка при создании: указанное имя уже используется другим заказчиком`);
 				setNameError('Указанное имя уже используется в системе');
+			} else 
+				toast.error(`Произошла ошибка при создании. Проверьте параметры`);
+			
 		}
 	};
 

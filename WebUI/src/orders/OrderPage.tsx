@@ -5,6 +5,7 @@ import { Order, getOrder } from "./ordersClient";
 import { OrderElement } from "./OrderElement";
 import { CustomerInfo } from "../customers/customersClient";
 import { FilmRecipeInfo } from "../film-recipes/filmRecipesClient";
+import { toast } from "react-toastify";
 
 type OrderPageProps = {
     id: number,
@@ -22,22 +23,26 @@ export const OrderPage = ({ id, apiPath, customers, filmRecipes }: OrderPageProp
 	const loadItem = useCallback(async () => {
 
 		let item: Order | undefined;
-
-		if (id > 0) 
-			item = await getOrder(id);
-		else 
-			item = {
-				number: '',
-				customerID: 0,
-				filmRecipeID: 0,
-				width: 0,
-				quantityInRunningMeter: 0,
-				finishedGoods: 0,
-				waste: 0,
-				rollsCount: 0,
-				plannedDate: new Date(),
-				priceOverdue: 0,
-			};        
+				
+		try {
+			if (id > 0) 
+				item = await getOrder(id);
+			else 
+				item = {
+					number: '',
+					customerID: 0,
+					filmRecipeID: 0,
+					width: 0,
+					quantityInRunningMeter: 0,
+					finishedGoods: 0,
+					waste: 0,
+					rollsCount: 0,
+					plannedDate: new Date(),
+					priceOverdue: 0,
+				};
+		} catch {
+			toast.error('Произошла ошибка при загрузке данных');
+		}      
         
 		if (item)
 			setItem(item);

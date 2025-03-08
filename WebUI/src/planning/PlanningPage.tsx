@@ -3,15 +3,10 @@ import { Box, Button, Checkbox, Divider, FormControl, FormControlLabel, FormLabe
 import { HeaderLabel, PageContainer } from "../common/controls";
 import { useCallback, useEffect, useState } from "react";
 import { ListItem as Item } from "../common/Item";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { DateRangeCalendar } from '@mui/x-date-pickers-pro/DateRangeCalendar';
 import { LoadingProgress } from "../common/LoadingProgress";
 import { getOrdersInfo } from "../orders/ordersClient";
 import { getProductionLinesInfo } from "../production-lines/productionLinesClient";
-import { DateRange } from "@mui/x-date-pickers-pro";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import { ActionsBar } from "../common/elementControls";
 import { TimeWithoutSelectField } from "../common/inputs/TimeField";
 import { FieldContainer } from "../production-lines/rules/RuleComponents";
@@ -27,6 +22,8 @@ import { Gantt, Task, ViewMode } from "gantt-task-react";
 import { convertProductionPlanToTasks } from "./productionPlanConverter";
 import "gantt-task-react/dist/index.css";
 import 'dayjs/locale/ru';
+import { toast } from "react-toastify";
+import { DateRangePicker } from "../common/inputs/DateRangePicker";
 
 const PlanningStepContainer = styled(FormControl)({
 	width: 'fill-available',
@@ -64,27 +61,25 @@ const formatMinutesToDDHHMMSS = (totalMinutes: number) => {
 	const minutes = Math.floor(totalMinutes % 60);
 
 	const formattedDays = days > 0 ? `${days} дней ` : '';
-	const formattedHours = hours > 0 || days > 0 ? `${hours.toString().padStart(2, '0')} часов ` : ''; //Show hours if days
-	const formattedMinutes = minutes > 0 || hours > 0 || days > 0 ? `${minutes.toString().padStart(2, '0')} минут ` : ''; //Show minutes if days or hours
+	const formattedHours = hours > 0 || days > 0 ? `${hours.toString().padStart(2, '0')} часов ` : '';
+	const formattedMinutes = minutes > 0 || hours > 0 || days > 0 ? `${minutes.toString().padStart(2, '0')} минут ` : '';
 	const formattedSeconds = seconds > 0 || minutes > 0 || hours > 0 || days > 0 ? `${seconds.toString().padStart(2, '0')} секунд` : '';
 
 	return `${formattedDays}${formattedHours}${formattedMinutes}${formattedSeconds}`.trim();
 }
 
-const removeDivWithLabel = (parentElement: HTMLElement, labelText: string) => {
-	if(parentElement){
-		const divs = parentElement.querySelectorAll("div");
-
-		divs.forEach(div => {
-			const label = div.querySelector("label");
-			if (label && label.textContent === labelText) {
-				div.remove();
-				console.log("Div removed successfully.");
-			}
-		});
-	} else 
-		console.log("Parent element not found");
+const factorial = (n: number) => {
+	if (n < 0) 
+		throw new Error("Факториал не определен для отрицательных чисел.");
 	
+	if (n === 0) 
+		return 1;
+	
+	let result = 1;
+	for (let i = 1; i <= n; i++) 
+		result *= i;
+	
+	return result;
 }
 
 type AlgorithmType = 'Bruteforce' | 'Genetic';
@@ -100,10 +95,8 @@ export const PlanningPage = () => {
 
 	const [functionType, setFunctionType] = useState(0)
 	
-	const [planningInterval, setPlanningInterval] = useState<DateRange<Dayjs>>([
-		dayjs(),
-		dayjs(),
-	]);
+	const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
+	const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
 
 	const [orders, setOrders] = useState<Item[]>()
 	const [selectedOrders, setSelectedOrders] = useState<number[]>([])
@@ -112,8 +105,10 @@ export const PlanningPage = () => {
 	const [selectedProductionLines, setSelectedProductionLines] = useState<number[]>([])
 
 	const [algorithmType, setAlgorithmType] = useState<AlgorithmType>('Bruteforce')
+	const [settingsGenerated, setSettingsGenerated] = useState(false)
 	const [timeoutDelay, setTimeoutDelay, timeoutDelayError, setTimeoutDelayError] = useFieldWithValidation<Dayjs | null>(null, () => '')
 	const [iterationsCount, setIterationsCount, iterationsCountError, setIterationsCountError] = useFieldWithValidation<string>('', validateMaxIterationsCount)
+	
 	const [generationsCount, setGenerationsCount, generationsCountError] = useFieldWithValidation<string>('1000', validateGenerationsCount)
 	const [degradingGenerationsCount, setDegradingGenerationsCount, degradingGenerationsCountError] = useFieldWithValidation<string>('', validateDegradingGenerationsCount)
 	const [mutationCoefficient, setMutationCoefficient, mutationCoefficientError] = useFieldWithValidation<string>('0.3', validateMutationCoefficient)
@@ -125,6 +120,8 @@ export const PlanningPage = () => {
 	const [startPopulationsCount, setStartPopulationsCount, startPopulationsCountError] = useFieldWithValidation<string>('400', validateStartPopulationsCount)
 
 	const [planInfos, setPlanInfos] = useState<ProductionPlanInfo[]>();
+	const [executionTime, setExecutionTime] = useState<number | null>(null);
+	const [selectedPlan, setSelectedPlan] = useState<number>();
 	const [tasks, setTasks] = useState<Task[]>();
 	const [targetFunctionResult, setTargetFunctionResult] = useState<string>('');
 	const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Day);
@@ -136,20 +133,16 @@ export const PlanningPage = () => {
 	const handleBack = () => {
 		setActiveStep((prevActiveStep) => prevActiveStep - 1);
 	};
-  
-	const handleReset = () => {
-		setActiveStep(0);
-	};
 
 	useEffect(() => {
-		if (activeStep === 2 && selectedOrders.length === 0) 
+		if (activeStep === 1 && (!selectedStartDate || !selectedEndDate))
+			setIsNextStepDisabled(true);
+		else if (activeStep === 2 && selectedOrders.length === 0) 
 			setIsNextStepDisabled(true);
 		else if (activeStep === 3 && selectedProductionLines.length === 0)
 			setIsNextStepDisabled(true);
 		else if (activeStep === 4 && algorithmType === 'Bruteforce')
-			if (iterationsCountError)
-				setIsNextStepDisabled(true);
-			else if (timeoutDelay === null && iterationsCount === '') {
+			if (timeoutDelay === null && iterationsCount === '') {
 				setIsNextStepDisabled(true);
 				setTimeoutDelayError('Заполните хотя бы одно из этих полей');
 				setIterationsCountError('Заполните хотя бы одно из этих полей');
@@ -166,7 +159,8 @@ export const PlanningPage = () => {
 					|| individualsInPopulationCountError
 					|| crossoverPointsCountError
 					|| pointedMutationProbabilityError
-					|| startPopulationsCountError) 
+					|| startPopulationsCountError
+					|| degradingGenerationsCountError) 
 				setIsNextStepDisabled(true);
 
 			setTimeoutDelayError('');
@@ -177,12 +171,15 @@ export const PlanningPage = () => {
 		
 	}, [
 		activeStep,
+		selectedStartDate,
+		selectedEndDate,
 		selectedOrders,
 		selectedProductionLines,
 		algorithmType,
 		timeoutDelay,
 		iterationsCount,
 		generationsCountError,
+		degradingGenerationsCountError,
 		iterationsCountError,
 		mutationCoefficientError,
 		mutationSelectionCountError,
@@ -195,6 +192,11 @@ export const PlanningPage = () => {
   
 	const handleFunctionTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setFunctionType(Number((event.target as HTMLInputElement).value));
+	};
+
+	const handleDateRangeChange = (startDate: Date | null, endDate: Date | null) => {
+		setSelectedStartDate(startDate);
+		setSelectedEndDate(endDate);
 	};
 	
 	const loadOrders = useCallback(async () => {
@@ -254,23 +256,44 @@ export const PlanningPage = () => {
 			loadOrders();
 		else if (activeStep === 3 && productionLines === undefined) 
 			loadProductionLines();
-		
 	}, [activeStep]);
+
+	useEffect(() => {
+		if (activeStep === 4 && settingsGenerated === false && selectedOrders && selectedProductionLines) {
+			if (selectedOrders.length + selectedProductionLines.length <= 6) {
+				setAlgorithmType('Bruteforce');
+				const iterationsCount = factorial(selectedOrders.length + selectedProductionLines.length - 1) / factorial(selectedProductionLines.length - 1);
+				setIterationsCount((iterationsCount).toFixed(0).toString());
+			} else if (selectedOrders.length + selectedProductionLines.length <= 11) {
+				setAlgorithmType('Bruteforce');
+				const iterationsCount = factorial(selectedOrders.length + selectedProductionLines.length - 1) / factorial(selectedProductionLines.length - 1) * 0.77;
+				setIterationsCount((iterationsCount).toFixed(0).toString());
+			} else {
+				setAlgorithmType('Genetic');
+				setGenerationsCount(Math.min(selectedOrders.length * selectedProductionLines.length * 20, 3000).toString());
+				const populationsCount = Math.min(selectedOrders.length * selectedProductionLines.length / 0.145, 600);
+				setStartPopulationsCount((populationsCount).toFixed(0).toString());
+				setIndividualsInPopulationCount((populationsCount / 2).toFixed(0).toString());
+				setCrossoverSelectionCount((populationsCount / 4).toFixed(0).toString());
+				setCrossoverPointsCount(Math.min(((selectedOrders.length / selectedProductionLines.length) / 19) * selectedProductionLines.length, 10).toFixed(0).toString());
+				setMutationSelectionCount((populationsCount / 16).toFixed(0).toString());
+			}
+
+			setSettingsGenerated(true);
+		}
+		
+	}, [activeStep, selectedOrders, selectedProductionLines, algorithmType, settingsGenerated]);
 
 	useEffect(() => {
 		if (activeStep === steps.length) {
 			const tryRunPlanning = async () => {
-				const startDateTime = planningInterval[0]?.toDate();
-				console.log(`loadOptimalPlan: algorithmType: ${algorithmType}`);
-	
 				if (algorithmType === 'Bruteforce') {
 					const iterationsCountNum = convertToInt(iterationsCount);
-					console.log(`startDateTime: ${startDateTime}; iterationsCount: ${iterationsCount}; iterationsCountNum: ${iterationsCountNum}; selectedOrders: ${selectedOrders}`);
-	
-					if (startDateTime && (iterationsCountNum || timeoutDelay !== null)) 
+					if (selectedStartDate && (iterationsCountNum || timeoutDelay !== null)) {
+						const startTime = performance.now();
 						try {
 							const plans = await planningByBruteforce({
-								startDateTime: startDateTime,
+								startDateTime: selectedStartDate,
 								orders: selectedOrders,
 								productionLines: selectedProductionLines,
 								functionType: functionType,
@@ -281,13 +304,19 @@ export const PlanningPage = () => {
 							});
 	
 							setPlanInfos(plans.sort((a, b) => b.targetFunctionValue - a.targetFunctionValue));
+							toast.success('Оптимальный производсвтенный план построен');
 						} catch (error: unknown) {
 							console.log(`Catch an error while trying planning by bruteforce ${error}`);
 							setActiveStep((prevActiveStep) => prevActiveStep - 1);
+							toast.error('Не удалось построить производсвтенный план, попробуйте поменять парметры задачи и повторите попытку');
+						} finally {
+							const endTime = performance.now();
+							const timeDiff = (endTime - startTime) / 1000;
+							setExecutionTime(timeDiff);
 						}
-					else
+					}
+					else 
 						setActiveStep((prevActiveStep) => prevActiveStep - 1);
-					
 				} else {
 					const generationsCountNum = convertToInt(generationsCount);
 					const mutationCoefficientNum = convertToNumber(mutationCoefficient);
@@ -299,7 +328,7 @@ export const PlanningPage = () => {
 					const startPopulationsCountNum = convertToInt(startPopulationsCount);
 					const degradingGenerationsCountNum = convertToInt(degradingGenerationsCount);
 	
-					if (startDateTime
+					if (selectedStartDate
 						&& generationsCountNum
 						&& mutationCoefficientNum
 						&& mutationSelectionCountNum
@@ -307,10 +336,12 @@ export const PlanningPage = () => {
 						&& individualsInPopulationCountNum
 						&& crossoverPointsCountNum
 						&& pointedMutationProbabilityNum
-						&& startPopulationsCountNum) 
+						&& startPopulationsCountNum
+						&& !degradingGenerationsCountError) {
+						const startTime = performance.now();
 						try {
 							const plans = await planningByGenetic({
-								startDateTime: startDateTime,
+								startDateTime: selectedStartDate,
 								orders: selectedOrders,
 								productionLines: selectedProductionLines,
 								functionType: functionType,
@@ -329,12 +360,19 @@ export const PlanningPage = () => {
 									startPopulationsCount: startPopulationsCountNum,
 								}
 							});
-	
+		
 							setPlanInfos(plans.sort((a, b) => b.targetFunctionValue - a.targetFunctionValue));
+							toast.success('Оптимальный производсвтенный план построен');
 						} catch (error: unknown) {
 							console.log(`Catch an error while trying planning by genetic ${error}`);
 							setActiveStep((prevActiveStep) => prevActiveStep - 1);
+							toast.error('Не удалось построить производсвтенный план, попробуйте поменять парметры задачи и повторите попытку');
+						} finally {
+							const endTime = performance.now();
+							const timeDiff = (endTime - startTime) / 1000;
+							setExecutionTime(timeDiff);
 						}
+					}
 					else
 						setActiveStep((prevActiveStep) => prevActiveStep - 1);
 				}
@@ -344,7 +382,6 @@ export const PlanningPage = () => {
 		}
 	}, [
 		activeStep,
-		planningInterval,
 		algorithmType,
 		selectedOrders,
 		selectedProductionLines,
@@ -352,6 +389,7 @@ export const PlanningPage = () => {
 		timeoutDelay,
 		generationsCount,
 		degradingGenerationsCount,
+		degradingGenerationsCountError,
 		mutationCoefficient,
 		mutationSelectionCount,
 		crossoverSelectionCount,
@@ -363,41 +401,35 @@ export const PlanningPage = () => {
 
 	useEffect(() => {
 		if (planInfos && planInfos.length > 0) {
-			console.log('Start converting production plan')
-			const newTasks = convertProductionPlanToTasks(planInfos[planInfos.length - 1]);
-			setTasks(newTasks);
-			setTargetFunctionResult(formatMinutesToDDHHMMSS(planInfos[planInfos.length - 1].targetFunctionValue));
-			console.log('End converting production plan')
+			console.log(`setSelectedPlan(planInfos.length - 1): ${planInfos.length - 1}; planInfos.length: ${planInfos.length}`);
+			setSelectedPlan(planInfos.length - 1);
 		}
 	}, [planInfos]);
 
-	useEffect(() => {
-		if (activeStep === 1) {
-			const parentElement = document.getElementById('MyDateRangeCalendarPicker');
-			const labelText = "MUI X Missing license key";
-
-			if (parentElement) 
-				removeDivWithLabel(parentElement, labelText);
-		}
-	}, [activeStep]);
-
 	const handleViewAllPlans = () => {
 		setTasks(undefined);
+		setSelectedPlan(undefined);
 	};
 
 	const handleReturnToPlanning = () => {
 		setTasks(undefined);
 		setPlanInfos(undefined);
+		setSelectedPlan(undefined);
 		setActiveStep(0);
+		setSettingsGenerated(false);
 	};
 
-	const handlePlanSelected = (value: number) => () => {
-		if (planInfos) {
-			const newTasks = convertProductionPlanToTasks(planInfos[value]);
+	useEffect(() => {
+		if (planInfos && selectedPlan !== undefined) {
+			const newTasks = convertProductionPlanToTasks(planInfos[selectedPlan]);
 			setTasks(newTasks);
-			setTargetFunctionResult(formatMinutesToDDHHMMSS(planInfos[value].targetFunctionValue));
+
+			if (functionType == 0)
+				setTargetFunctionResult(formatMinutesToDDHHMMSS(planInfos[selectedPlan].targetFunctionValue));
+			else
+				setTargetFunctionResult(`${planInfos[selectedPlan].targetFunctionValue.toFixed(2)} у.е.`);
 		}
-	};
+	}, [planInfos, selectedPlan, functionType]);
 
 	return (
 		<PageContainer sx={{ height: '100vh' }}>
@@ -414,7 +446,6 @@ export const PlanningPage = () => {
 											flexDirection: 'row',
 											marginBottom: '1vw',
 											marginTop: '15px',
-											justifyContent: 'flex-start',
 										}}>
 											<Button
 												variant="contained"
@@ -423,7 +454,7 @@ export const PlanningPage = () => {
 													'&:hover': {
 														backgroundColor: '#11101d'
 													},
-													margingLeft: '20px',
+													marginLeft: '20px',
 												}}
 												onClick={handleViewAllPlans}
 											>
@@ -436,15 +467,18 @@ export const PlanningPage = () => {
 													'&:hover': {
 														backgroundColor: '#11101d'
 													},
-													margingLeft: '20px',
+													marginLeft: '20px',
 												}}
 												onClick={handleReturnToPlanning}
 											>
 												Вернуться к планированию
 											</Button>
-											<Typography sx={{ color: 'black !important', fontSize: '1.3rem', margingLeft: '25px', }}>Значение критерия: {targetFunctionResult}</Typography>
+											<Typography sx={{ color: 'black !important', fontSize: '1.3rem', marginLeft: '20px', }}>Значение критерия: {targetFunctionResult}</Typography>
+											<Typography sx={{ color: 'black !important', fontSize: '1.3rem', marginLeft: '20px', }}>Время вычисленний: {executionTime?.toFixed(2)} сек.</Typography>
 										</Box>
-										<Gantt tasks={tasks} viewMode={viewMode}/>
+										<Gantt
+											tasks={tasks}
+											viewMode={viewMode}/>
 									</Box>
 								) : (
 									<Box sx={{ margin: '20px', width: '-webkit-fill-available' }}>
@@ -453,8 +487,8 @@ export const PlanningPage = () => {
 											<List sx={{ width: '100%' }}>
 												{ planInfos.map((value, index) => (
 													<ListItem key={index} disablePadding>
-														<ListItemButton role={undefined} onClick={handlePlanSelected(index)}>
-															<ListItemText primary={`${index + 1} Производственный план (${formatMinutesToDDHHMMSS(value.targetFunctionValue)})`} />
+														<ListItemButton role={undefined} onClick={() => setSelectedPlan(index)}>
+															<ListItemText primary={`${index + 1} Производственный план (${functionType === 0 ? formatMinutesToDDHHMMSS(value.targetFunctionValue) : `${value.targetFunctionValue.toFixed(2)} у.е.`})`} />
 														</ListItemButton>
 													</ListItem>
 												))}
@@ -519,11 +553,7 @@ export const PlanningPage = () => {
 							{activeStep === 1 && (
 								<PlanningStepContainer id='MyDateRangeCalendarPicker'>
 									<FormLabel sx={{ color: 'black !important', fontWeight: 'bold', fontSize: '1.3rem' }}>Выберите период планирования</FormLabel>
-									<LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
-										<DemoContainer components={['DateRangeCalendar']}>
-											<DateRangeCalendar value={planningInterval} onChange={(newValue) => setPlanningInterval(newValue)}/>
-										</DemoContainer>
-									</LocalizationProvider>
+									<DateRangePicker onDateRangeChange={handleDateRangeChange} />
 								</PlanningStepContainer>
 							)}
 							{activeStep === 2 && (
