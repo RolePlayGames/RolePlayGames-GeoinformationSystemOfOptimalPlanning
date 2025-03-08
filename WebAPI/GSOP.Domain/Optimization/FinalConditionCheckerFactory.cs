@@ -15,6 +15,10 @@ public class FinalConditionCheckerFactory : IFinalConditionCheckerFactory
         {
             result.Add(new TimeFinalConditionChecker<ProductionPlan>(conditions.TimeoutDelay.Value));
         }
+        else
+        {
+            result.Add(new TimeFinalConditionChecker<ProductionPlan>(TimeSpan.FromMinutes(3)));
+        }
 
         if (conditions.IterationsCount.HasValue)
         {
