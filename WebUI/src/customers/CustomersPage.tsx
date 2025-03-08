@@ -24,7 +24,7 @@ export const CustomersPage = () => {
 	const loadItems = useCallback(async () => {
 		try {
 			const result = await getCustomersInfo();
-			setItems(result);
+			setItems(result?.sort((a, b) => a.id - b.id));
 		} catch {
 			toast.error('Произошла ошибка при чтении данных');
 		}

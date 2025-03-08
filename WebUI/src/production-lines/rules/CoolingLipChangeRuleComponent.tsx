@@ -22,7 +22,7 @@ type CoolingLipChangeRuleComponentProps = {
 export const CoolingLipChangeRuleComponent = ({ rule, index, onDelete, rules, onValueChanged }: CoolingLipChangeRuleComponentProps) => {
 	const [coolingLipTo, setCoolingLipTo, coolingLipToError, setCoolingLipToError] = useItemFieldWithValidation<CoolingLipChangeRule, string>(rule, x => x.coolingLipTo.toString(), validateCalibration);
 	const [changeTime, setChangeTime] = useItemField<CoolingLipChangeRule, Dayjs | null>(rule, x => convertFromTimeSpan(x.changeTime));
-	const [changeConsumption, setChangeConsumption, changeConsumptionError, setchangeConsumptionError] = useItemFieldWithValidation<CoolingLipChangeRule, string>(rule, x => x.changeConsumption.toString(), validateWidthChangeConsumption);
+	const [changeConsumption, setChangeConsumption, changeConsumptionError,] = useItemFieldWithValidation<CoolingLipChangeRule, string>(rule, x => x.changeConsumption.toString(), validateWidthChangeConsumption);
 
 	useEffect(() => {
 		const numberCoolingLipTo = convertToNumber(coolingLipTo); 

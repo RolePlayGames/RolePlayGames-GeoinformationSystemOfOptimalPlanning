@@ -14,7 +14,7 @@ import { MenuItem } from './MenuItem';
 import { white } from '../styles/colors';
 import { menuItems } from './menuItems';
 
-const drawerWidth = 280;
+const drawerWidth = 320;
 
 const openedMixin = (theme: Theme): CSSObject => ({
 	width: drawerWidth,
