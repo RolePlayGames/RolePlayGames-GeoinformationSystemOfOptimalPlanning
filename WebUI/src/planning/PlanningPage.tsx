@@ -13,10 +13,10 @@ import { FieldContainer } from "../production-lines/rules/RuleComponents";
 import { useFieldWithValidation } from "../common/useItemField";
 import { convertToInt, convertToNumber } from "../utils/number-converters/numberConverter";
 import { InputField } from "../common/inputs";
-import { planningByBruteforce, planningByGenetic, ProductionPlanInfo } from "./planningClient";
+import { getOriginalPlan, planningByBruteforce, planningByGenetic, ProductionPlanInfo } from "./planningClient";
 import { convertToTimeSpan } from "../production-lines/timespanConverter";
 import { validateMaxIterationsCount, validateGenerationsCount, validateMutationCoefficient, validateMutationSelectionCount, validateCrossoverSelectionCount, validateIndividualsInPopulationCount, validateCrossoverPointsCount, validatePointedMutationProbability, validateStartPopulationsCount, validateDegradingGenerationsCount } from "./validations";
-import { oldPlanOrderNumbers, oldPlanProductionLinesNames } from "./oldPlanProductionData";
+import { originalPlanOrderNumbers, originalPlanProductionLinesNames } from "./originalPlanProductionData";
 import { steps } from "./steps";
 import { Gantt, Task, ViewMode } from "gantt-task-react";
 import { convertProductionPlanToTasks } from "./productionPlanConverter";
@@ -125,6 +125,10 @@ export const PlanningPage = () => {
 	const [tasks, setTasks] = useState<Task[]>();
 	const [targetFunctionResult, setTargetFunctionResult] = useState<string>('');
 	const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Day);
+	
+	const [isOriginalPlanAvaliable, setIsOriginalPlanAvaliable] = useState(false);
+	const [isOriginalPlanActive, setIsOriginalPlanActive] = useState(false);
+	const [originalPlan, setOriginalPlan] = useState<ProductionPlanInfo>();
 
 	const handleNext = async () => {
 		setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -206,14 +210,14 @@ export const PlanningPage = () => {
 
 	const selectOldPlanOrders = () => {
 		if (orders !== undefined) {
-			const newSelectedOrders = orders.filter(order => oldPlanOrderNumbers.includes(order.name)).map(order => order.id);
+			const newSelectedOrders = orders.filter(order => originalPlanOrderNumbers.includes(order.name)).map(order => order.id);
 			setSelectedOrders(newSelectedOrders);
 		}
 	};
 
 	const selectOldPlanProductionLines = () => {
 		if (productionLines !== undefined) {
-			const newSelectedProductionLines = productionLines.filter(line => oldPlanProductionLinesNames.includes(line.name)).map(order => order.id);
+			const newSelectedProductionLines = productionLines.filter(line => originalPlanProductionLinesNames.includes(line.name)).map(order => order.id);
 			setSelectedProductionLines(newSelectedProductionLines);
 		}
 	};
@@ -409,6 +413,7 @@ export const PlanningPage = () => {
 	const handleViewAllPlans = () => {
 		setTasks(undefined);
 		setSelectedPlan(undefined);
+		setIsOriginalPlanActive(false);
 	};
 
 	const handleReturnToPlanning = () => {
@@ -430,6 +435,47 @@ export const PlanningPage = () => {
 				setTargetFunctionResult(`${planInfos[selectedPlan].targetFunctionValue.toFixed(2)} у.е.`);
 		}
 	}, [planInfos, selectedPlan, functionType]);
+
+	useEffect(() => {
+		if (functionType !== 0 || !orders || !productionLines || selectedOrders.length !== originalPlanOrderNumbers.length || selectedProductionLines.length !== originalPlanProductionLinesNames.length)
+			setIsOriginalPlanAvaliable(false);
+		else {
+			const originalOrdersIDsSet = new Set(orders.filter(order => originalPlanOrderNumbers.includes(order.name)).map(order => order.id));
+			const originalProductionLinesIDs = productionLines.filter(line => originalPlanProductionLinesNames.includes(line.name)).map(order => order.id);
+
+			setIsOriginalPlanAvaliable(selectedOrders.every(element => originalOrdersIDsSet.has(element))
+				&& selectedProductionLines.every(element => originalProductionLinesIDs.includes(element)));
+		}
+	}, [functionType, orders, productionLines, selectedOrders, selectedProductionLines]);
+
+	const showOriginalPlan = async () => {
+		setIsOriginalPlanActive(true);
+	};
+
+	useEffect(() => {
+		if (isOriginalPlanActive && selectedStartDate !== null && originalPlan === undefined) {
+			const loadOriginalPlan = async () => {
+				try {
+					const plan = await getOriginalPlan(selectedStartDate);
+					setOriginalPlan(plan);
+
+					toast.success('Оригинальный план загружен');
+				} catch {
+					toast.error('При загрузке оригинального плана произошла ошибка, проверьте данные производства');
+				}
+			};
+
+			loadOriginalPlan();
+		}
+	}, [isOriginalPlanActive, originalPlan, selectedStartDate]);
+
+	useEffect(() => {
+		if (isOriginalPlanActive && originalPlan) {
+			const newTasks = convertProductionPlanToTasks(originalPlan);
+			setTasks(newTasks);
+			setTargetFunctionResult(formatMinutesToDDHHMMSS(originalPlan.targetFunctionValue));
+		}
+	}, [isOriginalPlanActive, originalPlan]);
 
 	return (
 		<PageContainer sx={{ height: '100vh' }}>
@@ -460,6 +506,21 @@ export const PlanningPage = () => {
 											>
 												Остальные решения
 											</Button>
+											{ isOriginalPlanAvaliable && !isOriginalPlanActive && (
+												<Button
+													variant="contained"
+													sx={{
+														background: '#1d1b31',
+														'&:hover': {
+															backgroundColor: '#11101d'
+														},
+														marginLeft: '20px',
+													}}
+													onClick={showOriginalPlan}
+												>
+													Оригинальный план
+												</Button>
+											)}
 											<Button
 												variant="contained"
 												sx={{

@@ -58,5 +58,5 @@ public static class ServiceCollectionExtensions
 
     internal static IServiceCollection AddOptimization(this IServiceCollection serviceCollection)
         => serviceCollection
-            .AddScoped<IProductionPlanner, ProductoinPlanner>();
+            .AddScoped<IProductionPlanner, ProductionPlanner>();
 }

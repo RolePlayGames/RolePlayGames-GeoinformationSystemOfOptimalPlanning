@@ -19,14 +19,14 @@ public class FilmRecipesController
     }
 
     [HttpPost]
-    public Task<long> CreateFilmType(FilmRecipeDTO filmRecipe)
+    public Task<long> CreateFilmRecipe(FilmRecipeDTO filmRecipe)
     {
         return _filmRecipeService.CreateFilmRecipe(filmRecipe);
     }
 
     [HttpDelete]
     [Route("{id}")]
-    public Task DeleteFilmType(long id)
+    public Task DeleteFilmRecipe(long id)
     {
         return _filmRecipeService.DeleteFilmRecipe(id);
     }
@@ -40,7 +40,7 @@ public class FilmRecipesController
 
     [HttpGet]
     [Route("{id}")]
-    public Task<FilmRecipeDTO> GetFilmType(long id)
+    public Task<FilmRecipeDTO> GetFilmRecipe(long id)
     {
         return _filmRecipeService.GetFilmRecipe(id);
     }
@@ -54,7 +54,7 @@ public class FilmRecipesController
 
     [HttpPost]
     [Route("{id}")]
-    public Task UpdateCustomer(long id, FilmRecipeDTO filmRecipe)
+    public Task UpdateFilmRecipe(long id, FilmRecipeDTO filmRecipe)
     {
         return _filmRecipeService.UpdateFilmRecipe(id, filmRecipe);
     }

@@ -4,17 +4,17 @@ public record OrderFinishedGoods
 {
     public const int Min = 0;
 
-    private readonly int _finishedGoods;
+    private readonly double _finishedGoods;
 
-    public OrderFinishedGoods(int finishedGoods)
+    public OrderFinishedGoods(double finishedGoods)
     {
-        if (finishedGoods <= Min)
-            throw new ArgumentOutOfRangeException(nameof(finishedGoods), $"Finished goods should be greater than {Min}");
+        if (finishedGoods < Min)
+            throw new ArgumentOutOfRangeException(nameof(finishedGoods), $"Finished goods should be greater than or equal to {Min}");
 
         _finishedGoods = finishedGoods;
     }
 
-    public static implicit operator int(OrderFinishedGoods finishedGoods) => finishedGoods._finishedGoods;
+    public static implicit operator double(OrderFinishedGoods finishedGoods) => finishedGoods._finishedGoods;
 
-    public static explicit operator OrderFinishedGoods(int finishedGoods) => new(finishedGoods);
+    public static explicit operator OrderFinishedGoods(double finishedGoods) => new(finishedGoods);
 }

@@ -79,3 +79,14 @@ export const planningByGenetic = async (task: GeneticforcePlanningTask) => {
 		throw new ClientError(error as AxiosError);
 	}
 }
+
+export const getOriginalPlan = async (startDateTime: Date) => {
+	const formattedDate = startDateTime.toISOString();
+	try {
+		const { data } = await axios.get<ProductionPlanInfo>(`${API_ROOT}${API_URL}/original-plan?startDateTime=${formattedDate}`);
+		return data;
+	} catch (error: unknown) {
+		handleError(nameof({getOriginalPlan}), error as AxiosError);
+		throw new ClientError(error as AxiosError);
+	}
+}

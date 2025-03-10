@@ -80,7 +80,7 @@ public class ApproximationAlgorithm : IOptimizationAlgorithm<ProductionPlan>
         while (0 < orders.Count && i < 2000)
         {
             var lastFilmRecipe = orderedOrders.Last().FilmRecipe;
-            var recipeChanges = extruderRecipeChange.Where(change => change.FilmTypeFromID == lastFilmRecipe.ID).OrderBy(change => change.ChangeValueRule.ChangeTime);
+            var recipeChanges = extruderRecipeChange.Where(change => change.FilmTypeFromID == lastFilmRecipe.FilmTypeID).OrderBy(change => change.ChangeValueRule.ChangeTime);
 
             foreach (var change in recipeChanges)
             {
@@ -104,6 +104,11 @@ public class ApproximationAlgorithm : IOptimizationAlgorithm<ProductionPlan>
             }
 
             i++;
+        }
+
+        if (orders.Any())
+        {
+            orderedOrders.AddRange(orders);
         }
 
         return new() { ProductionLine = productionLine, Orders = orderedOrders };

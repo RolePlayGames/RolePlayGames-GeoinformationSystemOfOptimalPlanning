@@ -24,8 +24,8 @@ public class OrderReader : ModelReader<OrderModel>
             || number == string.Empty
             || !int.TryParse(width, out var widthNum)
             || !int.TryParse(quantityInRunningMeter, out var quantityInRunningMeterNum)
-            || !int.TryParse(finishedGoods, out var finishedGoodsNum)
-            || !int.TryParse(waste, out var wasteNum)
+            || !double.TryParse(finishedGoods, out var finishedGoodsNum)
+            || !double.TryParse(waste, out var wasteNum)
             || !int.TryParse(rollsCount, out var rollsCountNum)
             || filmRecipeName is null
             || filmRecipeName == string.Empty

@@ -38,25 +38,25 @@ export const validateQuantityInRunningMeter = (value: string) => {
 }
 
 export const validateFinishedGoods = (value: string) => {
-	const number = convertToInt(value);
+	const number = convertToNumber(value);
 
 	if (number === undefined)
-		return 'Введите целое число';
+		return 'Введите число';
 
-	if (number <= 0)
-		return 'Количество выходного материала должно быть положительным';
+	if (number < 0)
+		return 'Количество выходного материала должно быть неотрицательным';
 
 	return undefined;
 }
 
 export const validateWaste = (value: string) => {
-	const number = convertToInt(value);
+	const number = convertToNumber(value);
 
 	if (number === undefined)
-		return 'Введите целое число';
+		return 'Введите число';
 
-	if (number <= 0)
-		return 'Расход должен быть положительным';
+	if (number < 0)
+		return 'Расход должен быть неотрицательным';
 
 	return undefined;
 }

@@ -3,9 +3,10 @@ import { HeaderLabel, PageContainer, StartIconButton } from "../common/controls"
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import { useCallback, useEffect, useState } from "react";
-import { exportProductionData, importProductionData } from "./importExportClient";
+import { exportProductionData, importProductionData, ProductionDataImportItemNotFoundError } from "./importExportClient";
 import { LoadingProgress } from "../common/LoadingProgress";
 import { toast } from "react-toastify";
+import { ClientError, IClientError } from "../common/clients/clientError";
 
 const ImportExportContianer = styled(Box)({
 	display: 'flex',
@@ -66,10 +67,47 @@ export const ImportExportPage = () => {
 
 	const uploadFile = useCallback(async (formData: FormData) => {
 		try {
-			await importProductionData(formData);
-		} catch (error: any) {
-			toast.error('Произошла ошибка при загрузке данных. Проверьте корректность данных');
-			console.log(`Got an error while uploading file: ${error}`);
+			const importResult = await importProductionData(formData);
+			toast.success(`Данные успешно загружены. Всего заказов: ${importResult.ordersCount}, производственных линий: ${importResult.productionLinesCount}`);
+		} catch (error: unknown) {
+			const productionDataImportItemNotFoundError = error as ProductionDataImportItemNotFoundError;
+
+			if (productionDataImportItemNotFoundError.errorType === 'ProductionDataImportItemNotFoundError') 
+				if (productionDataImportItemNotFoundError.itemType === 'FilmTypeDTO')
+					toast.error(`Найдена ссылка на несуществующий тип пленки ${productionDataImportItemNotFoundError.identifier}`);
+				else if (productionDataImportItemNotFoundError.itemType === 'CustomerDTO')
+					toast.error(`Найдена ссылка на несуществующего заказчика ${productionDataImportItemNotFoundError.identifier}`);
+				else if (productionDataImportItemNotFoundError.itemType === 'FilmRecipeDTO')
+					toast.error(`Найдена ссылка на несуществующий рецепт ${productionDataImportItemNotFoundError.identifier}`);
+				else
+					toast.error(`Найдена ссылка на несуществующий элемент ${productionDataImportItemNotFoundError.identifier}`);
+			
+			else if (error instanceof ClientError) {
+				const errorCode = error.errorCode;
+	
+				if (errorCode === 'CustomerNameAlreadyExistsException')
+					toast.error('Найдены дублирующие имена заказчиков');
+				else if (errorCode === 'FilmRecipeNameAlreadyExistsException')
+					toast.error('Найдены дублирующие названия рецептов');
+				else if (errorCode === 'FilmTypeDoesNotExistsException')
+					toast.error('Найдены ссылки на несуществующие типы пленки');
+				else if (errorCode === 'FilmTypeArticleAlreadyExistsException')
+					toast.error('Найдены дублирующие типы пленки');
+				else if (errorCode === 'OrderNumberAlreadyExistsException')
+					toast.error('Найдены дублирующие заказы');
+				else if (errorCode === 'CustomerDoesNotExistsException')
+					toast.error('Найдены ссылки на несуществующих заказчиков');
+				else if (errorCode === 'FilmRecipeDoesNotExistsException')
+					toast.error('Найдены ссылки на несуществующие рецепты');
+				else if (errorCode === 'ProductionLineNameAlreadyExistsException')
+					toast.error('Найдены дублирующие производственные линии');
+				else if (errorCode === 'ProductionDataEndImportException')
+					toast.error('Произошла ошибка при сохранении данных. Проверьте данные и попробуйте еще раз позже');
+				else if (errorCode === 'ArgumentOutOfRangeException')
+					toast.error('Найдены некорректные данные. Проверьте данные и попробуйте еще раз');
+			}
+			else
+				toast.error('Произошла ошибка при загрузке данных. Проверьте корректность данных');
 		} finally {
 			SetIsActionDisabled(false);
 		}
@@ -110,7 +148,7 @@ export const ImportExportPage = () => {
 			document.body.appendChild(link);
 			link.click();
 			document.body.removeChild(link);
-		} catch(error: any) {
+		} catch (error: any) {
 			toast.error('Произошла ошибка при выгрузке данных');
 			console.log(`Got an error while exporting file: ${error}`);
 		} finally {

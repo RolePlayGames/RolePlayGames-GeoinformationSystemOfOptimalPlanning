@@ -7,6 +7,7 @@ using GSOP.Domain.Contracts.ProductionData;
 using GSOP.Domain.Contracts.ProductionLines.Exceptions;
 using GSOP.Interfaces.API.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace GSOP.Interfaces.API.ProductionData;
 
@@ -14,6 +15,7 @@ public class ProductionDataExceptionFilter : ExceptionFilterBase
 {
     protected override IActionResult? MapException(Exception exception) => exception switch
     {
+        ArgumentOutOfRangeException => new UnprocessableEntityObjectResult(nameof(ArgumentOutOfRangeException)),
         CustomerNameAlreadyExistsException => new UnprocessableEntityObjectResult(nameof(CustomerNameAlreadyExistsException)),
         FilmRecipeNameAlreadyExistsException => new UnprocessableEntityObjectResult(nameof(FilmRecipeNameAlreadyExistsException)),
         FilmTypeDoesNotExistsException => new UnprocessableEntityObjectResult(nameof(FilmTypeDoesNotExistsException)),
@@ -23,7 +25,7 @@ public class ProductionDataExceptionFilter : ExceptionFilterBase
         FilmRecipeDoesNotExistsException => new UnprocessableEntityObjectResult(nameof(FilmRecipeDoesNotExistsException)),
         ProductionLineNameAlreadyExistsException => new UnprocessableEntityObjectResult(nameof(ProductionLineNameAlreadyExistsException)),
         ProductionDataEndImportException => new UnprocessableEntityObjectResult(nameof(ProductionDataEndImportException)),
-        ProductionDataImportItemNotFoundException => new UnprocessableEntityObjectResult(nameof(ProductionDataImportItemNotFoundException)),
+        ProductionDataImportItemNotFoundException ex => new UnprocessableEntityObjectResult(JsonSerializer.Serialize(new ProductionDataImportItemNotFoundError(ex))),
         _ => null,
     };
 }

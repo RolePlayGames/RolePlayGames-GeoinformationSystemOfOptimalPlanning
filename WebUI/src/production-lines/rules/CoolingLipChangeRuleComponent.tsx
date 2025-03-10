@@ -25,7 +25,7 @@ export const CoolingLipChangeRuleComponent = ({ rule, index, onDelete, rules, on
 	const [changeConsumption, setChangeConsumption, changeConsumptionError,] = useItemFieldWithValidation<CoolingLipChangeRule, string>(rule, x => x.changeConsumption.toString(), validateWidthChangeConsumption);
 
 	useEffect(() => {
-		const numberCoolingLipTo = convertToNumber(coolingLipTo); 
+		const numberCoolingLipTo = convertToNumber(coolingLipTo);
 		
 		if (numberCoolingLipTo) {
 			const sameRules = rules.filter((x, i) => i !== index && x.coolingLipTo === numberCoolingLipTo);

@@ -19,21 +19,21 @@ public class OrdersController
     }
 
     [HttpPost]
-    public Task<long> CreateFilmType(OrderDTO order)
+    public Task<long> CreateOrder(OrderDTO order)
     {
         return _orderService.CreateOrder(order);
     }
 
     [HttpDelete]
     [Route("{id}")]
-    public Task DeleteFilmType(long id)
+    public Task DeleteOrder(long id)
     {
         return _orderService.DeleteOrder(id);
     }
 
     [HttpGet]
     [Route("{id}")]
-    public Task<OrderDTO> GetFilmType(long id)
+    public Task<OrderDTO> GetOrder(long id)
     {
         return _orderService.GetOrder(id);
     }
@@ -47,7 +47,7 @@ public class OrdersController
 
     [HttpPost]
     [Route("{id}")]
-    public Task UpdateCustomer(long id, OrderDTO order)
+    public Task UpdateOrder(long id, OrderDTO order)
     {
         return _orderService.UpdateOrder(id, order);
     }
