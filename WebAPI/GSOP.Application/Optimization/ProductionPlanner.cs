@@ -1,4 +1,6 @@
 ﻿using GSOP.Application.Contracts.Optimization.Models;
+using GSOP.Application.Contracts.Orders;
+using GSOP.Application.Contracts.ProductionLines;
 using GSOP.Domain.Algorithms.Contracts;
 using GSOP.Domain.Algorithms.Contracts.Bruteforce;
 using GSOP.Domain.Algorithms.Contracts.Genetic.Models;
@@ -18,15 +20,71 @@ using GSOP.Domain.Optimization.Genetic.IndividualConverters;
 using GSOP.Domain.Optimization.Genetic.TargetFunctionCalculators;
 using GSOP.Domain.Optimization.TargetFunctionCalculators.Cost;
 using GSOP.Domain.Optimization.TargetFunctionCalculators.Time;
+using System.Collections.Frozen;
 
 namespace GSOP.Application.Optimization;
 
-public class ProductoinPlanner : IProductionPlanner
+public class ProductionPlanner : IProductionPlanner
 {
+    private static readonly string[] _originalPlanOrderNumbers = [
+        "101586",
+        "101585",
+        "101596",
+        "101597",
+        "101587",
+        "101589",
+        "101559",
+        "101543",
+        "101650",
+        "101590",
+        "101651",
+        "101648",
+        "101647",
+        "101646",
+        "101652",
+        "101663",
+        "101653",
+        "101613",
+        "101614",
+        "101632",
+        "101621",
+        "101615",
+        "101633",
+        "101662",
+        "101616",
+        "101627",
+        "101634",
+        "101654",
+        "101617",
+        "101635",
+        "101628",
+        "101626",
+        "101618",
+        "101636",
+        "101637",
+        "101619",
+        "101629",
+        "101638",
+        "101630",
+        "101639",
+        "101631",
+        "101640",
+        "101664",
+        "101641",
+        "101644",
+        "101642",
+        "101643",
+        "101645",
+    ];
+
+    private static readonly string _originalPlanProductionLineName = "MEX 08";
+
     private readonly IProductionLineQueueCostCalculator _productionLineQueueCostCalculator;
     private readonly IProductionLineQueueTimeCalculator _productionLineQueueTimeCalculator;
     private readonly IProductionLineFactory _productionLineFactory;
+    private readonly IProductionLineService _productionLineService;
     private readonly IOrderFactory _orderFactory;
+    private readonly IOrderService _orderService;
 
     private readonly IBruteforceDistributor _bruteforeDistributor;
     private readonly IBruteforceAlgorithmFactory _bruteforceAlgorithmFactory;
@@ -38,11 +96,13 @@ public class ProductoinPlanner : IProductionPlanner
     private readonly IOrderExcecutionTimeCalculator _orderExcecutionTimeCalculator;
     private readonly IOrdersReconfigurationTimeCalculator _ordersReconfigurationTimeCalculator;
 
-    public ProductoinPlanner(
+    public ProductionPlanner(
         IProductionLineQueueCostCalculator productionLineQueueCostCalculator,
         IProductionLineQueueTimeCalculator productionLineQueueTimeCalculator,
         IProductionLineFactory productionLineFactory,
+        IProductionLineService productionLineService,
         IOrderFactory orderFactory,
+        IOrderService orderService,
         IBruteforceDistributor bruteforeDistributor,
         IBruteforceAlgorithmFactory bruteforceAlgorithmFactory,
         IIndividualConverter individualConverter,
@@ -62,6 +122,8 @@ public class ProductoinPlanner : IProductionPlanner
         _approximationAlgorithmFactory = approximationAlgorithmFactory;
         _orderExcecutionTimeCalculator = orderExcecutionTimeCalculator;
         _ordersReconfigurationTimeCalculator = ordersReconfigurationTimeCalculator;
+        _productionLineService = productionLineService;
+        _orderService = orderService;
     }
 
     public async Task<IReadOnlyCollection<ProductionPlanInfo>> CreateOptimizedProductionPlanByBruteforceAlgorithm(BruteforceAlgorithmPlanningData planningData)
@@ -105,9 +167,23 @@ public class ProductoinPlanner : IProductionPlanner
         return _geneticAlgorithmFactory.CreateAlgorithm(productionLineModels, orderModels, targetFunctionCalculatorProxy, fitnessCalculatorProxy, planningData.Options, planningData.Conditions, _approximationAlgorithmFactory, _orderExcecutionTimeCalculator)
             .GetResolve()
             .Select(_individualConverter.ConvertToProductionPlan)
-            .Concat([_approximationAlgorithmFactory.CreateAlgorithm(productionLineModels, orderModels, _orderExcecutionTimeCalculator).GetResolve()])
             .Select(x => ConvertProductionPlan(planningData.StartDateTime, targetFunctionCalculator, x))
             .ToList();
+    }
+
+    public async Task<ProductionPlanInfo> GetOriginalProductionPlan(DateTime startDateTime)
+    {
+        var orders = (await _orderService.GetOrdersInfo()).ToFrozenDictionary(x => x.Name, x => x.ID);
+        var orderModels = await GetOrders(_originalPlanOrderNumbers.Select(x => orders.TryGetValue(x, out var orderID) ? orderID : throw new OriginalPlanOrderWasNotFoundException(x)).ToList());
+
+        var productionLines = (await _productionLineService.GetProductionLinesInfo()).ToFrozenDictionary(x => x.Name, x => x.ID);
+        var productionLineModels = await GetProductionLines([productionLines.TryGetValue(_originalPlanProductionLineName, out var lineID) ? lineID : throw new OriginalPlanProductionLineWasNotFoundException(_originalPlanProductionLineName)]);
+
+        var productionPlan = new ProductionPlan { ProductionLineQueues = [new ProductionLineQueue { ProductionLine = productionLineModels.First(), Orders = orderModels }] };
+
+        var targetFunctionCalculator = new TimeFunctionCalculator(_productionLineQueueTimeCalculator);
+
+        return ConvertProductionPlan(startDateTime, targetFunctionCalculator, productionPlan);
     }
 
     private async Task<IReadOnlyCollection<IOrder>> GetOrders(IReadOnlyCollection<long> orders)

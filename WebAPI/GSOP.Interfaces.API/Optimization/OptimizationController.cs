@@ -30,4 +30,11 @@ public class OptimizationController
     {
         return _productionPlanner.CreateOptimizedProductionPlanByBruteforceAlgorithm(planningData);
     }
+
+    [HttpGet]
+    [Route("original-plan")]
+    public Task<ProductionPlanInfo> OriginalPlan(DateTime startDateTime)
+    {
+        return _productionPlanner.GetOriginalProductionPlan(startDateTime);
+    }
 }

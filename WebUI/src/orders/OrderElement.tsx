@@ -67,8 +67,8 @@ export const OrderElement = ({ id, item, apiPath, customers, filmRecipes }: Orde
 	const onSave = () => {
 		const widthNumber = convertToInt(width);
 		const quantityInRunningMeterNumber = convertToInt(quantityInRunningMeter);
-		const finishedGoodsNumber = convertToInt(finishedGoods);
-		const wasteNumber = convertToInt(waste);
+		const finishedGoodsNumber = convertToNumber(finishedGoods);
+		const wasteNumber = convertToNumber(waste);
 		const rollsCountNumber = convertToInt(rollsCount);
 		const priceOverdueNumber = convertToNumber(priceOverdue);
 

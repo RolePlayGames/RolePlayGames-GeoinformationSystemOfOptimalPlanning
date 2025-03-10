@@ -12,9 +12,9 @@ public record OrderModel
 
     public required int QuantityInRunningMeter { get; init; }
 
-    public required int FinishedGoods { get; init; }
+    public required double FinishedGoods { get; init; }
 
-    public required int Waste { get; init; }
+    public required double Waste { get; init; }
 
     public required int RollsCount { get; init; }
 

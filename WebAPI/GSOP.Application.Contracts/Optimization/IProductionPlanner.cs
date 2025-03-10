@@ -9,4 +9,6 @@ public interface IProductionPlanner
     Task<IReadOnlyCollection<ProductionPlanInfo>> CreateOptimizedProductionPlanByBruteforceAlgorithm(BruteforceAlgorithmPlanningData planningData);
 
     Task<IReadOnlyCollection<ProductionPlanInfo>> CreateOptimizedProductionPlanByGeneticAlgorithm(GeneticAlgorithmPlanningData planningData);
+
+    Task<ProductionPlanInfo> GetOriginalProductionPlan(DateTime startDateTime);
 }

@@ -26,10 +26,10 @@ public class OrderPOCO
     public required int QuantityInRunningMeter { get; init; }
 
     [Column]
-    public required int FinishedGoods { get; init; }
+    public required double FinishedGoods { get; init; }
 
     [Column]
-    public required int Waste { get; init; }
+    public required double Waste { get; init; }
 
     [Column]
     public required int RollsCount { get; init; }
