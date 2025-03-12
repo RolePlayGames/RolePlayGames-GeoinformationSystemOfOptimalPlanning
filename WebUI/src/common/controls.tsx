@@ -31,6 +31,19 @@ export const ItemsBlock = styled(Box)({
 	width: 'max-content',
 	borderRight: '1px',
 	borderColor: 'black',
+	height: '100%',
+	'overflowY': 'scroll',
+	'::-webkit-scrollbar': {
+		width: '10px',
+	},
+	'::-webkit-scrollbar-thumb': {
+		backgroundColor: '#1d1b31',
+		borderRadius: '5px',
+	},
+	'::-webkit-scrollbar-thumb:active': {
+		backgroundColor: '#11101d',
+	},
+	paddingRight: '10px',
 });
 
 export const AddItemButton = (props: ButtonProps) => (
@@ -99,5 +112,10 @@ export const EndIconButton = (props: IconButtonProps) => (
 );
 
 export const ItemsList = styled(List)({
-	padding: 0
+	paddingLeft: 0,
+	paddingTop: 0,
+	paddingRight: '10px',
+	paddingBottom: 0,
+	maxHeight: 'calc(100vh - 104px)',
+	'overflowY': 'auto',
 });
