@@ -25,6 +25,8 @@ import 'dayjs/locale/ru';
 import { toast } from "react-toastify";
 import { DateRangePicker } from "../common/inputs/DateRangePicker";
 
+type AlgorithmType = 'Bruteforce' | 'Genetic';
+
 const PlanningStepContainer = styled(FormControl)({
 	width: 'fill-available',
 });
@@ -54,6 +56,37 @@ const BlackLabel = styled(FormLabel)({
 	fontSize: '1.3rem'
 });
 
+const PlanningContianer = styled(Box)({
+	display: 'flex',
+	flexDirection: 'row',
+});
+
+const GanttContainer = styled(Box)({
+	display: 'flex',
+	flexDirection: 'column'
+});
+
+const ActionContainer = styled(Box)({
+	display: 'flex',
+	flexDirection: 'row',
+	marginBottom: '1vw',
+	marginTop: '15px',
+});
+
+const ActionButton = styled(Button)({
+	marginLeft: '20px',
+	background: '#1d1b31',
+	'&:hover': {
+		backgroundColor: '#11101d'
+	},
+});
+
+const ActionLabel = styled(Typography)({
+	color: 'black !important',
+	fontSize: '1.3rem',
+	marginLeft: '20px',
+});
+
 const formatMinutesToDDHHMMSS = (totalMinutes: number) => {
 	const seconds = Math.floor((totalMinutes * 60) % 60);
 	const hours = Math.floor((totalMinutes / 60) % 24);
@@ -81,13 +114,6 @@ const factorial = (n: number) => {
 	
 	return result;
 }
-
-type AlgorithmType = 'Bruteforce' | 'Genetic';
-
-const PlanningContianer = styled(Box)({
-	display: 'flex',
-	flexDirection: 'row',
-});
 
 export const PlanningPage = () => {
 	const [activeStep, setActiveStep] = useState(0)
@@ -486,61 +512,24 @@ export const PlanningPage = () => {
 						{ planInfos ? (
 							<>
 								{ tasks ? (
-									<Box sx={{ display: 'flex', flexDirection: 'column' }}>
-										<Box sx={{
-											display: 'flex',
-											flexDirection: 'row',
-											marginBottom: '1vw',
-											marginTop: '15px',
-										}}>
-											<Button
-												variant="contained"
-												sx={{
-													background: '#1d1b31',
-													'&:hover': {
-														backgroundColor: '#11101d'
-													},
-													marginLeft: '20px',
-												}}
-												onClick={handleViewAllPlans}
-											>
+									<GanttContainer>
+										<ActionContainer>
+											<ActionButton variant="contained" onClick={handleViewAllPlans}>
 												Остальные решения
-											</Button>
+											</ActionButton>
 											{ isOriginalPlanAvaliable && !isOriginalPlanActive && (
-												<Button
-													variant="contained"
-													sx={{
-														background: '#1d1b31',
-														'&:hover': {
-															backgroundColor: '#11101d'
-														},
-														marginLeft: '20px',
-													}}
-													onClick={showOriginalPlan}
-												>
+												<ActionButton variant="contained" onClick={showOriginalPlan}>
 													Оригинальный план
-												</Button>
+												</ActionButton>
 											)}
-											<Button
-												variant="contained"
-												sx={{
-													background: '#1d1b31',
-													'&:hover': {
-														backgroundColor: '#11101d'
-													},
-													marginLeft: '20px',
-												}}
-												onClick={handleReturnToPlanning}
-											>
+											<ActionButton variant="contained" onClick={handleReturnToPlanning}>
 												Вернуться к планированию
-											</Button>
-											<Typography sx={{ color: 'black !important', fontSize: '1.3rem', marginLeft: '20px', }}>Значение критерия: {targetFunctionResult}</Typography>
-											<Typography sx={{ color: 'black !important', fontSize: '1.3rem', marginLeft: '20px', }}>Время вычисленний: {executionTime?.toFixed(2)} сек.</Typography>
-										</Box>
-										<Gantt
-											tasks={tasks}
-											viewMode={viewMode}/>
-									</Box>
+											</ActionButton>
+											<ActionLabel>Значение критерия: {targetFunctionResult}</ActionLabel>
+											<ActionLabel>Время вычисленний: {executionTime?.toFixed(2)} сек.</ActionLabel>
+										</ActionContainer>
+										<Gantt tasks={tasks} viewMode={viewMode}/>
+									</GanttContainer>
 								) : (
 									<Box sx={{ margin: '20px', width: '-webkit-fill-available' }}>
 										<PlanningStepContainer>
@@ -661,7 +650,7 @@ export const PlanningPage = () => {
 									{ orders === undefined ? (
 										<LoadingProgress/>
 									) : (
-										<List sx={{ width: '100%' }}>
+										<List sx={{ width: '100%', maxHeight: 'calc(100vh - 185px)', 'overflowY': 'auto', }}>
 											{orders.map((value) => {
 												const labelId = `checkbox-list-label-${value}`;
 												return (
@@ -729,7 +718,7 @@ export const PlanningPage = () => {
 									{ productionLines === undefined ? (
 										<LoadingProgress/>
 									) : (
-										<List sx={{ width: '100%' }}>
+										<List sx={{ width: '100%', maxHeight: 'calc(100vh - 185px)', 'overflowY': 'auto', }}>
 											{ productionLines.map((value) => {
 												const labelId = `checkbox-list-label-${value}`;
 												return (

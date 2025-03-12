@@ -62,8 +62,7 @@ export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
 		if (id > 0) 
 			return onUpdate();
 		else 
-			return onCreate();
-        
+			return onCreate();        
 	};
 
 	const onDelete = async () => {

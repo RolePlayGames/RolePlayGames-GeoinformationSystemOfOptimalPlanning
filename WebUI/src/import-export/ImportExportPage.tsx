@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { exportProductionData, importProductionData, ProductionDataImportItemNotFoundError } from "./importExportClient";
 import { LoadingProgress } from "../common/LoadingProgress";
 import { toast } from "react-toastify";
-import { ClientError, IClientError } from "../common/clients/clientError";
+import { ClientError } from "../common/clients/clientError";
 
 const ImportExportContianer = styled(Box)({
 	display: 'flex',
