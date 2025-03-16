@@ -9,5 +9,9 @@ public interface ICustomer
 {
     CustomerName Name { get; }
 
+    Coordinates? Coordinates { get; }
+
     Task SetName(CustomerName name);
+
+    void SetCoordinates(Coordinates? coordinates);
 }
