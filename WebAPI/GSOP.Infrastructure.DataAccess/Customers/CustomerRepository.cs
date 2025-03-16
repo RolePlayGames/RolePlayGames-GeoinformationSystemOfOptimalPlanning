@@ -18,7 +18,7 @@ public class CustomerRepository : ICustomerRepository
     /// <inheritdoc/>
     public Task<long> CreateCustomer(ICustomer customer)
     {
-        return _connection.InsertWithInt64IdentityAsync(new CustomerPOCO { Name = customer.Name });
+        return _connection.InsertWithInt64IdentityAsync(new CustomerPOCO { Name = customer.Name, Latitude = customer.Coordinates?.Latitude, Longitude = customer.Coordinates?.Longitude });
     }
 
     /// <inheritdoc/>
@@ -34,7 +34,7 @@ public class CustomerRepository : ICustomerRepository
     {
         return _connection.Customers
             .Where(x => x.ID == id)
-            .Select(x => new CustomerDTO { Name = x.Name })
+            .Select(x => new CustomerDTO { Name = x.Name, Coordinates = x.Latitude.HasValue && x.Longitude.HasValue ? new CoordinatesDTO { Latitude = x.Latitude.Value, Longitude = x.Longitude.Value } : null })
             .FirstOrDefaultAsync();
     }
 
@@ -52,6 +52,8 @@ public class CustomerRepository : ICustomerRepository
         return _connection.Customers
             .Where(x => x.ID == id)
             .Set(x => x.Name, customer.Name)
+            .Set(x => x.Latitude, customer.Coordinates?.Latitude)
+            .Set(x => x.Longitude, customer.Coordinates?.Longitude)
             .UpdateAsync();
     }
 

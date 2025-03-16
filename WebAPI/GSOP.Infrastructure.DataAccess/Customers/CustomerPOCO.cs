@@ -12,4 +12,10 @@ public class CustomerPOCO
 
     [Column]
     public required string Name { get; init; }
+
+    [Column]
+    public required decimal? Latitude { get; init; }
+
+    [Column]
+    public required decimal? Longitude { get; init; }
 }

@@ -11,8 +11,14 @@ export type CustomerInfo = {
     name: string,
 }
 
+export type Coordinates = {
+    latitude: number,
+    longitude: number,
+}
+
 export type Customer = {
     name: string,
+	coordinates: Coordinates | undefined,
 }
 
 export const getCustomersInfo = async () => {

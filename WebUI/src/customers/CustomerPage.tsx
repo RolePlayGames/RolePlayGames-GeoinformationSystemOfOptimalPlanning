@@ -26,6 +26,7 @@ export const CustomerPage = ({ id, apiPath }: CustomerPageProps) => {
 			else 
 				item = {
 					name: '',
+					coordinates: undefined,
 				}
 		} catch {
 			toast.error('Произошла ошибка при загрузке данных');

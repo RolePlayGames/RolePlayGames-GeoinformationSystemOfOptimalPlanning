@@ -113,7 +113,7 @@ public class ProductionDataService : IProductionDataService
                 Nozzle = x.Nozzle,
                 Thickness = x.Thickness,
             }).ToList(),
-            Customers = customers.Select(x => new Contracts.ProductionData.Models.CustomerModel { Name = x.Name }).ToList(),
+            Customers = customers.Select(x => new Contracts.ProductionData.Models.CustomerModel { Name = x.Name, Latitude = x.Coordinates?.Latitude, Longitude = x.Coordinates?.Longitude }).ToList(),
             Orders = orders.Select(x => new Contracts.ProductionData.Models.OrderModel
             {
                 Number = x.Number,
@@ -205,7 +205,7 @@ public class ProductionDataService : IProductionDataService
                 await _filmRecipeService.CreateFilmRecipe(dto);
             }
 
-            foreach (var dto in data.Customers.Select(x => new CustomerDTO { Name = x.Name }))
+            foreach (var dto in data.Customers.Select(x => new CustomerDTO { Name = x.Name, Coordinates = x.Latitude.HasValue && x.Longitude.HasValue ? new() { Latitude = x.Latitude.Value, Longitude = x.Longitude.Value } : null }))
             {
                 await _customerService.CreateCustomer(dto);
             }

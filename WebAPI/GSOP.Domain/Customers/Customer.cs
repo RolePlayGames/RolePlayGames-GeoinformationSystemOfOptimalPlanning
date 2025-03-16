@@ -11,13 +11,15 @@ public class Customer : ICustomer
 
     public CustomerName Name { get; protected set; }
 
-    public Customer(CustomerName name, ICustomerRepository customerRepository)
+    public Coordinates? Coordinates { get; protected set; }
+
+    public Customer(CustomerName name, Coordinates? coordinates, ICustomerRepository customerRepository)
     {
         Name = name;
         _customerRepository = customerRepository;
+        Coordinates = coordinates;
     }
 
-    /// <inheritdoc/>
     public async Task SetName(CustomerName name)
     {
         if (Name != name)
@@ -29,5 +31,10 @@ public class Customer : ICustomer
 
             Name = name;
         }
+    }
+
+    public void SetCoordinates(Coordinates? coordinates)
+    {
+        Coordinates = coordinates;
     }
 }

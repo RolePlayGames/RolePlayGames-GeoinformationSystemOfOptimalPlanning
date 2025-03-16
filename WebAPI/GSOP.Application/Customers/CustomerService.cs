@@ -43,10 +43,7 @@ public class CustomerService : ICustomerService
         var customerId = new ID(id);
         var customer = await _customerRepository.GetCustomer(customerId);
 
-        if (customer is null)
-            throw new CustomerWasNotFoundException(customerId);
-
-        return customer;
+        return customer is null ? throw new CustomerWasNotFoundException(customerId) : customer;
     }
 
     /// <inheritdoc/>
@@ -64,6 +61,7 @@ public class CustomerService : ICustomerService
         var existingCustomer = await _customerFactory.CreateCustomer(id);
 
         await existingCustomer.SetName(customerName);
+        existingCustomer.SetCoordinates(customer.Coordinates is null ? null : new(new(customer.Coordinates.Latitude), new(customer.Coordinates.Longitude)));
 
         await _customerRepository.UpdateCustomer(customerId, existingCustomer);
     }

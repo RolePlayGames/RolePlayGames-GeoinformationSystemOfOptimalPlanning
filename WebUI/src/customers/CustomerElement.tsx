@@ -3,9 +3,10 @@ import { InputField } from "../common/inputs";
 import { Customer, updateCustomer, createCustomer, deleteCustomer } from "./customersClient";
 import { HeaderLabel } from "../common/controls";
 import { ActionsBar, SaveButton, DeleteButton, ElementContainer } from "../common/elementControls";
-import { useItemFieldWithValidation } from "../common/useItemField";
+import { useItemField, useItemFieldWithValidation } from "../common/useItemField";
 import { IClientError } from "../common/clients/clientError";
 import { toast } from "react-toastify";
+import { CustomerLocationSelector } from "./CustomerLocationSelector";
 
 const validateName = (name: string) => {
 	if (name.length == 0)
@@ -25,12 +26,15 @@ type CustomerElementProps = {
 
 export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
 	const [name, setName, nameError, setNameError] = useItemFieldWithValidation<Customer, string>(item, x => x.name, validateName);
+	const [latitude, setLatitude] = useItemField<Customer, number | undefined>(item, x => x.coordinates?.latitude);
+	const [longitude, setLongitude] = useItemField<Customer, number | undefined>(item, x => x.coordinates?.longitude);
 
 	const navigate = useNavigate();
 
 	const onUpdate = async () => {
 		try {
-			await updateCustomer(id, { name });
+			const coordinates = latitude && longitude ? { latitude, longitude } : undefined;
+			await updateCustomer(id, { name, coordinates });
 			navigate(apiPath);
 			toast.success(`Заказчик ${name} был обновлен`);
 		} catch (error: unknown) {
@@ -45,7 +49,8 @@ export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
 
 	const onCreate = async () => {
 		try {
-			await createCustomer({ name });
+			const coordinates = latitude && longitude ? { latitude, longitude } : undefined;
+			await createCustomer({ name, coordinates });
 			navigate(apiPath);
 			toast.success(`Заказчик ${name} был создан`);
 		} catch (error: unknown) {
@@ -72,6 +77,11 @@ export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
 		}
 	};
 
+	const handleLocationChange = (latitude: number | undefined, longitude: number | undefined) => {
+		setLatitude(latitude);
+		setLongitude(longitude);
+	};
+
 	return(
 		<ElementContainer>
 			<HeaderLabel>Заказчик {item.name}</HeaderLabel>
@@ -84,6 +94,7 @@ export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
 				value={name}
 				onChange={setName}
 				errorText={nameError}/>
+			<CustomerLocationSelector initialLatitude={latitude} initialLongitude={longitude} onLocationChange={handleLocationChange}/>
 		</ElementContainer>
 	);
 }

@@ -20,14 +20,12 @@ public class CustomerFactory : ICustomerFactory
     {
         var customerId = new ID(id);
 
-        var customer = await _customerRepository.GetCustomer(customerId);
-
-        if (customer is null)
-            throw new CustomerWasNotFoundException(customerId);
+        var customer = await _customerRepository.GetCustomer(customerId) ?? throw new CustomerWasNotFoundException(customerId);
 
         var name = new CustomerName(customer.Name);
+        var coordinates = customer.Coordinates is not null ? new Coordinates(new(customer.Coordinates.Latitude), new(customer.Coordinates.Longitude)) : null;
 
-        return new Customer(name, _customerRepository);
+        return new Customer(name, coordinates, _customerRepository);
     }
 
     /// <inheritdoc/>
@@ -40,6 +38,8 @@ public class CustomerFactory : ICustomerFactory
         if (isCustomerNameExsits)
             throw new CustomerNameAlreadyExistsException(name);
 
-        return new Customer(name, _customerRepository);
+        var coordinates = customer.Coordinates is not null ? new Coordinates(new(customer.Coordinates.Latitude), new(customer.Coordinates.Longitude)) : null;
+
+        return new Customer(name, coordinates,_customerRepository);
     }
 }
