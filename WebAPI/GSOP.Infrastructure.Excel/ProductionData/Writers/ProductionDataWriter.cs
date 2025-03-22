@@ -16,6 +16,7 @@ public class ProductionDataWriter : IProductionDataWriter
     private readonly IModelWriter<CoolingLipChangeRuleModel> _coolingLipChangeRuleWriter;
     private readonly IModelWriter<FilmTypeChangeRuleModel> _filmTypeChangeRuleWriter;
     private readonly IModelWriter<NozzleChangeRuleModel> _nozzleChangeRuleWriter;
+    private readonly IModelWriter<ProductionModel> _productionWriter;
 
     public ProductionDataWriter(
         IModelWriter<FilmTypeModel> filmTypeWriter,
@@ -26,7 +27,8 @@ public class ProductionDataWriter : IProductionDataWriter
         IModelWriter<CalibratoinChangeRuleModel> calibrationChangeRuleWriter,
         IModelWriter<CoolingLipChangeRuleModel> coolingLipChangeRuleWriter,
         IModelWriter<FilmTypeChangeRuleModel> filmTypeChangeRuleWriter,
-        IModelWriter<NozzleChangeRuleModel> nozzleChangeRuleWriter)
+        IModelWriter<NozzleChangeRuleModel> nozzleChangeRuleWriter,
+        IModelWriter<ProductionModel> productionWriter)
     {
         _filmTypeWriter = filmTypeWriter;
         _filmRecipeWriter = filmRecipeWriter;
@@ -37,6 +39,7 @@ public class ProductionDataWriter : IProductionDataWriter
         _coolingLipChangeRuleWriter = coolingLipChangeRuleWriter;
         _filmTypeChangeRuleWriter = filmTypeChangeRuleWriter;
         _nozzleChangeRuleWriter = nozzleChangeRuleWriter;
+        _productionWriter = productionWriter;
     }
 
     public async Task<Stream> Write(Application.Contracts.ProductionData.ProductionData productionData)
@@ -52,6 +55,7 @@ public class ProductionDataWriter : IProductionDataWriter
         _coolingLipChangeRuleWriter.Write(package, productionData.CoolingLipChangeRules);
         _filmTypeChangeRuleWriter.Write(package, productionData.FilmTypeChangeRules);
         _nozzleChangeRuleWriter.Write(package, productionData.NozzleChangeRules);
+        _productionWriter.Write(package, productionData.Productions);
 
         var stream = new MemoryStream();
 

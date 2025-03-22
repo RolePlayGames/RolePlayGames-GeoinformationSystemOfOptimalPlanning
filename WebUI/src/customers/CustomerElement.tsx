@@ -6,7 +6,7 @@ import { ActionsBar, SaveButton, DeleteButton, ElementContainer } from "../commo
 import { useItemField, useItemFieldWithValidation } from "../common/useItemField";
 import { IClientError } from "../common/clients/clientError";
 import { toast } from "react-toastify";
-import { CustomerLocationSelector } from "./CustomerLocationSelector";
+import { LocationPicker } from "../common/inputs/LocationPicker";
 
 const validateName = (name: string) => {
 	if (name.length == 0)
@@ -94,7 +94,7 @@ export const CustomerElement = ({ id, item, apiPath }: CustomerElementProps)=> {
 				value={name}
 				onChange={setName}
 				errorText={nameError}/>
-			<CustomerLocationSelector initialLatitude={latitude} initialLongitude={longitude} onLocationChange={handleLocationChange}/>
+			<LocationPicker initialLatitude={latitude} initialLongitude={longitude} onLocationChange={handleLocationChange}/>
 		</ElementContainer>
 	);
 }

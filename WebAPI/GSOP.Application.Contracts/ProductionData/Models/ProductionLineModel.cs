@@ -25,4 +25,6 @@ public record ProductionLineModel
     public required double WidthChangeConsumption { get; init; }
 
     public required int SetupTimeMinutes { get; init; }
+
+    public required string ProductionName { get; init; }
 }

@@ -3,6 +3,7 @@ using GSOP.Domain.Contracts;
 using GSOP.Domain.Contracts.Customers;
 using GSOP.Domain.Contracts.Customers.Exceptions;
 using GSOP.Domain.Contracts.Customers.Models;
+using GSOP.Domain.Contracts.Locations;
 using GSOP.Domain.Customers;
 
 namespace GSOP.Domain.Test.Customers;
@@ -24,7 +25,7 @@ public class CustomerFactoryTest
     {
         // Arrange
         var id = _fixture.Create<ID>();
-        var customerDTO = new CustomerDTO { Name = "Alexander" };
+        var customerDTO = new CustomerDTO { Name = "Alexander", Coordinates = _fixture.Create<CoordinatesDTO>() };
         var customerName = new CustomerName(customerDTO.Name);
 
         _customerRepositoryMock
@@ -64,7 +65,7 @@ public class CustomerFactoryTest
     public async Task CreateCustomer_ByDTO_CustomerNameDoesNotExist_CreatesNewCutomer()
     {
         // Arrange
-        var customerDTO = new CustomerDTO { Name = "Alexander" };
+        var customerDTO = new CustomerDTO { Name = "Alexander", Coordinates = _fixture.Create<CoordinatesDTO>() };
         var customerName = new CustomerName(customerDTO.Name);
 
         _customerRepositoryMock
@@ -85,7 +86,7 @@ public class CustomerFactoryTest
     public async Task CreateCustomer_ByDTO_CustomerNameExists_ThrowsCustomerNameAlreadyExistsException()
     {
         // Arrange
-        var customerDTO = new CustomerDTO { Name = "Alexander" };
+        var customerDTO = new CustomerDTO { Name = "Alexander", Coordinates = _fixture.Create<CoordinatesDTO>() };
         var customerName = new CustomerName(customerDTO.Name);
 
         _customerRepositoryMock

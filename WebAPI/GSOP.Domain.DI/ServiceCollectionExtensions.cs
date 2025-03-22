@@ -32,6 +32,8 @@ using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Time;
 using GSOP.Domain.Optimization.TargetFunctionCalculators.Time;
 using GSOP.Domain.Algorithms.Bruteforce.CombinationsGenerators;
 using GSOP.Domain.Optimization.TargetFunctionCalculators;
+using GSOP.Domain.Productions;
+using GSOP.Domain.Contracts.Productions;
 
 namespace GSOP.Domain.DI;
 
@@ -46,6 +48,7 @@ public static class ServiceCollectionExtensions
             .AddFilmRecipeComponents()
             .AddFilmTypeComponents()
             .AddOrderComponents()
+            .AddProductionComponents()
             .AddProductionLineComponents()
             .AddProductionDataComponents()
             .AddOptimizationComponents()
@@ -66,6 +69,10 @@ public static class ServiceCollectionExtensions
     internal static IServiceCollection AddOrderComponents(this IServiceCollection serviceCollection)
         => serviceCollection
             .AddScoped<IOrderFactory, OrderFactory>();
+
+    internal static IServiceCollection AddProductionComponents(this IServiceCollection serviceCollection)
+        => serviceCollection
+            .AddScoped<IProductionFactory, ProductionFactory>();
 
     internal static IServiceCollection AddProductionLineComponents(this IServiceCollection serviceCollection)
         => serviceCollection

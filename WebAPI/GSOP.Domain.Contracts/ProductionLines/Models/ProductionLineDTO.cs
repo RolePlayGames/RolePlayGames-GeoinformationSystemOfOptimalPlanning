@@ -35,4 +35,6 @@ public record ProductionLineDTO
     public required IReadOnlyCollection<FilmTypeChangeRuleDTO> FilmTypeChangeRules { get; init; }
 
     public required IReadOnlyCollection<NozzleChangeRuleDTO> NozzleChangeRules { get; init; }
+
+    public required long ProductionID { get; init; }
 }

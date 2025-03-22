@@ -1,4 +1,6 @@
-﻿namespace GSOP.Domain.Contracts.Customers.Models;
+﻿using GSOP.Domain.Contracts.Locations;
+
+namespace GSOP.Domain.Contracts.Customers.Models;
 
 public record CustomerDTO
 {

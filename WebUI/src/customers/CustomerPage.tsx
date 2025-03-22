@@ -50,5 +50,4 @@ export const CustomerPage = ({ id, apiPath }: CustomerPageProps) => {
 		return (
 			<CustomerElement id={id} item={item} apiPath={apiPath}/>
 		);
-    
 }

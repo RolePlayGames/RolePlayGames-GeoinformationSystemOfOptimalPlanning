@@ -21,6 +21,7 @@ public class ProductionLineWriter : ModelWriter<ProductionLineModel>
         nameof(ProductionLineModel.WidthChangeTimeMinutes),
         nameof(ProductionLineModel.WidthChangeConsumption),
         nameof(ProductionLineModel.SetupTimeMinutes),
+        nameof(ProductionLineModel.ProductionName),
     ];
 
     protected override void WriteModel(ExcelWorksheet worksheet, ProductionLineModel model, int rowNum)
@@ -37,5 +38,6 @@ public class ProductionLineWriter : ModelWriter<ProductionLineModel>
         worksheet.Cells[rowNum, 10].Value = model.WidthChangeTimeMinutes;
         worksheet.Cells[rowNum, 11].Value = model.WidthChangeConsumption;
         worksheet.Cells[rowNum, 12].Value = model.SetupTimeMinutes;
+        worksheet.Cells[rowNum, 13].Value = model.ProductionName;
     }
 }

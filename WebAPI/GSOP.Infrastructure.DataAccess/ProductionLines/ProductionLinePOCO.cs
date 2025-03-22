@@ -45,4 +45,7 @@ public class ProductionLinePOCO
 
     [Column]
     public required TimeSpan SetupTime { get; init; }
+
+    [Column]
+    public required long ProductionID { get; init; }
 }

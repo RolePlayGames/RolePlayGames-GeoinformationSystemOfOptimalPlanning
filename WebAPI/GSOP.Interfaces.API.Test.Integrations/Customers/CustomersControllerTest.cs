@@ -23,7 +23,7 @@ public class CustomersControllerTest : WebIntegrationTestBase
     public async Task CreateCustomer_NameDoesNotExist_ReturnsStatusCodeOKAndCustomerId()
     {
         // Arrange
-        var request = new CustomerDTO { Name = "Klockner Pentaplast Internal" };
+        var request = new CustomerDTO { Name = "Klockner Pentaplast Internal", Coordinates = null };
 
         _customerRepositoryMock
             .Setup(x => x.IsCustomerNameExsits(It.Is<CustomerName>(x => x == request.Name)))
@@ -54,7 +54,7 @@ public class CustomersControllerTest : WebIntegrationTestBase
     public async Task CreateCustomer_NameExists_ReturnsStatusCodeUnprocessableEntity()
     {
         // Arrange
-        var request = new CustomerDTO { Name = "Klockner Pentaplast Internal" };
+        var request = new CustomerDTO { Name = "Klockner Pentaplast Internal", Coordinates = null };
 
         _customerRepositoryMock
             .Setup(x => x.IsCustomerNameExsits(It.Is<CustomerName>(x => x == request.Name)))
@@ -195,7 +195,7 @@ public class CustomersControllerTest : WebIntegrationTestBase
         // Arrange
         var customerId = Fixture.Create<long>();
         var url = $"{_url}/{customerId}";
-        var request = new CustomerDTO { Name = "Klockner Pentaplast Internal" };
+        var request = new CustomerDTO { Name = "Klockner Pentaplast Internal", Coordinates = null };
 
         var customer = Fixture.Create<CustomerDTO>();
 
@@ -251,7 +251,7 @@ public class CustomersControllerTest : WebIntegrationTestBase
         // Arrange
         var customerId = Fixture.Create<long>();
         var url = $"{_url}/{customerId}";
-        var request = new CustomerDTO { Name = "Klockner Pentaplast Internal" };
+        var request = new CustomerDTO { Name = "Klockner Pentaplast Internal", Coordinates = null };
 
         var customer = Fixture.Create<CustomerDTO>();
 

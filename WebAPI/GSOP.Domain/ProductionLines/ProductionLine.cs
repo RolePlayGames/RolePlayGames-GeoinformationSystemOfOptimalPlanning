@@ -1,12 +1,16 @@
-﻿using GSOP.Domain.Contracts.ProductionLines;
+﻿using GSOP.Domain.Contracts;
+using GSOP.Domain.Contracts.ProductionLines;
 using GSOP.Domain.Contracts.ProductionLines.Exceptions;
 using GSOP.Domain.Contracts.ProductionLines.Models;
+using GSOP.Domain.Contracts.Productions;
+using GSOP.Domain.Contracts.Productions.Exceptions;
 
 namespace GSOP.Domain.ProductionLines;
 
 public class ProductionLine : IProductionLine
 {
     private readonly IProductionLineRepository _productionLineRepository;
+    private readonly IProductionRepository _productionRepository;
 
     public ProductionLineName Name { get; private set; }
 
@@ -32,6 +36,8 @@ public class ProductionLine : IProductionLine
 
     public IReadOnlyCollection<FilmTypeChangeRule> FilmTypeChangeRules { get; private set; }
 
+    public ID ProductionID { get; private set; }
+
     public ProductionLine(
         ProductionLineName name,
         ProductionLineHourCost hourCost,
@@ -41,11 +47,13 @@ public class ProductionLine : IProductionLine
         ProductionLineChangeThicknessRule thicknessChangeRule,
         ProductionLineChangeWidthRule widthChangeRule,
         ProductionLineSetupTime setupTime,
+        ID productionId,
         IReadOnlyCollection<NozzleChangeRule> nozzleChangeRules,
         IReadOnlyCollection<CalibratoinChangeRule> calibratoinChangeRsules,
         IReadOnlyCollection<CoolingLipChangeRule> coolingLipChangeRsules,
         IReadOnlyCollection<FilmTypeChangeRule> filmTypeChangeRsules,
-        IProductionLineRepository productionLineRepository)
+        IProductionLineRepository productionLineRepository,
+        IProductionRepository productionRepository)
     {
         Name = name;
         HourCost = hourCost;
@@ -55,11 +63,13 @@ public class ProductionLine : IProductionLine
         ThicknessChangeRule = thicknessChangeRule;
         WidthChangeRule = widthChangeRule;
         SetupTime = setupTime;
+        ProductionID = productionId;
         NozzleChangeRules = nozzleChangeRules;
         CalibratoinChangeRules = calibratoinChangeRsules;
         CoolingLipChangeRules = coolingLipChangeRsules;
         FilmTypeChangeRules = filmTypeChangeRsules;
         _productionLineRepository = productionLineRepository;
+        _productionRepository = productionRepository;
     }
 
     public void SetHourCost(ProductionLineHourCost hourCost)
@@ -128,5 +138,18 @@ public class ProductionLine : IProductionLine
     public void SetFilmTypeChangeRules(IReadOnlyCollection<FilmTypeChangeRule> filmTypeChangeRules)
     {
         FilmTypeChangeRules = filmTypeChangeRules;
+    }
+
+    public async Task SetProductionID(ID productionId)
+    {
+        if (ProductionID != productionId)
+        {
+            var isProductionExists = await _productionRepository.IsProductionExists(productionId);
+
+            if (!isProductionExists)
+                throw new ProductionWasNotFoundException(productionId);
+
+            ProductionID = productionId;
+        }
     }
 }

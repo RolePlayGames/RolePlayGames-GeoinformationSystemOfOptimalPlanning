@@ -4,6 +4,7 @@ using GSOP.Infrastructure.DataAccess.FilmTypes;
 using GSOP.Infrastructure.DataAccess.Orders;
 using GSOP.Infrastructure.DataAccess.ProductionLines;
 using GSOP.Infrastructure.DataAccess.ProductionLines.ProductionRules;
+using GSOP.Infrastructure.DataAccess.Productions;
 using LinqToDB;
 
 namespace GSOP.Infrastructure.DataAccess;
@@ -25,6 +26,8 @@ public class DatabaseConnection : LinqToDB.Data.DataConnection
     public virtual ITable<NozzleChangeRulePOCO> NozzleChangeRules => this.GetTable<NozzleChangeRulePOCO>();
 
     public virtual ITable<OrderPOCO> Orders => this.GetTable<OrderPOCO>();
+
+    public virtual ITable<ProductionPOCO> Productions => this.GetTable<ProductionPOCO>();
 
     public virtual ITable<ProductionLinePOCO> ProductionLines => this.GetTable<ProductionLinePOCO>();
 

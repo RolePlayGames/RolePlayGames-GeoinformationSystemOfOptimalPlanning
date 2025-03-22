@@ -15,7 +15,7 @@ public class CustomerTest
     {
         _customerRepositoryMock = new(MockBehavior.Strict);
         _customerName = new CustomerName("James");
-        _customer = new Customer(_customerName, _customerRepositoryMock.Object);
+        _customer = new Customer(_customerName, null, _customerRepositoryMock.Object);
     }
 
     [Fact]

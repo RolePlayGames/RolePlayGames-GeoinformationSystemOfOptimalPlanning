@@ -53,6 +53,7 @@ export type ProductionLine = {
 	coolingLipChangeRules: CoolingLipChangeRule[],
 	filmTypeChangeRules: FilmTypeChangeRule[],
 	nozzleChangeRules: NozzleChangeRule[],
+	productionID: number,
 }
 
 export const getProductionLinesInfo = async () => {
