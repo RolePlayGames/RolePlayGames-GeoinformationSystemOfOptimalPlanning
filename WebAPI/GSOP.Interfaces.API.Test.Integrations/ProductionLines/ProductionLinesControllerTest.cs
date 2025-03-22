@@ -31,6 +31,7 @@ public class ProductionLinesControllerTest : WebIntegrationTestBase
         CalibratoinChangeRules = [new CalibratoinChangeRuleDTO { CalibrationTo = 25, ChangeTime = TimeSpan.FromMinutes(15), ChangeConsumption = 8 }],
         CoolingLipChangeRules = [new CoolingLipChangeRuleDTO { CoolingLipTo = 5, ChangeTime = TimeSpan.FromMinutes(15), ChangeConsumption = 8 }],
         FilmTypeChangeRules = [new FilmTypeChangeRuleDTO { FilmRecipeFromID = 1, FilmRecipeToID = 2, ChangeTime = TimeSpan.FromMinutes(15), ChangeConsumption = 8 }],
+        ProductionID = 1,
     };
 
     private static readonly ProductionLineDTO _newProductionLine = new()
@@ -51,6 +52,7 @@ public class ProductionLinesControllerTest : WebIntegrationTestBase
         CalibratoinChangeRules = [new CalibratoinChangeRuleDTO { CalibrationTo = 25, ChangeTime = TimeSpan.FromMinutes(30), ChangeConsumption = 10 }],
         CoolingLipChangeRules = [new CoolingLipChangeRuleDTO { CoolingLipTo = 15, ChangeTime = TimeSpan.FromMinutes(30), ChangeConsumption = 10 }],
         FilmTypeChangeRules = [new FilmTypeChangeRuleDTO { FilmRecipeFromID = 1, FilmRecipeToID = 2, ChangeTime = TimeSpan.FromMinutes(30), ChangeConsumption = 10 }],
+        ProductionID = 2,
     };
 
     private readonly Mock<IProductionLineRepository> _productionLineRepositoryMock;

@@ -21,6 +21,7 @@ public class ProductionLineReader : ModelReader<ProductionLineModel>
         var widthChangeTime = cells[rowNum, 10].Value?.ToString();
         var widthChangeConsumption = cells[rowNum, 11].Value?.ToString();
         var setupTime = cells[rowNum, 12].Value?.ToString();
+        var productionName = cells[rowNum, 13].Value?.ToString();
 
         return name is null
             || name == string.Empty
@@ -35,6 +36,8 @@ public class ProductionLineReader : ModelReader<ProductionLineModel>
             || !int.TryParse(widthChangeTime, out var widthChangeTimeNum)
             || !double.TryParse(widthChangeConsumption, out var widthChangeConsumptionNum)
             || !int.TryParse(setupTime, out var setupTimeNum)
+            || productionName is null
+            || productionName == string.Empty
             ? null
             : new()
             {
@@ -50,6 +53,7 @@ public class ProductionLineReader : ModelReader<ProductionLineModel>
                 WidthChangeTimeMinutes = widthChangeTimeNum,
                 WidthChangeConsumption = widthChangeConsumptionNum,
                 SetupTimeMinutes = setupTimeNum,
+                ProductionName = productionName,
             };
     }
 }

@@ -5,14 +5,16 @@ import { ProductionLine, getProductionLine } from "./productionLinesClient";
 import { ProductionLineElement } from "./ProductionLineElement";
 import { AvaliableFilmType } from "../film-recipes/filmRecipesClient";
 import { toast } from "react-toastify";
+import { ProductionInfo } from "../productions/productionsClient";
 
 type ProductionLinePageProps = {
     id: number,
     apiPath: string,
 	filmTypes: AvaliableFilmType[],
+	productions: ProductionInfo[],
 }
 
-export const ProductionLinePage = ({ id, apiPath, filmTypes }: ProductionLinePageProps) => {
+export const ProductionLinePage = ({ id, apiPath, filmTypes, productions }: ProductionLinePageProps) => {
 
 	const [item, setItem] = useState<ProductionLine | undefined>();
 
@@ -43,6 +45,7 @@ export const ProductionLinePage = ({ id, apiPath, filmTypes }: ProductionLinePag
 					coolingLipChangeRules: [],
 					filmTypeChangeRules: [],
 					nozzleChangeRules: [],
+					productionID: 0,
 				};
 		} catch {
 			toast.error('Произошла ошибка при загрузке данных');
@@ -64,7 +67,7 @@ export const ProductionLinePage = ({ id, apiPath, filmTypes }: ProductionLinePag
 		);
 	else 
 		return (
-			<ProductionLineElement id={id} item={item} apiPath={apiPath} filmTypes={filmTypes}/>
+			<ProductionLineElement id={id} item={item} apiPath={apiPath} filmTypes={filmTypes} productions={productions}/>
 		);
     
 }

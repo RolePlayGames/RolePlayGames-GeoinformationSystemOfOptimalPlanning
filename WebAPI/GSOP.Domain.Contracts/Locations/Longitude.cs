@@ -1,4 +1,4 @@
-﻿namespace GSOP.Domain.Contracts.Customers.Models;
+﻿namespace GSOP.Domain.Contracts.Locations;
 
 public record Longitude
 {
@@ -15,5 +15,5 @@ public record Longitude
 
     public static implicit operator decimal?(Longitude? longitude) => longitude?._longitude;
 
-    public static explicit operator Longitude?(decimal? longitude) => longitude.HasValue ? new (longitude.Value) : null;
+    public static explicit operator Longitude?(decimal? longitude) => longitude.HasValue ? new(longitude.Value) : null;
 }

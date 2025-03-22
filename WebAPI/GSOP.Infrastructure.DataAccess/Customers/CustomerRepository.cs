@@ -1,6 +1,7 @@
 ﻿using GSOP.Domain.Contracts;
 using GSOP.Domain.Contracts.Customers;
 using GSOP.Domain.Contracts.Customers.Models;
+using GSOP.Domain.Contracts.Locations;
 using LinqToDB;
 
 namespace GSOP.Infrastructure.DataAccess.Customers;

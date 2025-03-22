@@ -44,6 +44,7 @@ public class ProductionLineRepository : IProductionLineRepository
                 WidthChangeTime = productionLine.WidthChangeRule.ChangeTime,
                 WidthChangeConsumption = productionLine.WidthChangeRule.ChangeConsumption,
                 SetupTime = productionLine.SetupTime,
+                ProductionID = productionLine.ProductionID,
             });
 
             foreach (var cailbrationChangeRule in productionLine.CalibratoinChangeRules)
@@ -154,6 +155,7 @@ public class ProductionLineRepository : IProductionLineRepository
                 CoolingLipChangeRules = coolingLipChangeRules,
                 FilmTypeChangeRules = filmTypeChangeRules,
                 NozzleChangeRules = nozzleChangeRules,
+                ProductionID = x.ProductionID,
             })
             .FirstOrDefaultAsync();
 

@@ -16,6 +16,7 @@ public class ProductionDataReader : IProductionDataReader
     private readonly IModelReader<CoolingLipChangeRuleModel> _coolingLipChangeRuleReader;
     private readonly IModelReader<FilmTypeChangeRuleModel> _filmTypeChangeRuleReader;
     private readonly IModelReader<NozzleChangeRuleModel> _nozzleChangeRuleReader;
+    private readonly IModelReader<ProductionModel> _productionReader;
 
     public ProductionDataReader(
         IModelReader<FilmTypeModel> filmTypeReader,
@@ -26,7 +27,8 @@ public class ProductionDataReader : IProductionDataReader
         IModelReader<CalibratoinChangeRuleModel> calibrationChangeRuleReader,
         IModelReader<CoolingLipChangeRuleModel> coolingLipChangeRuleReader,
         IModelReader<FilmTypeChangeRuleModel> filmTypeChangeRuleReader,
-        IModelReader<NozzleChangeRuleModel> nozzleChangeRuleReader)
+        IModelReader<NozzleChangeRuleModel> nozzleChangeRuleReader,
+        IModelReader<ProductionModel> productionReader)
     {
         _filmTypeReader = filmTypeReader;
         _filmRecipeReader = filmRecipeReader;
@@ -37,6 +39,7 @@ public class ProductionDataReader : IProductionDataReader
         _coolingLipChangeRuleReader = coolingLipChangeRuleReader;
         _filmTypeChangeRuleReader = filmTypeChangeRuleReader;
         _nozzleChangeRuleReader = nozzleChangeRuleReader;
+        _productionReader = productionReader;
 
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
     }
@@ -54,6 +57,7 @@ public class ProductionDataReader : IProductionDataReader
         var coolingLipChangeRules = _coolingLipChangeRuleReader.Read(package);
         var filmTypeChangeRules = _filmTypeChangeRuleReader.Read(package);
         var nozzleChangeRules = _nozzleChangeRuleReader.Read(package);
+        var productions = _productionReader.Read(package);
 
         return new()
         {
@@ -66,6 +70,7 @@ public class ProductionDataReader : IProductionDataReader
             CoolingLipChangeRules = coolingLipChangeRules,
             FilmTypeChangeRules = filmTypeChangeRules,
             NozzleChangeRules = nozzleChangeRules,
+            Productions = productions,
         };
     }
 }

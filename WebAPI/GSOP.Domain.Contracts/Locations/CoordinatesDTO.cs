@@ -1,4 +1,4 @@
-﻿namespace GSOP.Domain.Contracts.Customers.Models;
+﻿namespace GSOP.Domain.Contracts.Locations;
 
 public record CoordinatesDTO
 {

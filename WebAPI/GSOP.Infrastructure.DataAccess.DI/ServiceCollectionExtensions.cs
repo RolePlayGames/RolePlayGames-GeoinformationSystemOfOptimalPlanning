@@ -4,6 +4,7 @@ using GSOP.Domain.Contracts.FilmTypes;
 using GSOP.Domain.Contracts.Orders;
 using GSOP.Domain.Contracts.ProductionData;
 using GSOP.Domain.Contracts.ProductionLines;
+using GSOP.Domain.Contracts.Productions;
 using GSOP.Infrastructure.DataAccess.Connections;
 using GSOP.Infrastructure.DataAccess.Contracts.Migrations;
 using GSOP.Infrastructure.DataAccess.Customers;
@@ -13,6 +14,7 @@ using GSOP.Infrastructure.DataAccess.Migrations;
 using GSOP.Infrastructure.DataAccess.Orders;
 using GSOP.Infrastructure.DataAccess.ProductionData;
 using GSOP.Infrastructure.DataAccess.ProductionLines;
+using GSOP.Infrastructure.DataAccess.Productions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GSOP.Infrastructure.DataAccess.DI;
@@ -33,6 +35,7 @@ public static class ServiceCollectionExtensions
         .AddScoped<IFilmRecipeRepository, FilmRecipeRepository>()
         .AddScoped<IFilmTypeRepository, FilmTypeRepository>()
         .AddScoped<IOrderRepository, OrderRepository>()
+        .AddScoped<IProductionRepository, ProductionRepository>()
         .AddScoped<IProductionLineRepository, ProductionLineRepository>()
         .AddScoped<IProductionDataRepository, ProductionDataRepository>()
         .AddMigratorConnection()

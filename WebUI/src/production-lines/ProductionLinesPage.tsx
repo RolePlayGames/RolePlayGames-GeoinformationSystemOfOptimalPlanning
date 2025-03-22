@@ -8,6 +8,7 @@ import { getProductionLinesInfo } from "./productionLinesClient";
 import { PRODUCTION_LINES } from "../routes/routes";
 import { AvaliableFilmType, getAvaliableFilmTypes } from "../film-recipes/filmRecipesClient";
 import { toast } from "react-toastify";
+import { getProductionsInfo, ProductionInfo } from "../productions/productionsClient";
 
 const apiPath = PRODUCTION_LINES;
 
@@ -20,6 +21,7 @@ export const ProductionLinesPage = () => {
 
 	const [items, setItems] = useState<ListItem[]>();
 	const [filmTypes, setFilmTypes] = useState<AvaliableFilmType[]>();
+	const [productions, setProductions] = useState<ProductionInfo[]>();
 
 	const navigate = useNavigate();
 
@@ -30,6 +32,15 @@ export const ProductionLinesPage = () => {
 			
 			const filmTypes = await getAvaliableFilmTypes();
 			setFilmTypes(filmTypes);
+				
+			const productions = await getProductionsInfo();
+			setProductions(productions);
+
+			if (filmTypes?.length === 0)
+				toast.error('В системе отсутствуют типы материала. Для создания правил производственных линий создайте хотя бы одно производство');
+
+			if (productions?.length === 0)
+				toast.error('В системе отсутствуют производства. Для создания производственных линий создайте хотя бы одно производство');
 		} catch {
 			toast.error('Произошла ошибка при чтении данных');
 		}
@@ -57,7 +68,7 @@ export const ProductionLinesPage = () => {
 	return(
 		<PageContainer>
 			<HeaderLabel>Производственные линии</HeaderLabel>
-			{ items === undefined || filmTypes === undefined ? (
+			{ items === undefined || filmTypes === undefined || productions === undefined ? (
 				<LoadingProgress/>
 			) : (
 				<ItemsContainer>
@@ -67,7 +78,7 @@ export const ProductionLinesPage = () => {
 							{ items.map((item) => (<Item item={item} handleItemClick={handleItemClick}/>)) }
 						</ItemsList>
 					</ItemsBlock>
-					{ (itemId !== undefined && isVisible) && <ProductionLinePage id={itemId} apiPath={apiPath} filmTypes={filmTypes}/> }
+					{ (itemId !== undefined && isVisible) && <ProductionLinePage id={itemId} apiPath={apiPath} filmTypes={filmTypes} productions={productions}/> }
 				</ItemsContainer>
 			)}
 		</PageContainer>

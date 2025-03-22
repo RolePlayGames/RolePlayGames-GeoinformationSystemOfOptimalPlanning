@@ -2,17 +2,19 @@
 using GSOP.Domain.Contracts.ProductionLines;
 using GSOP.Domain.Contracts.ProductionLines.Exceptions;
 using GSOP.Domain.Contracts.ProductionLines.Models;
-using GSOP.Domain.Contracts.ProductionLines.ProductionRules;
+using GSOP.Domain.Contracts.Productions;
 
 namespace GSOP.Domain.ProductionLines;
 
 public class ProductionLineFactory : IProductionLineFactory
 {
     private readonly IProductionLineRepository _productionLineRepository;
+    private readonly IProductionRepository _productionRepository;
 
-    public ProductionLineFactory(IProductionLineRepository productionLineRepository)
+    public ProductionLineFactory(IProductionLineRepository productionLineRepository, IProductionRepository productionRepository)
     {
         _productionLineRepository = productionLineRepository;
+        _productionRepository = productionRepository;
     }
 
     public async Task<IProductionLine> Create(long id)
@@ -33,7 +35,7 @@ public class ProductionLineFactory : IProductionLineFactory
         var calibratoinChangeRules = productionLine.CalibratoinChangeRules.Select(x => new CalibratoinChangeRule { CalibrationTo = new(x.CalibrationTo), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
         var coolingLipChangeRules = productionLine.CoolingLipChangeRules.Select(x => new CoolingLipChangeRule { CoolingLipTo = new(x.CoolingLipTo), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
         var filmTypeChangeRules = productionLine.FilmTypeChangeRules.Select(x => new FilmTypeChangeRule { FilmTypeFromID = new(x.FilmRecipeFromID), FilmTypeToID = new(x.FilmRecipeToID), ChangeValueRule = new(x.ChangeTime, x.ChangeConsumption) }).ToList();
-
+        var productionID = new ID(productionLine.ProductionID);
 
         return new ProductionLine(
             name,
@@ -44,11 +46,13 @@ public class ProductionLineFactory : IProductionLineFactory
             thicknessChangeRule,
             widthChangeRule,
             setupTime,
+            productionID,
             nozzleChangeRules,
             calibratoinChangeRules,
             coolingLipChangeRules,
             filmTypeChangeRules,
-            _productionLineRepository);
+            _productionLineRepository,
+            _productionRepository);
     }
 
     public async Task<IProductionLine> Create(ProductionLineDTO productionLine)
@@ -59,6 +63,9 @@ public class ProductionLineFactory : IProductionLineFactory
 
         if (isNameExsits)
             throw new ProductionLineNameAlreadyExistsException(name);
+
+        var productionID = new ID(productionLine.ProductionID);
+        var isProductionExists = await _productionRepository.IsProductionExists(productionID);
 
         var hourCost = new ProductionLineHourCost(productionLine.HourCost);
         var maxProductionSpeed = new ProductionLineMaxProductionSpeed(productionLine.MaxProductionSpeed);
@@ -81,10 +88,12 @@ public class ProductionLineFactory : IProductionLineFactory
             thicknessChangeRule,
             widthChangeRule,
             setupTime,
+            productionID,
             nozzleChangeRules,
             calibratoinChangeRules,
             coolingLipChangeRules,
             filmTypeChangeRules,
-            _productionLineRepository);
+            _productionLineRepository,
+            _productionRepository);
     }
 }

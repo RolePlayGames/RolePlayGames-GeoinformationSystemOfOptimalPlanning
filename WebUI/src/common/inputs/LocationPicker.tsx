@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
-import'leaflet/dist/leaflet.css';
+import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
 import { Box } from '@mui/material';
-import { InputField } from '../common/inputs';
+import { InputField } from './inputs';
 
 const defaultZoom = 13;
 const defaultPosition: [number, number] = [59.57, 30.19];
@@ -20,13 +20,13 @@ const removeMapFlag = () => {
 	}
 };
 
-export interface CustomerLocationSelectorProps {
+export interface LocationPickerProps {
     initialLatitude?: number;
     initialLongitude?: number;
     onLocationChange: (latitude: number | undefined, longitude: number | undefined) => void;
 }
 
-export const CustomerLocationSelector: React.FC<CustomerLocationSelectorProps> = ({
+export const LocationPicker: React.FC<LocationPickerProps> = ({
 	initialLatitude,
 	initialLongitude,
 	onLocationChange,

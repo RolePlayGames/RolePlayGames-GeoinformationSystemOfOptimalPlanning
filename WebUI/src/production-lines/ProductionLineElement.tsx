@@ -6,7 +6,7 @@ import { convertToNumber } from "../utils/number-converters/numberConverter";
 import { useItemField, useItemFieldWithValidation } from "../common/useItemField";
 import { Dayjs } from "dayjs";
 import { IClientError } from "../common/clients/clientError";
-import { InputField } from "../common/inputs";
+import { InputField, SelectField } from "../common/inputs";
 import { validateHourCost, validateMaxProductionSpeed, validateMaxThickness, validateMaxWidth, validateMinThickness, validateMinWidth, validateName, validateWidthChangeConsumption } from "./validations";
 import { TimeWithoutSelectField } from "../common/inputs/TimeField";
 import { AccordionDetails } from "@mui/material";
@@ -19,6 +19,7 @@ import { NozzleChangeRuleComponent } from "./rules/NozzleChangeRuleComponent";
 import { AvaliableFilmType } from "../film-recipes/filmRecipesClient";
 import { ChangeRuleList, ChangeRuleHeader } from "./rules/ChangeRuleList";
 import { toast } from "react-toastify";
+import { ProductionInfo } from "../productions/productionsClient";
 
 const calibrationChangeRulesCheck = (rules: CalibratoinChangeRule[]) => rules.filter(checkRule => rules.filter(rule => checkRule !== rule && checkRule.calibrationTo === rule.calibrationTo).length > 0).length == 0;
 const coolingLipChangeRulesCheck = (rules: CoolingLipChangeRule[]) => rules.filter(checkRule => rules.filter(rule => checkRule !== rule && checkRule.coolingLipTo === rule.coolingLipTo).length > 0).length == 0;
@@ -30,10 +31,12 @@ type ProductionLineElementProps = {
     item: ProductionLine,
     apiPath: string,
 	filmTypes: AvaliableFilmType[],
+	productions: ProductionInfo[],
 }
 
-export const ProductionLineElement = ({ id, item, apiPath, filmTypes }: ProductionLineElementProps) => {
+export const ProductionLineElement = ({ id, item, apiPath, filmTypes, productions }: ProductionLineElementProps) => {
 	const [name, setName, nameError, setNameError] = useItemFieldWithValidation<ProductionLine, string>(item, x => x.name, validateName);
+	const [productionID, setProductionID] = useItemField<ProductionLine, number | undefined>(item, item => productions.findIndex(x => x.id === item.productionID) > -1 ? item.productionID : productions[0].id);
 	const [hourCost, setHourCost, hourCostError] = useItemFieldWithValidation<ProductionLine, string>(item, x => x.hourCost.toString(), validateHourCost);
 	const [maxProductionSpeed, setMaxProductionSpeed, maxProductionSpeedError] = useItemFieldWithValidation<ProductionLine, string>(item, x => x.maxProductionSpeed.toString(), validateMaxProductionSpeed);
 	const [minWidth, setMinWidth, minWidthError] = useItemFieldWithValidation<ProductionLine, string>(item, x => x.widthMin.toString(), validateMinWidth);
@@ -106,6 +109,7 @@ export const ProductionLineElement = ({ id, item, apiPath, filmTypes }: Producti
 			&& thicknessChangeTime !== null
 			&& thicknessChangeConsumptionNumber !== undefined
 			&& setupTime !== null
+			&& productionID !== undefined
 			&& calibrationChangeRulesCheck(calibratoinChangeRules)
 			&& coolingLipChangeRulesCheck(coolingLipChangeRules)
 			&& filmTypeChangeRulesCheck(filmTypeChangeRules)
@@ -128,6 +132,7 @@ export const ProductionLineElement = ({ id, item, apiPath, filmTypes }: Producti
 				coolingLipChangeRules: coolingLipChangeRules,
 				filmTypeChangeRules: filmTypeChangeRules,
 				nozzleChangeRules: nozzleChangeRules,
+				productionID: productionID,
 			};
 
 			if (id > 0) 
@@ -281,6 +286,13 @@ export const ProductionLineElement = ({ id, item, apiPath, filmTypes }: Producti
 				value={name}
 				onChange={setName}
 				errorText={nameError}/>
+			<SelectField
+				label='Производство'
+				items={productions}
+				onItemChanged={setProductionID}
+				variant='standard'
+				value={productionID}
+			/>
 			<InputField
 				label='Стоимость часа работы, у.е./ч.'
 				value={hourCost}

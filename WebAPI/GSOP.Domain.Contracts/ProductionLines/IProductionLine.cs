@@ -20,6 +20,8 @@ public interface IProductionLine
 
     ProductionLineSetupTime SetupTime { get; }
 
+    ID ProductionID { get; }
+
     IReadOnlyCollection<NozzleChangeRule> NozzleChangeRules { get; }
 
     IReadOnlyCollection<CalibratoinChangeRule> CalibratoinChangeRules { get; }
@@ -51,4 +53,6 @@ public interface IProductionLine
     void SetCoolingLipChangeRules(IReadOnlyCollection<CoolingLipChangeRule> coolingLipChangeRules);
 
     void SetFilmTypeChangeRules(IReadOnlyCollection<FilmTypeChangeRule> filmTypeChangeRules);
+
+    Task SetProductionID(ID productionId);
 }
