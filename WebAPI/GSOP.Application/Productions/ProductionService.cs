@@ -3,6 +3,7 @@ using GSOP.Domain.Contracts;
 using GSOP.Domain.Contracts.Productions;
 using GSOP.Domain.Contracts.Productions.Exceptions;
 using GSOP.Domain.Contracts.Productions.Models;
+using GSOP.Domain.Contracts.Routes;
 
 namespace GSOP.Application.Productions;
 
@@ -11,11 +12,15 @@ public class ProductionService : IProductionService
 {
     private readonly IProductionFactory _productionFactory;
     private readonly IProductionRepository _productionRepository;
+    private readonly IRouteFactory _routeFactory;
+    private readonly IRouteRepository _routeRepository;
 
-    public ProductionService(IProductionFactory productionFactory, IProductionRepository productionRepository)
+    public ProductionService(IProductionFactory productionFactory, IProductionRepository productionRepository, IRouteFactory routeFactory, IRouteRepository routeRepository)
     {
         _productionFactory = productionFactory;
         _productionRepository = productionRepository;
+        _routeFactory = routeFactory;
+        _routeRepository = routeRepository;
     }
 
     /// <inheritdoc/>
@@ -23,7 +28,16 @@ public class ProductionService : IProductionService
     {
         var newProduction = await _productionFactory.CreateProduction(production);
 
-        return await _productionRepository.CreateProduction(newProduction);
+        var productionId = await _productionRepository.CreateProduction(newProduction);
+
+        var routes = await _routeFactory.CreateProductionRoutes(new(productionId));
+
+        foreach (var route in routes)
+        {
+            await _routeRepository.Create(route);
+        }
+
+        return productionId;
     }
 
     /// <inheritdoc/>

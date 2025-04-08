@@ -5,6 +5,7 @@ using GSOP.Application.Contracts.Orders;
 using GSOP.Application.Contracts.ProductionData;
 using GSOP.Application.Contracts.ProductionLines;
 using GSOP.Application.Contracts.Productions;
+using GSOP.Application.Contracts.Routes;
 using GSOP.Application.Customers;
 using GSOP.Application.FilmRecipes;
 using GSOP.Application.FilmTypes;
@@ -13,6 +14,7 @@ using GSOP.Application.Orders;
 using GSOP.Application.ProductionData;
 using GSOP.Application.ProductionLines;
 using GSOP.Application.Productions;
+using GSOP.Application.Routes;
 using GSOP.Domain.Contracts.Optimization;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,6 +35,7 @@ public static class ServiceCollectionExtensions
             .AddProductionLineComponents()
             .AddProductionDataComponents()
             .AddOptimization()
+            .AddRouteComponents()
             ;
 
     internal static IServiceCollection AddCustomerComponents(this IServiceCollection serviceCollection)
@@ -46,6 +49,10 @@ public static class ServiceCollectionExtensions
     internal static IServiceCollection AddFilmTypeComponents(this IServiceCollection serviceCollection)
         => serviceCollection
             .AddScoped<IFilmTypeSerivce, FilmTypeService>();
+
+    internal static IServiceCollection AddOptimization(this IServiceCollection serviceCollection)
+        => serviceCollection
+            .AddScoped<IProductionPlanner, ProductionPlanner>();
 
     internal static IServiceCollection AddOrderComponents(this IServiceCollection serviceCollection)
         => serviceCollection
@@ -63,7 +70,7 @@ public static class ServiceCollectionExtensions
         => serviceCollection
             .AddScoped<IProductionDataService, ProductionDataService>();
 
-    internal static IServiceCollection AddOptimization(this IServiceCollection serviceCollection)
+    internal static IServiceCollection AddRouteComponents(this IServiceCollection serviceCollection)
         => serviceCollection
-            .AddScoped<IProductionPlanner, ProductionPlanner>();
+            .AddScoped<IRouteService, RouteService>();
 }

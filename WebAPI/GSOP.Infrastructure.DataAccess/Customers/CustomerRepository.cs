@@ -65,4 +65,12 @@ public class CustomerRepository : ICustomerRepository
             .Where(x => x.Name == customerName)
             .AnyAsync();
     }
+
+    /// <inheritdoc/>
+    public Task<bool> IsCustomerExsits(ID id)
+    {
+        return _connection.Customers
+            .Where(x => x.ID == id)
+            .AnyAsync();
+    }
 }

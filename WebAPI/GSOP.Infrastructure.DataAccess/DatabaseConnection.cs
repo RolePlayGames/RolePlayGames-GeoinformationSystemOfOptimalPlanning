@@ -5,6 +5,7 @@ using GSOP.Infrastructure.DataAccess.Orders;
 using GSOP.Infrastructure.DataAccess.ProductionLines;
 using GSOP.Infrastructure.DataAccess.ProductionLines.ProductionRules;
 using GSOP.Infrastructure.DataAccess.Productions;
+using GSOP.Infrastructure.DataAccess.Routes;
 using LinqToDB;
 
 namespace GSOP.Infrastructure.DataAccess;
@@ -30,6 +31,8 @@ public class DatabaseConnection : LinqToDB.Data.DataConnection
     public virtual ITable<ProductionPOCO> Productions => this.GetTable<ProductionPOCO>();
 
     public virtual ITable<ProductionLinePOCO> ProductionLines => this.GetTable<ProductionLinePOCO>();
+
+    public virtual ITable<RoutePOCO> Routes => this.GetTable<RoutePOCO>();
 
     public DatabaseConnection(DataOptions<DatabaseConnection> options) : base(options.Options)
     {

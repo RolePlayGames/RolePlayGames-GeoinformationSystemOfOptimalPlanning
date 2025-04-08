@@ -3,6 +3,7 @@ using GSOP.Domain.Contracts;
 using GSOP.Domain.Contracts.Customers;
 using GSOP.Domain.Contracts.Customers.Exceptions;
 using GSOP.Domain.Contracts.Customers.Models;
+using GSOP.Domain.Contracts.Routes;
 
 namespace GSOP.Application.Customers;
 
@@ -11,11 +12,15 @@ public class CustomerService : ICustomerService
 {
     private readonly ICustomerFactory _customerFactory;
     private readonly ICustomerRepository _customerRepository;
+    private readonly IRouteFactory _routeFactory;
+    private readonly IRouteRepository _routeRepository;
 
-    public CustomerService(ICustomerFactory customerFactory, ICustomerRepository customerRepository)
+    public CustomerService(ICustomerFactory customerFactory, ICustomerRepository customerRepository, IRouteFactory routeFactory, IRouteRepository routeRepository)
     {
         _customerFactory = customerFactory;
         _customerRepository = customerRepository;
+        _routeFactory = routeFactory;
+        _routeRepository = routeRepository;
     }
 
     /// <inheritdoc/>
@@ -23,7 +28,16 @@ public class CustomerService : ICustomerService
     {
         var newCustomer = await _customerFactory.CreateCustomer(customer);
 
-        return await _customerRepository.CreateCustomer(newCustomer);
+        var customerId = await _customerRepository.CreateCustomer(newCustomer);
+
+        var routes = await _routeFactory.CreateCustomerRoutes(new(customerId));
+
+        foreach (var route in routes)
+        {
+            await _routeRepository.Create(route);
+        }
+
+        return customerId;
     }
 
     /// <inheritdoc/>
