@@ -7,6 +7,7 @@ using GSOP.Application.Contracts.ProductionData.Models;
 using GSOP.Application.Contracts.ProductionData.Models.ChangeRules;
 using GSOP.Application.Contracts.ProductionLines;
 using GSOP.Application.Contracts.Productions;
+using GSOP.Application.Contracts.Routes;
 using GSOP.Domain.Contracts.Customers.Models;
 using GSOP.Domain.Contracts.FilmRecipes.Models;
 using GSOP.Domain.Contracts.FilmTypes.Models;
@@ -15,6 +16,8 @@ using GSOP.Domain.Contracts.ProductionData;
 using GSOP.Domain.Contracts.ProductionLines.Models;
 using GSOP.Domain.Contracts.ProductionLines.ProductionRules;
 using GSOP.Domain.Contracts.Productions.Models;
+using GSOP.Domain.Contracts.Routes.Models;
+using System.Collections.Frozen;
 
 namespace GSOP.Application.ProductionData;
 
@@ -27,6 +30,7 @@ public class ProductionDataService : IProductionDataService
     private readonly IOrderService _orderService;
     private readonly IProductionLineService _productionLineService;
     private readonly IProductionService _productionService;
+    private readonly IRouteService _routeService;
 
     public ProductionDataService(
         IProductionDataRepository productionDataRepository,
@@ -35,7 +39,8 @@ public class ProductionDataService : IProductionDataService
         ICustomerService customerService,
         IOrderService orderService,
         IProductionLineService productionLineService,
-        IProductionService productionService)
+        IProductionService productionService,
+        IRouteService routeService)
     {
         _productionDataRepository = productionDataRepository;
         _filmTypeSerivce = filmTypeSerivce;
@@ -44,6 +49,7 @@ public class ProductionDataService : IProductionDataService
         _orderService = orderService;
         _productionLineService = productionLineService;
         _productionService = productionService;
+        _routeService = routeService;
     }
 
     public async Task<Contracts.ProductionData.ProductionData> Export()
@@ -106,6 +112,16 @@ public class ProductionDataService : IProductionDataService
         {
             var productionLine = await _productionLineService.GetProductionLine(info.ID);
             productionLines.Add(productionLine);
+        }
+
+        var routesInfo = await _routeService.GetRoutesInfo();
+
+        var routes = new List<RouteReadDTO>(customersInfo.Count * productionLinesInfo.Count);
+
+        foreach (var info in routesInfo)
+        {
+            var route = await _routeService.GetRoute(info.ID);
+            routes.Add(route);
         }
 
         var filmTypeArticleById = filmTypesInfo.ToDictionary(x => x.ID, x => x.Name);
@@ -187,6 +203,7 @@ public class ProductionDataService : IProductionDataService
                 ProductionLineName = x.Name,
             })).ToList(),
             Productions = productions.Select(x => new ProductionModel { Name = x.Name, Latitude = x.Coordinates?.Latitude, Longitude = x.Coordinates?.Longitude }).ToList(),
+            Routes = routes.Select(x => new RouteModel { CustomerName = x.CustomerInfo.EntityName, ProductionName = x.ProductionInfo.EntityName, Price = x.Price, DrivingTimeMinutes = (int)x.DrivingTime.TotalMinutes }).ToList(),
         };
     }
 
@@ -310,6 +327,29 @@ public class ProductionDataService : IProductionDataService
             }))
             {
                 await _productionLineService.CreateProductionLine(dto);
+            }
+
+            var routesData = data.Routes.Select(x =>
+            {
+                var productionId = productions.TryGetValue(x.ProductionName, out var production) ? production : throw new ProductionDataImportItemNotFoundException(typeof(ProductionDTO), x.ProductionName);
+                var customerId = customers.TryGetValue(x.CustomerName, out var customer) ? customer : throw new ProductionDataImportItemNotFoundException(typeof(CustomerDTO), x.CustomerName);
+
+                return new { productionId, customerId, x.Price, x.DrivingTimeMinutes };
+            }).GroupBy(x => x.productionId)
+            .ToFrozenDictionary(x => x.Key, x => x.GroupBy(x => x.customerId).ToDictionary(x => x.Key, x => x.First()));
+
+            var routesInfo = await _routeService.GetRoutesInfo();
+
+            foreach (var routeInfo in routesInfo)
+            {
+                var route = await _routeService.GetRoute(routeInfo.ID);
+
+                if (routesData.TryGetValue(route.ProductionInfo.EntityID, out var productionRoutes) && productionRoutes.TryGetValue(route.CustomerInfo.EntityID, out var customerRoute))
+                {
+                    var writeModel = new RouteWriteDTO { DrivingTime = TimeSpan.FromMinutes(customerRoute.DrivingTimeMinutes), Price = customerRoute.Price };
+
+                    await _routeService.UpdateRoute(routeInfo.ID, writeModel);
+                }
             }
             
             await _productionDataRepository.EndImport();

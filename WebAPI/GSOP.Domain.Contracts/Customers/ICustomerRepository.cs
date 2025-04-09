@@ -42,6 +42,13 @@ public interface ICustomerRepository
     Task<bool> IsCustomerNameExsits(CustomerName customerName);
 
     /// <summary>
+    /// Is customer already exists
+    /// </summary>
+    /// <param name="id">Customer id</param>
+    /// <returns>True if customer exists</returns>
+    Task<bool> IsCustomerExsits(ID id);
+
+    /// <summary>
     /// Updates customer
     /// </summary>
     /// <param name="id">Customer id</param>

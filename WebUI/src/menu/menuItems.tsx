@@ -6,8 +6,9 @@ import PrecisionManufacturingOutlinedIcon from '@mui/icons-material/PrecisionMan
 import ImportExportOutlinedIcon from '@mui/icons-material/ImportExportOutlined';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import FactoryOutlinedIcon from '@mui/icons-material/FactoryOutlined';
+import RouteOutlinedIcon from '@mui/icons-material/RouteOutlined';
 import { white } from "../styles/colors";
-import { CUSTOMERS, FILM_RECIPES, FILM_TYPES, IMPORT_EXPORT, OPTIMAL_PLANNING, ORDERS, PRODUCTION_LINES, PRODUCTIONS } from "../routes/routes";
+import { CUSTOMERS, FILM_RECIPES, FILM_TYPES, IMPORT_EXPORT, OPTIMAL_PLANNING, ORDERS, PRODUCTION_LINES, PRODUCTIONS, ROUTES } from "../routes/routes";
 
 export const menuItems = [
 	{
@@ -39,6 +40,11 @@ export const menuItems = [
 		header: 'Производственные линии',
 		icon: <PrecisionManufacturingOutlinedIcon sx={{ color: white }}/>,
 		path: PRODUCTION_LINES,
+	},
+	{
+		header: 'Матрица маршрутов',
+		icon: <RouteOutlinedIcon sx={{ color: white }}/>,
+		path: ROUTES,
 	},
 	{
 		header: 'Импорт / Экспорт',

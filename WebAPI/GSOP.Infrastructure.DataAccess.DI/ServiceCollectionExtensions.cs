@@ -5,6 +5,7 @@ using GSOP.Domain.Contracts.Orders;
 using GSOP.Domain.Contracts.ProductionData;
 using GSOP.Domain.Contracts.ProductionLines;
 using GSOP.Domain.Contracts.Productions;
+using GSOP.Domain.Contracts.Routes;
 using GSOP.Infrastructure.DataAccess.Connections;
 using GSOP.Infrastructure.DataAccess.Contracts.Migrations;
 using GSOP.Infrastructure.DataAccess.Customers;
@@ -15,6 +16,7 @@ using GSOP.Infrastructure.DataAccess.Orders;
 using GSOP.Infrastructure.DataAccess.ProductionData;
 using GSOP.Infrastructure.DataAccess.ProductionLines;
 using GSOP.Infrastructure.DataAccess.Productions;
+using GSOP.Infrastructure.DataAccess.Routes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GSOP.Infrastructure.DataAccess.DI;
@@ -38,6 +40,7 @@ public static class ServiceCollectionExtensions
         .AddScoped<IProductionRepository, ProductionRepository>()
         .AddScoped<IProductionLineRepository, ProductionLineRepository>()
         .AddScoped<IProductionDataRepository, ProductionDataRepository>()
+        .AddScoped<IRouteRepository, RouteRepository>()
         .AddMigratorConnection()
         .AddLinqToDbConnection();
 }
