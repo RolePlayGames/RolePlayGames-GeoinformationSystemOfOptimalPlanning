@@ -17,6 +17,7 @@ public class ProductionDataReader : IProductionDataReader
     private readonly IModelReader<FilmTypeChangeRuleModel> _filmTypeChangeRuleReader;
     private readonly IModelReader<NozzleChangeRuleModel> _nozzleChangeRuleReader;
     private readonly IModelReader<ProductionModel> _productionReader;
+    private readonly IModelReader<RouteModel> _routeReader;
 
     public ProductionDataReader(
         IModelReader<FilmTypeModel> filmTypeReader,
@@ -28,7 +29,8 @@ public class ProductionDataReader : IProductionDataReader
         IModelReader<CoolingLipChangeRuleModel> coolingLipChangeRuleReader,
         IModelReader<FilmTypeChangeRuleModel> filmTypeChangeRuleReader,
         IModelReader<NozzleChangeRuleModel> nozzleChangeRuleReader,
-        IModelReader<ProductionModel> productionReader)
+        IModelReader<ProductionModel> productionReader,
+        IModelReader<RouteModel> routeReader)
     {
         _filmTypeReader = filmTypeReader;
         _filmRecipeReader = filmRecipeReader;
@@ -42,6 +44,7 @@ public class ProductionDataReader : IProductionDataReader
         _productionReader = productionReader;
 
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        _routeReader = routeReader;
     }
 
     public Application.Contracts.ProductionData.ProductionData ReadProductionData(Stream fileStream)
@@ -58,6 +61,7 @@ public class ProductionDataReader : IProductionDataReader
         var filmTypeChangeRules = _filmTypeChangeRuleReader.Read(package);
         var nozzleChangeRules = _nozzleChangeRuleReader.Read(package);
         var productions = _productionReader.Read(package);
+        var routes = _routeReader.Read(package);
 
         return new()
         {
@@ -71,6 +75,7 @@ public class ProductionDataReader : IProductionDataReader
             FilmTypeChangeRules = filmTypeChangeRules,
             NozzleChangeRules = nozzleChangeRules,
             Productions = productions,
+            Routes = routes,
         };
     }
 }

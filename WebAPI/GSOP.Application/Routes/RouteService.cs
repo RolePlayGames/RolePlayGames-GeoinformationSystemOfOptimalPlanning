@@ -43,7 +43,7 @@ public class RouteService : IRouteService
             },
             ProductionInfo = new()
             {
-                EntityID = routeModel.CustomerID,
+                EntityID = routeModel.ProductionID,
                 EntityName = production.Name,
                 EntityCoordinates = production.Coordinates is null
                     ? null

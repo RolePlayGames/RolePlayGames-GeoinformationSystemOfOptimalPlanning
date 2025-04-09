@@ -24,6 +24,7 @@ public class ProductionDataRepository : IProductionDataRepository
         await _connection.FilmRecipes.DeleteAsync();
         await _connection.FilmTypes.DeleteAsync();
         await _connection.Productions.DeleteAsync();
+        await _connection.Routes.DeleteAsync();
     }
 
     public async Task EndImport()

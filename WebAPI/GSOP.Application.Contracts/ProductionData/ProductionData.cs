@@ -24,4 +24,6 @@ public record ProductionData
     public required IReadOnlyCollection<NozzleChangeRuleModel> NozzleChangeRules { get; init; }
 
     public required IReadOnlyCollection<ProductionModel> Productions { get; init; }
+
+    public required IReadOnlyCollection<RouteModel> Routes { get; init; }
 }
