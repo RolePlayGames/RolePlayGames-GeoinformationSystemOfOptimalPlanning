@@ -64,33 +64,42 @@ export const RouteElement = ({ id, item, apiPath }: RouteElementProps) => {
 
 	const routeName = `${item.productionInfo.entityName} - ${item.customerInfo.entityName}`;
 
-    useEffect(() => {
-        const center: [number, number] = [
-            (item.productionInfo.entityCoordinates!.latitude + item.customerInfo.entityCoordinates!.latitude) / 2,
-            (item.productionInfo.entityCoordinates!.longitude + item.customerInfo.entityCoordinates!.longitude) / 2,
-        ];
-
-        setMapCenter(center);
-    }, [item]);
+	useEffect(() => {
+		if (item.productionInfo.entityCoordinates && item.customerInfo.entityCoordinates) {
+			const center: [number, number] = [
+				(item.productionInfo.entityCoordinates.latitude + item.customerInfo.entityCoordinates.latitude) / 2,
+				(item.productionInfo.entityCoordinates.longitude + item.customerInfo.entityCoordinates.longitude) / 2,
+			];
+	
+			setMapCenter(center);
+		} else 
+			setMapCenter(undefined);
+		
+	}, [item]);
 
 	useEffect(() => {
-		const getRoute = async () => {
-			const coordinates = await getRouteCoordinates(item.productionInfo.entityCoordinates!, item.customerInfo.entityCoordinates!);
-        
-			if (coordinates) {
-				setRouteCoordinates(coordinates.coordinates);
-				setRouteDistance(coordinates.distance);
-            
-				// Центрируем карту по маршруту
-				if (mapRef.current) {
-					const bounds = L.latLngBounds(coordinates.coordinates);
-					mapRef.current.fitBounds(bounds);
-				}
-			} else
-				toast.error('Неудалось построить маршрут между точками, попробуйте позже.');
-		};
-    
-		getRoute();
+		if (item.productionInfo.entityCoordinates && item.customerInfo.entityCoordinates) {
+			const getRoute = async () => {
+				const coordinates = await getRouteCoordinates(item.productionInfo.entityCoordinates!, item.customerInfo.entityCoordinates!);
+			
+				if (coordinates) {
+					setRouteCoordinates(coordinates.coordinates);
+					setRouteDistance(coordinates.distance);
+				
+					// Центрируем карту по маршруту
+					if (mapRef.current) {
+						const bounds = L.latLngBounds(coordinates.coordinates);
+						mapRef.current.fitBounds(bounds);
+					}
+				} else
+					toast.error('Неудалось построить маршрут между точками, попробуйте позже.');
+			};
+		
+			getRoute();
+		} else {
+			setRouteCoordinates([]);
+			setRouteDistance(undefined);
+		}
 	}, [item]);
 
 	const onUpdate = async (item: RouteWriteModel) => {
@@ -154,24 +163,23 @@ export const RouteElement = ({ id, item, apiPath }: RouteElementProps) => {
 				label='Время проезда по маршруту'
 				value={drivingTime}
 				onChange={setDrivingTime}/>
-			<MapContainer center={mapCenter} zoom={6} style={{ height: '500px', width: '100%' }} ref={mapRef}>
-				<TileLayer
-					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-					attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-				/>
-            
-				<Marker position={[item.productionInfo.entityCoordinates!.latitude, item.productionInfo.entityCoordinates!.longitude]}>
-					<Popup>{item.productionInfo.entityName}</Popup>
-				</Marker>
-            
-				<Marker position={[item.customerInfo.entityCoordinates!.latitude, item.customerInfo.entityCoordinates!.longitude]}>
-					<Popup>{item.customerInfo.entityName}</Popup>
-				</Marker>
-            
-				{routeCoordinates.length > 0 && (
-					<Polyline positions={routeCoordinates} color="blue" />
-				)}
-			</MapContainer>
+			{item.productionInfo.entityCoordinates && item.customerInfo.entityCoordinates && (
+				<MapContainer center={mapCenter} zoom={6} style={{ height: '500px', width: '100%' }} ref={mapRef}>
+					<TileLayer
+						url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+						attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+					/>            
+					<Marker position={[item.productionInfo.entityCoordinates!.latitude, item.productionInfo.entityCoordinates!.longitude]}>
+						<Popup>{item.productionInfo.entityName}</Popup>
+					</Marker>            
+					<Marker position={[item.customerInfo.entityCoordinates!.latitude, item.customerInfo.entityCoordinates!.longitude]}>
+						<Popup>{item.customerInfo.entityName}</Popup>
+					</Marker>            
+					{routeCoordinates.length > 0 && (
+						<Polyline positions={routeCoordinates} color="blue" />
+					)}
+				</MapContainer>
+			)}
 		</ElementContainer>
 	);
 }

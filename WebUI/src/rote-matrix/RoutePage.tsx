@@ -25,12 +25,10 @@ export const RoutePage = ({ id, apiPath }: RoutePageProps) => {
 
 			if (item !== undefined) {
 				if (!item.productionInfo.entityCoordinates)
-					toast.error(`Производство ${item.productionInfo.entityName} не имеет данных о местоположении. Попробуйте еще раз после того, как заполните данные`);
+					toast.error(`Производство ${item.productionInfo.entityName} не имеет данных о местоположении. Карта будет доступна после того, как заполните данные`);
                 
 				if (!item.customerInfo.entityCoordinates)
-					toast.error(`Заказчик ${item.customerInfo.entityName} не имеет данных о местоположении. Попробуйте еще раз после того, как заполните данные`);
-
-				item = item.productionInfo.entityCoordinates && item.customerInfo.entityCoordinates ? item : undefined;
+					toast.error(`Заказчик ${item.customerInfo.entityName} не имеет данных о местоположении. Карта будет доступна после того, как заполните данные`);
 			}
 
 		} catch {
