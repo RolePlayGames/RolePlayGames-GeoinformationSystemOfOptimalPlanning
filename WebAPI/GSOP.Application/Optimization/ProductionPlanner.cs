@@ -14,6 +14,8 @@ using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Cost;
 using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Time;
 using GSOP.Domain.Contracts.Orders;
 using GSOP.Domain.Contracts.ProductionLines;
+using GSOP.Domain.Contracts.Routes;
+using GSOP.Domain.Contracts.Routes.Models;
 using GSOP.Domain.Optimization.FitnessFunctionCalculators;
 using GSOP.Domain.Optimization.Genetic.FitnessFunctionCalculators;
 using GSOP.Domain.Optimization.Genetic.IndividualConverters;
@@ -85,6 +87,7 @@ public class ProductionPlanner : IProductionPlanner
     private readonly IProductionLineService _productionLineService;
     private readonly IOrderFactory _orderFactory;
     private readonly IOrderService _orderService;
+    private readonly IRouteRepository _routeRepository;
 
     private readonly IBruteforceDistributor _bruteforeDistributor;
     private readonly IBruteforceAlgorithmFactory _bruteforceAlgorithmFactory;
@@ -109,7 +112,8 @@ public class ProductionPlanner : IProductionPlanner
         IGeneticAlgorithmFactory geneticAlgorithmFactory,
         IApproximationAlgorithmFactory approximationAlgorithmFactory,
         IOrderExcecutionTimeCalculator orderExcecutionTimeCalculator,
-        IOrdersReconfigurationTimeCalculator ordersReconfigurationTimeCalculator)
+        IOrdersReconfigurationTimeCalculator ordersReconfigurationTimeCalculator,
+        IRouteRepository routeRepository)
     {
         _productionLineQueueCostCalculator = productionLineQueueCostCalculator;
         _productionLineQueueTimeCalculator = productionLineQueueTimeCalculator;
@@ -124,6 +128,7 @@ public class ProductionPlanner : IProductionPlanner
         _ordersReconfigurationTimeCalculator = ordersReconfigurationTimeCalculator;
         _productionLineService = productionLineService;
         _orderService = orderService;
+        _routeRepository = routeRepository;
     }
 
     public async Task<IReadOnlyCollection<ProductionPlanInfo>> CreateOptimizedProductionPlanByBruteforceAlgorithm(BruteforceAlgorithmPlanningData planningData)
@@ -138,10 +143,11 @@ public class ProductionPlanner : IProductionPlanner
 
         var orderModels = await GetOrders(planningData.Orders);
         var productionLineModels = await GetProductionLines(planningData.ProductionLines);
+        var routesMap = await GetRoutesMap(productionLineModels, orderModels);
 
         return _bruteforceAlgorithmFactory.CreateAlgorithm(_bruteforeDistributor, orderModels, productionLineModels, planningData.Conditions, fitnessCalculator)
             .GetResolve()
-            .Select(x => ConvertProductionPlan(planningData.StartDateTime, targetFunctionCalculator, x))
+            .Select(x => ConvertProductionPlan(planningData.StartDateTime, targetFunctionCalculator, x, routesMap))
             .ToList();
     }
 
@@ -163,11 +169,12 @@ public class ProductionPlanner : IProductionPlanner
 
         var orderModels = await GetOrders(planningData.Orders);
         var productionLineModels = await GetProductionLines(planningData.ProductionLines);
+        var routesMap = await GetRoutesMap(productionLineModels, orderModels);
 
         return _geneticAlgorithmFactory.CreateAlgorithm(productionLineModels, orderModels, targetFunctionCalculatorProxy, fitnessCalculatorProxy, planningData.Options, planningData.Conditions, _approximationAlgorithmFactory, _orderExcecutionTimeCalculator)
             .GetResolve()
             .Select(_individualConverter.ConvertToProductionPlan)
-            .Select(x => ConvertProductionPlan(planningData.StartDateTime, targetFunctionCalculator, x))
+            .Select(x => ConvertProductionPlan(planningData.StartDateTime, targetFunctionCalculator, x, routesMap))
             .ToList();
     }
 
@@ -179,11 +186,13 @@ public class ProductionPlanner : IProductionPlanner
         var productionLines = (await _productionLineService.GetProductionLinesInfo()).ToFrozenDictionary(x => x.Name, x => x.ID);
         var productionLineModels = await GetProductionLines([productionLines.TryGetValue(_originalPlanProductionLineName, out var lineID) ? lineID : throw new OriginalPlanProductionLineWasNotFoundException(_originalPlanProductionLineName)]);
 
+        var routesMap = await GetRoutesMap(productionLineModels, orderModels);
+
         var productionPlan = new ProductionPlan { ProductionLineQueues = [new ProductionLineQueue { ProductionLine = productionLineModels.First(), Orders = orderModels }] };
 
         var targetFunctionCalculator = new TimeFunctionCalculator(_productionLineQueueTimeCalculator);
 
-        return ConvertProductionPlan(startDateTime, targetFunctionCalculator, productionPlan);
+        return ConvertProductionPlan(startDateTime, targetFunctionCalculator, productionPlan, routesMap);
     }
 
     private async Task<IReadOnlyCollection<IOrder>> GetOrders(IReadOnlyCollection<long> orders)
@@ -210,17 +219,30 @@ public class ProductionPlanner : IProductionPlanner
         return productionLineModels;
     }
 
-    private ProductionPlanInfo ConvertProductionPlan(DateTime startDateTime, ITargetFunctionCalculator<ProductionPlan> targetFunctionCalculator, ProductionPlan productionPlan)
+    private async Task<FrozenDictionary<long, FrozenDictionary<long, RouteReadDTO>>> GetRoutesMap(IReadOnlyCollection<IProductionLine> productionLines, IReadOnlyCollection<IOrder> orders)
     {
+        var productionIds = productionLines.Select(x => x.ProductionID).Distinct().ToList();
+        var customerIds = orders.Select(x => x.CustomerID).Distinct().ToList();
+
+        var routes = await _routeRepository.GetRoutesBetweenProductionsAndCustomers(productionIds, customerIds);
+
+        return routes.GroupBy(x => x.ProductionInfo.EntityID).ToFrozenDictionary(x => x.Key, x => x.ToFrozenDictionary(x => x.CustomerInfo.EntityID));
+    }
+
+    private ProductionPlanInfo ConvertProductionPlan(DateTime startDateTime, ITargetFunctionCalculator<ProductionPlan> targetFunctionCalculator, ProductionPlan productionPlan, FrozenDictionary<long, FrozenDictionary<long, RouteReadDTO>> routesMap)
+    {
+        var routesQueue = routesMap.SelectMany(x => x.Value.Select(x => x.Value)).ToFrozenDictionary(x => x, x => new List<OrderRouteInfo>());
+
         return new()
         {
             StartDateTime = startDateTime,
-            ProductionLineQueues = productionPlan.ProductionLineQueues.Select(x => ConvertProductionLineQueue(startDateTime, x)).ToList(),
+            ProductionLineQueues = productionPlan.ProductionLineQueues.Select(x => ConvertProductionLineQueue(startDateTime, x, routesMap[x.ProductionLine.ProductionID], routesQueue)).ToList(),
+            RoutesQueues = routesQueue.Select(x => new RoutesQueueInfo { Route = x.Key, OrderPosition = x.Value.OrderBy(x => x.OrderDeliveryStartDateTime).ToList() }).ToList(),
             TargetFunctionValue = targetFunctionCalculator.Calculate(productionPlan),
         };
     }
 
-    private ProductionLineQueueInfo ConvertProductionLineQueue(DateTime startDateTime, ProductionLineQueue productionLineQueue)
+    private ProductionLineQueueInfo ConvertProductionLineQueue(DateTime startDateTime, ProductionLineQueue productionLineQueue, FrozenDictionary<long, RouteReadDTO> customerRoutes, FrozenDictionary<RouteReadDTO, List<OrderRouteInfo>> routesQueue)
     {
         var orderPositions = new List<OrderPositionInfo>(productionLineQueue.Orders.Count);
 
@@ -238,7 +260,7 @@ public class ProductionPlanner : IProductionPlanner
 
             var duration = TimeSpan.FromMinutes(_orderExcecutionTimeCalculator.Calculate(order));
 
-            var orderPosition = new OrderPositionInfo()
+            var orderPosition = new OrderPositionInfo
             {
                 OrderNumber = order.Number,
                 OrderProductionStartDateTime = currentDateTime,
@@ -246,6 +268,17 @@ public class ProductionPlanner : IProductionPlanner
             };
 
             orderPositions.Add(orderPosition);
+
+            var route = customerRoutes[order.CustomerID];
+
+            var orderRoute = new OrderRouteInfo()
+            {
+                OrderNumber = order.Number,
+                OrderDeliveryStartDateTime = orderPosition.OrderProductionEndDateTime,
+                OrderDeliveryEndDateTime = orderPosition.OrderProductionEndDateTime + customerRoutes[order.CustomerID].DrivingTime,
+            };
+
+            routesQueue[route].Add(orderRoute);
         }
 
         return new()

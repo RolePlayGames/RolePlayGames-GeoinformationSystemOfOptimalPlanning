@@ -91,6 +91,44 @@ public class RouteRepository : IRouteRepository
     }
 
     /// <inheritdoc/>
+    public async Task<IReadOnlyCollection<RouteReadDTO>> GetRoutesBetweenProductionsAndCustomers(IReadOnlyCollection<ID> productionIds, IReadOnlyCollection<ID> customerIds)
+    {
+        var productionIdValues = productionIds.Select(id => (long)id).ToList();
+        var customerIdValues = customerIds.Select(id => (long)id).ToList();
+
+        var query =
+            from route in _connection.Routes
+            join production in _connection.Productions
+                on route.ProductionID equals production.ID
+            join customer in _connection.Customers
+                on route.CustomerID equals customer.ID
+            where productionIdValues.Contains(production.ID) && customerIdValues.Contains(customer.ID)
+            select new RouteReadDTO
+            {
+                ProductionInfo = new()
+                {
+                    EntityID = production.ID,
+                    EntityName = production.Name,
+                    EntityCoordinates = production.Latitude.HasValue && production.Longitude.HasValue
+                        ? new CoordinatesDTO { Latitude = production.Latitude.Value, Longitude = production.Longitude.Value }
+                        : null,
+                },
+                CustomerInfo = new()
+                {
+                    EntityID = customer.ID,
+                    EntityName = customer.Name,
+                    EntityCoordinates = customer.Latitude.HasValue && customer.Longitude.HasValue
+                        ? new CoordinatesDTO { Latitude = customer.Latitude.Value, Longitude = customer.Longitude.Value }
+                        : null,
+                },
+                Price = route.Price,
+                DrivingTime = route.DrivingTime,
+            };
+
+        return await query.ToListAsync();
+    }
+
+    /// <inheritdoc/>
     public Task Update(ID id, IRoute route)
     {
         return _connection.Routes
