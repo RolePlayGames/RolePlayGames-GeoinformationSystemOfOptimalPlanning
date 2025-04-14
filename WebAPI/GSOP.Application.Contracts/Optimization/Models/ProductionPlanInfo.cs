@@ -8,7 +8,5 @@ public record ProductionPlanInfo
 
     public required IReadOnlyCollection<ProductionLineQueueInfo> ProductionLineQueues { get; init; }
 
-    public required IReadOnlyCollection<RoutesQueueInfo> RoutesQueues { get; init; }
-
     public required double TargetFunctionValue { get; init; }
 }

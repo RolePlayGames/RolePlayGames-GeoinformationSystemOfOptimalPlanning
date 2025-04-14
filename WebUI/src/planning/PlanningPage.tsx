@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
-import { Box, Button, Checkbox, Divider, FormControl, FormControlLabel, FormLabel,  List, ListItem, ListItemButton, ListItemIcon, ListItemText, Radio, RadioGroup, Step, StepContent, StepLabel, Stepper, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Collapse, Divider, FormControl, FormControlLabel, FormLabel,  List, ListItem, ListItemButton, ListItemIcon, ListItemText, Radio, RadioGroup, Step, StepContent, StepLabel, Stepper, Tab, Tabs, Typography } from "@mui/material";
 import { HeaderLabel, PageContainer } from "../common/controls";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ListItem as Item } from "../common/Item";
 import { LoadingProgress } from "../common/LoadingProgress";
 import { getOrdersInfo } from "../orders/ordersClient";
@@ -13,7 +13,7 @@ import { FieldContainer } from "../production-lines/rules/RuleComponents";
 import { useFieldWithValidation } from "../common/useItemField";
 import { convertToInt, convertToNumber } from "../utils/number-converters/numberConverter";
 import { InputField } from "../common/inputs";
-import { getOriginalPlan, planningByBruteforce, planningByGenetic, ProductionPlanInfo } from "./planningClient";
+import { getOriginalPlan, planningByBruteforce, planningByGenetic, ProductionPlanInfo, RoutesQueueInfo } from "./planningClient";
 import { convertToTimeSpan } from "../production-lines/timespanConverter";
 import { validateMaxIterationsCount, validateGenerationsCount, validateMutationCoefficient, validateMutationSelectionCount, validateCrossoverSelectionCount, validateIndividualsInPopulationCount, validateCrossoverPointsCount, validatePointedMutationProbability, validateStartPopulationsCount, validateDegradingGenerationsCount } from "./validations";
 import { originalPlanOrderNumbers, originalPlanProductionLinesNames } from "./originalPlanProductionData";
@@ -24,8 +24,51 @@ import "gantt-task-react/dist/index.css";
 import 'dayjs/locale/ru';
 import { toast } from "react-toastify";
 import { DateRangePicker } from "../common/inputs/DateRangePicker";
+import { getRouteCoordinates } from "../rote-matrix/routesClient";
+import 'leaflet/dist/leaflet.css';
+import L from "leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import { TabPanel } from "../common/TabPanel";
+import { removeMapFlag } from "../common/mapHelpers";
+
+const defaultPosition: [number, number] = [59.57, 30.19];
 
 type AlgorithmType = 'Bruteforce' | 'Genetic';
+
+enum SolutionTab { AllDicisions, SelectedPlan, OriginalPlan, RoutesMap }
+
+type RouteCoordinates = {
+	coordinates: [number, number][],
+	distance: number,
+}
+
+const formatMinutesToDDHHMMSS = (totalMinutes: number) => {
+	const seconds = Math.floor((totalMinutes * 60) % 60);
+	const hours = Math.floor((totalMinutes / 60) % 24);
+	const days = Math.floor(totalMinutes / (60 * 24));
+	const minutes = Math.floor(totalMinutes % 60);
+
+	const formattedDays = days > 0 ? `${days} дней ` : '';
+	const formattedHours = hours > 0 || days > 0 ? `${hours.toString().padStart(2, '0')} часов ` : '';
+	const formattedMinutes = minutes > 0 || hours > 0 || days > 0 ? `${minutes.toString().padStart(2, '0')} минут ` : '';
+	const formattedSeconds = seconds > 0 || minutes > 0 || hours > 0 || days > 0 ? `${seconds.toString().padStart(2, '0')} секунд` : '';
+
+	return `${formattedDays}${formattedHours}${formattedMinutes}${formattedSeconds}`.trim();
+}
+
+const factorial = (n: number) => {
+	if (n < 0) 
+		throw new Error("Факториал не определен для отрицательных чисел.");
+	
+	if (n === 0) 
+		return 1;
+	
+	let result = 1;
+	for (let i = 1; i <= n; i++) 
+		result *= i;
+	
+	return result;
+}
 
 const PlanningStepContainer = styled(FormControl)({
 	width: 'fill-available',
@@ -63,7 +106,8 @@ const PlanningContianer = styled(Box)({
 
 const GanttContainer = styled(Box)({
 	display: 'flex',
-	flexDirection: 'column'
+	flexDirection: 'column',
+	width: '100%',
 });
 
 const ActionContainer = styled(Box)({
@@ -71,6 +115,7 @@ const ActionContainer = styled(Box)({
 	flexDirection: 'row',
 	marginBottom: '1vw',
 	marginTop: '15px',
+	marginLeft: '15px',
 });
 
 const ActionButton = styled(Button)({
@@ -87,33 +132,36 @@ const ActionLabel = styled(Typography)({
 	marginLeft: '20px',
 });
 
-const formatMinutesToDDHHMMSS = (totalMinutes: number) => {
-	const seconds = Math.floor((totalMinutes * 60) % 60);
-	const hours = Math.floor((totalMinutes / 60) % 24);
-	const days = Math.floor(totalMinutes / (60 * 24));
-	const minutes = Math.floor(totalMinutes % 60);
+const ColoredTabs = styled(Tabs)({
+	'& .MuiTabs-indicator': {
+		backgroundColor: '#1d1b31',
+	},
+	'& .MuiTab-root': {
+		'&.Mui-selected': {
+			color: '#1d1b31',
+			fontWeight: 'bold',
+		},
+	},
+});
 
-	const formattedDays = days > 0 ? `${days} дней ` : '';
-	const formattedHours = hours > 0 || days > 0 ? `${hours.toString().padStart(2, '0')} часов ` : '';
-	const formattedMinutes = minutes > 0 || hours > 0 || days > 0 ? `${minutes.toString().padStart(2, '0')} минут ` : '';
-	const formattedSeconds = seconds > 0 || minutes > 0 || hours > 0 || days > 0 ? `${seconds.toString().padStart(2, '0')} секунд` : '';
-
-	return `${formattedDays}${formattedHours}${formattedMinutes}${formattedSeconds}`.trim();
-}
-
-const factorial = (n: number) => {
-	if (n < 0) 
-		throw new Error("Факториал не определен для отрицательных чисел.");
-	
-	if (n === 0) 
-		return 1;
-	
-	let result = 1;
-	for (let i = 1; i <= n; i++) 
-		result *= i;
-	
-	return result;
-}
+export const ListBlock = styled(Box)({
+	width: 'max-content',
+	borderRight: '1px',
+	borderColor: 'black',
+	height: '700px',
+	'overflowY': 'scroll',
+	'::-webkit-scrollbar': {
+		width: '10px',
+	},
+	'::-webkit-scrollbar-thumb': {
+		backgroundColor: '#1d1b31',
+		borderRadius: '5px',
+	},
+	'::-webkit-scrollbar-thumb:active': {
+		backgroundColor: '#11101d',
+	},
+	paddingRight: '10px',
+});
 
 export const PlanningPage = () => {
 	const [activeStep, setActiveStep] = useState(0)
@@ -145,17 +193,27 @@ export const PlanningPage = () => {
 	const [pointedMutationProbability, setPointedMutationProbability, pointedMutationProbabilityError] = useFieldWithValidation<string>('0,35', validatePointedMutationProbability)
 	const [startPopulationsCount, setStartPopulationsCount, startPopulationsCountError] = useFieldWithValidation<string>('400', validateStartPopulationsCount)
 
+	const [tabID, setTabID] = useState(SolutionTab.SelectedPlan);
+
 	const [planInfos, setPlanInfos] = useState<ProductionPlanInfo[]>();
+	const [routesQueueInfos, setRoutesQueueInfos] = useState<RoutesQueueInfo[]>();
 	const [executionTime, setExecutionTime] = useState<number | null>(null);
 	const [selectedPlan, setSelectedPlan] = useState<number>();
 	const [tasks, setTasks] = useState<Task[]>();
 	const [targetFunctionResult, setTargetFunctionResult] = useState<string>('');
-	const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Day);
-	
-	const [isOriginalPlanAvaliable, setIsOriginalPlanAvaliable] = useState(false);
-	const [isOriginalPlanActive, setIsOriginalPlanActive] = useState(false);
-	const [originalPlan, setOriginalPlan] = useState<ProductionPlanInfo>();
 
+	const [isOriginalPlanAvaliable, setIsOriginalPlanAvaliable] = useState(false);
+	const [originalPlan, setOriginalPlan] = useState<ProductionPlanInfo>();
+	const [originalTasks, setOriginalTasks] = useState<Task[]>();
+	const [originalTargetFunctionResult, setOriginalTargetFunctionResult] = useState<string>('');
+	
+	const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Day);
+
+	const [routeCoordinates, setRouteCoordinates] = useState<RouteCoordinates[]>();
+	const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null);
+	
+	const mapRef = useRef<L.Map | null>(null);
+	
 	const handleNext = async () => {
 		setActiveStep((prevActiveStep) => prevActiveStep + 1);
 	}
@@ -322,7 +380,7 @@ export const PlanningPage = () => {
 					if (selectedStartDate && (iterationsCountNum || timeoutDelay !== null)) {
 						const startTime = performance.now();
 						try {
-							const plans = await planningByBruteforce({
+							const result = await planningByBruteforce({
 								startDateTime: selectedStartDate,
 								orders: selectedOrders,
 								productionLines: selectedProductionLines,
@@ -333,7 +391,8 @@ export const PlanningPage = () => {
 								}
 							});
 	
-							setPlanInfos(plans.sort((a, b) => b.targetFunctionValue - a.targetFunctionValue));
+							setPlanInfos(result.productionPlans.sort((a, b) => b.targetFunctionValue - a.targetFunctionValue));
+							setRoutesQueueInfos(result.routesQueues);
 							toast.success('Оптимальный производсвтенный план построен');
 						} catch (error: unknown) {
 							console.log(`Catch an error while trying planning by bruteforce ${error}`);
@@ -370,7 +429,7 @@ export const PlanningPage = () => {
 						&& !degradingGenerationsCountError) {
 						const startTime = performance.now();
 						try {
-							const plans = await planningByGenetic({
+							const result = await planningByGenetic({
 								startDateTime: selectedStartDate,
 								orders: selectedOrders,
 								productionLines: selectedProductionLines,
@@ -391,7 +450,8 @@ export const PlanningPage = () => {
 								}
 							});
 		
-							setPlanInfos(plans.sort((a, b) => b.targetFunctionValue - a.targetFunctionValue));
+							setPlanInfos(result.productionPlans.sort((a, b) => b.targetFunctionValue - a.targetFunctionValue));
+							setRoutesQueueInfos(result.routesQueues);
 							toast.success('Оптимальный производсвтенный план построен');
 						} catch (error: unknown) {
 							console.log(`Catch an error while trying planning by genetic ${error}`);
@@ -430,20 +490,14 @@ export const PlanningPage = () => {
 	]);
 
 	useEffect(() => {
-		if (planInfos && planInfos.length > 0) {
-			console.log(`setSelectedPlan(planInfos.length - 1): ${planInfos.length - 1}; planInfos.length: ${planInfos.length}`);
+		if (planInfos && planInfos.length > 0) 
 			setSelectedPlan(planInfos.length - 1);
-		}
+		
 	}, [planInfos]);
-
-	const handleViewAllPlans = () => {
-		setTasks(undefined);
-		setSelectedPlan(undefined);
-		setIsOriginalPlanActive(false);
-	};
 
 	const handleReturnToPlanning = () => {
 		setTasks(undefined);
+		setOriginalTasks(undefined);
 		setPlanInfos(undefined);
 		setSelectedPlan(undefined);
 		setActiveStep(0);
@@ -474,12 +528,8 @@ export const PlanningPage = () => {
 		}
 	}, [functionType, orders, productionLines, selectedOrders, selectedProductionLines]);
 
-	const showOriginalPlan = async () => {
-		setIsOriginalPlanActive(true);
-	};
-
 	useEffect(() => {
-		if (isOriginalPlanActive && selectedStartDate !== null && originalPlan === undefined) {
+		if (isOriginalPlanAvaliable && selectedStartDate !== null && originalPlan === undefined) {
 			const loadOriginalPlan = async () => {
 				try {
 					const plan = await getOriginalPlan(selectedStartDate);
@@ -493,15 +543,66 @@ export const PlanningPage = () => {
 
 			loadOriginalPlan();
 		}
-	}, [isOriginalPlanActive, originalPlan, selectedStartDate]);
+	}, [isOriginalPlanAvaliable, originalPlan, selectedStartDate]);
 
 	useEffect(() => {
-		if (isOriginalPlanActive && originalPlan) {
+		if (originalPlan) {
 			const newTasks = convertProductionPlanToTasks(originalPlan);
-			setTasks(newTasks);
-			setTargetFunctionResult(formatMinutesToDDHHMMSS(originalPlan.targetFunctionValue));
+			setOriginalTasks(newTasks);
+			setOriginalTargetFunctionResult(formatMinutesToDDHHMMSS(originalPlan.targetFunctionValue));
 		}
-	}, [isOriginalPlanActive, originalPlan]);
+	}, [originalPlan]);
+
+	useEffect(() => {
+		removeMapFlag();
+	}, [tabID]);
+
+	useEffect(() => {
+		removeMapFlag();
+	}, []);
+  
+	const handleTabChange = (event: React.SyntheticEvent, newValue: SolutionTab) => {
+		setTabID(newValue);
+		removeMapFlag();
+	};
+
+	useEffect(() => {
+		if (routesQueueInfos) {
+			const loadRoutesCoordinates = async () => {
+				const coordinateCollection: RouteCoordinates[] = [];
+
+				for (const productionRoutes of routesQueueInfos) 
+					for (const customerRoute of productionRoutes.customerInfos) 
+						if (productionRoutes.productionInfo.entityCoordinates && customerRoute.entityCoordinates) {
+							const coordinates = await getRouteCoordinates(productionRoutes.productionInfo.entityCoordinates, customerRoute.entityCoordinates);
+
+							if (coordinates)
+								coordinateCollection.push(coordinates);
+
+							if (coordinateCollection.length == 1) 
+								setMarkerPosition([
+									productionRoutes.productionInfo.entityCoordinates.latitude,
+									productionRoutes.productionInfo.entityCoordinates.longitude,
+								]);
+							
+						}
+
+				setRouteCoordinates(coordinateCollection);
+			}
+
+			loadRoutesCoordinates();
+		}
+	}, [routesQueueInfos]);
+	
+		
+	useEffect(() => {
+		delete(L.Icon.Default.prototype as any)._getIconUrl;
+		L.Icon.Default.mergeOptions({
+			iconRetinaUrl:require('leaflet/dist/images/marker-icon-2x.png'),
+			iconUrl:require('leaflet/dist/images/marker-icon.png'),
+			shadowUrl:require('leaflet/dist/images/marker-shadow.png')}
+		)
+	}, []);
 
 	return (
 		<PageContainer sx={{ height: '100vh' }}>
@@ -510,43 +611,120 @@ export const PlanningPage = () => {
 				{ activeStep === steps.length ? (
 					<>
 						{ planInfos ? (
-							<>
-								{ tasks ? (
-									<GanttContainer>
+							<GanttContainer>
+								<ActionContainer>
+									<ColoredTabs value={tabID} onChange={handleTabChange} >
+										<Tab label="Остальные решения" value={SolutionTab.AllDicisions}/>
+										<Tab label="План производства" value={SolutionTab.SelectedPlan}/>
+										{ isOriginalPlanAvaliable && (
+											<Tab label="Оригинальный план" value={SolutionTab.OriginalPlan}/>
+										)}
+										<Tab label="Карта производств и поставок" value={SolutionTab.RoutesMap}/>
+									</ColoredTabs>
+									<ActionButton variant="contained" onClick={handleReturnToPlanning}>
+										Вернуться к планированию
+									</ActionButton>
+								</ActionContainer>
+								<TabPanel value={tabID} index={SolutionTab.AllDicisions}>
+									<PlanningStepContainer>
+										<BlackLabel sx={{ marginLeft: '15px' }}>Поэтапный список решений</BlackLabel>
+										<List>
+											{ planInfos.map((value, index) => (
+												<ListItem key={index} disablePadding>
+													<ListItemButton role={undefined} onClick={() => setSelectedPlan(index)}>
+														<ListItemText primary={`${index + 1} Производственный план (${functionType === 0 ? formatMinutesToDDHHMMSS(value.targetFunctionValue) : `${value.targetFunctionValue.toFixed(2)} у.е.`})`} />
+													</ListItemButton>
+												</ListItem>
+											))}
+										</List>
+									</PlanningStepContainer>
+								</TabPanel>
+								{ tasks && (
+									<TabPanel value={tabID} index={SolutionTab.SelectedPlan}>
 										<ActionContainer>
-											<ActionButton variant="contained" onClick={handleViewAllPlans}>
-												Остальные решения
-											</ActionButton>
-											{ isOriginalPlanAvaliable && !isOriginalPlanActive && (
-												<ActionButton variant="contained" onClick={showOriginalPlan}>
-													Оригинальный план
-												</ActionButton>
-											)}
-											<ActionButton variant="contained" onClick={handleReturnToPlanning}>
-												Вернуться к планированию
-											</ActionButton>
 											<ActionLabel>Значение критерия: {targetFunctionResult}</ActionLabel>
 											<ActionLabel>Время вычисленний: {executionTime?.toFixed(2)} сек.</ActionLabel>
 										</ActionContainer>
 										<Gantt tasks={tasks} viewMode={viewMode}/>
-									</GanttContainer>
-								) : (
-									<Box sx={{ margin: '20px', width: '-webkit-fill-available' }}>
-										<PlanningStepContainer>
-											<BlackLabel>Поэтапный список решений</BlackLabel>
-											<List sx={{ width: '100%' }}>
-												{ planInfos.map((value, index) => (
-													<ListItem key={index} disablePadding>
-														<ListItemButton role={undefined} onClick={() => setSelectedPlan(index)}>
-															<ListItemText primary={`${index + 1} Производственный план (${functionType === 0 ? formatMinutesToDDHHMMSS(value.targetFunctionValue) : `${value.targetFunctionValue.toFixed(2)} у.е.`})`} />
-														</ListItemButton>
-													</ListItem>
-												))}
-											</List>
-										</PlanningStepContainer>
-									</Box>
+									</TabPanel>
 								)}
-							</>
+								{ originalTasks && (
+									<TabPanel value={tabID} index={SolutionTab.OriginalPlan}>
+										<ActionContainer>
+											<ActionLabel>Значение критерия: {originalTargetFunctionResult}</ActionLabel>
+										</ActionContainer>
+										<Gantt tasks={originalTasks} viewMode={viewMode}/>
+									</TabPanel>
+								)}
+								{ routesQueueInfos && (
+									<TabPanel value={tabID} index={SolutionTab.RoutesMap}>
+										<Box sx={{ display: 'flex', flexDirection: 'row' }}>
+											<ListBlock>
+												<List>
+													{ routesQueueInfos.map(item => (
+															<>
+																<ListItemButton>
+																	<ListItemText primary={item.productionInfo.entityName}/>
+																</ListItemButton>
+																<Collapse in={true} timeout="auto" unmountOnExit>
+																	<List component="div" disablePadding>
+																		{ item.customerInfos.map(item => (
+																			<ListItemButton sx={{ pl: 4 }}>
+																				<ListItemText primary={item.entityName} />
+																			</ListItemButton>
+																		))}
+																	</List>
+																</Collapse>
+															</>
+													)) }
+												</List>
+											</ListBlock>
+											<MapContainer center={ markerPosition || defaultPosition} zoom={6} style={{ height: '700px', width: '100%' }} ref={mapRef}>
+												<TileLayer
+													url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+													attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+												/>
+												{ routesQueueInfos.map(item => {
+													removeMapFlag();
+													return (
+														<>
+															{ item.productionInfo.entityCoordinates && (
+																<Marker position={[item.productionInfo.entityCoordinates.latitude, item.productionInfo.entityCoordinates.longitude]}>
+																	<Popup>{item.productionInfo.entityName}</Popup>
+																</Marker>
+															) }
+														</>
+													)
+												})}
+												{ routesQueueInfos.map(item => (
+													<>
+														{ item.customerInfos.map(item => (
+															<>
+																{ item.entityCoordinates && (
+																	<Marker position={[item.entityCoordinates.latitude, item.entityCoordinates.longitude]}>
+																		<Popup>{item.entityName}</Popup>
+																	</Marker>
+																)}
+															</>
+														)) }
+													</>
+												))}
+												{ routeCoordinates && (
+													<>
+														{ routeCoordinates.map(item => (
+															<>
+																{ item.coordinates.length > 0 && (
+																	<Polyline positions={item.coordinates} color="blue" />
+																)}
+															</>
+														))}
+													</>
+												)}
+											</MapContainer>
+										</Box>
+									</TabPanel>
+								)}
+							</GanttContainer>
 						) : (
 							<LoadingProgress/>
 						)}
