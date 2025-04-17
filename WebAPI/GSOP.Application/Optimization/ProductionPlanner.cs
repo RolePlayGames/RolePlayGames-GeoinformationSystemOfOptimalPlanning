@@ -14,6 +14,7 @@ using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Cost;
 using GSOP.Domain.Contracts.Optimization.TargetFunctionCalculators.Time;
 using GSOP.Domain.Contracts.Orders;
 using GSOP.Domain.Contracts.ProductionLines;
+using GSOP.Domain.Contracts.Routes;
 using GSOP.Domain.Optimization.FitnessFunctionCalculators;
 using GSOP.Domain.Optimization.Genetic.FitnessFunctionCalculators;
 using GSOP.Domain.Optimization.Genetic.IndividualConverters;
@@ -85,6 +86,7 @@ public class ProductionPlanner : IProductionPlanner
     private readonly IProductionLineService _productionLineService;
     private readonly IOrderFactory _orderFactory;
     private readonly IOrderService _orderService;
+    private readonly IRouteRepository _routeRepository;
 
     private readonly IBruteforceDistributor _bruteforeDistributor;
     private readonly IBruteforceAlgorithmFactory _bruteforceAlgorithmFactory;
@@ -109,7 +111,8 @@ public class ProductionPlanner : IProductionPlanner
         IGeneticAlgorithmFactory geneticAlgorithmFactory,
         IApproximationAlgorithmFactory approximationAlgorithmFactory,
         IOrderExcecutionTimeCalculator orderExcecutionTimeCalculator,
-        IOrdersReconfigurationTimeCalculator ordersReconfigurationTimeCalculator)
+        IOrdersReconfigurationTimeCalculator ordersReconfigurationTimeCalculator,
+        IRouteRepository routeRepository)
     {
         _productionLineQueueCostCalculator = productionLineQueueCostCalculator;
         _productionLineQueueTimeCalculator = productionLineQueueTimeCalculator;
@@ -124,9 +127,10 @@ public class ProductionPlanner : IProductionPlanner
         _ordersReconfigurationTimeCalculator = ordersReconfigurationTimeCalculator;
         _productionLineService = productionLineService;
         _orderService = orderService;
+        _routeRepository = routeRepository;
     }
 
-    public async Task<IReadOnlyCollection<ProductionPlanInfo>> CreateOptimizedProductionPlanByBruteforceAlgorithm(BruteforceAlgorithmPlanningData planningData)
+    public async Task<PlanningInfo> CreateOptimizedProductionPlanByBruteforceAlgorithm(BruteforceAlgorithmPlanningData planningData)
     {
         ITargetFunctionCalculator<ProductionPlan> targetFunctionCalculator = planningData.FunctionType switch
         { 
@@ -138,14 +142,19 @@ public class ProductionPlanner : IProductionPlanner
 
         var orderModels = await GetOrders(planningData.Orders);
         var productionLineModels = await GetProductionLines(planningData.ProductionLines);
+        var routesMap = await GetRoutesMap(productionLineModels, orderModels);
 
-        return _bruteforceAlgorithmFactory.CreateAlgorithm(_bruteforeDistributor, orderModels, productionLineModels, planningData.Conditions, fitnessCalculator)
-            .GetResolve()
-            .Select(x => ConvertProductionPlan(planningData.StartDateTime, targetFunctionCalculator, x))
-            .ToList();
+        return new()
+        {
+            RoutesQueues = routesMap,
+            ProductionPlans = _bruteforceAlgorithmFactory.CreateAlgorithm(_bruteforeDistributor, orderModels, productionLineModels, planningData.Conditions, fitnessCalculator)
+                .GetResolve()
+                .Select(x => ConvertProductionPlan(planningData.StartDateTime, targetFunctionCalculator, x))
+                .ToList(),
+        };
     }
 
-    public async Task<IReadOnlyCollection<ProductionPlanInfo>> CreateOptimizedProductionPlanByGeneticAlgorithm(GeneticAlgorithmPlanningData planningData)
+    public async Task<PlanningInfo> CreateOptimizedProductionPlanByGeneticAlgorithm(GeneticAlgorithmPlanningData planningData)
     {
         ITargetFunctionCalculator<ProductionPlan> targetFunctionCalculator = planningData.FunctionType switch
         {
@@ -163,12 +172,17 @@ public class ProductionPlanner : IProductionPlanner
 
         var orderModels = await GetOrders(planningData.Orders);
         var productionLineModels = await GetProductionLines(planningData.ProductionLines);
+        var routesMap = await GetRoutesMap(productionLineModels, orderModels);
 
-        return _geneticAlgorithmFactory.CreateAlgorithm(productionLineModels, orderModels, targetFunctionCalculatorProxy, fitnessCalculatorProxy, planningData.Options, planningData.Conditions, _approximationAlgorithmFactory, _orderExcecutionTimeCalculator)
-            .GetResolve()
-            .Select(_individualConverter.ConvertToProductionPlan)
-            .Select(x => ConvertProductionPlan(planningData.StartDateTime, targetFunctionCalculator, x))
-            .ToList();
+        return new()
+        {
+            RoutesQueues = routesMap,
+            ProductionPlans = _geneticAlgorithmFactory.CreateAlgorithm(productionLineModels, orderModels, targetFunctionCalculatorProxy, fitnessCalculatorProxy, planningData.Options, planningData.Conditions, _approximationAlgorithmFactory, _orderExcecutionTimeCalculator)
+                .GetResolve()
+                .Select(_individualConverter.ConvertToProductionPlan)
+                .Select(x => ConvertProductionPlan(planningData.StartDateTime, targetFunctionCalculator, x))
+                .ToList(),
+        };
     }
 
     public async Task<ProductionPlanInfo> GetOriginalProductionPlan(DateTime startDateTime)
@@ -179,9 +193,9 @@ public class ProductionPlanner : IProductionPlanner
         var productionLines = (await _productionLineService.GetProductionLinesInfo()).ToFrozenDictionary(x => x.Name, x => x.ID);
         var productionLineModels = await GetProductionLines([productionLines.TryGetValue(_originalPlanProductionLineName, out var lineID) ? lineID : throw new OriginalPlanProductionLineWasNotFoundException(_originalPlanProductionLineName)]);
 
-        var productionPlan = new ProductionPlan { ProductionLineQueues = [new ProductionLineQueue { ProductionLine = productionLineModels.First(), Orders = orderModels }] };
-
         var targetFunctionCalculator = new TimeFunctionCalculator(_productionLineQueueTimeCalculator);
+
+        var productionPlan = new ProductionPlan { ProductionLineQueues = [new ProductionLineQueue { ProductionLine = productionLineModels.First(), Orders = orderModels }] };
 
         return ConvertProductionPlan(startDateTime, targetFunctionCalculator, productionPlan);
     }
@@ -208,6 +222,16 @@ public class ProductionPlanner : IProductionPlanner
         }
 
         return productionLineModels;
+    }
+
+    private async Task<IReadOnlyCollection<RoutesQueueInfo>> GetRoutesMap(IReadOnlyCollection<IProductionLine> productionLines, IReadOnlyCollection<IOrder> orders)
+    {
+        var productionIds = productionLines.Select(x => x.ProductionID).Distinct().ToList();
+        var customerIds = orders.Select(x => x.CustomerID).Distinct().ToList();
+
+        var routes = await _routeRepository.GetRoutesBetweenProductionsAndCustomers(productionIds, customerIds);
+
+        return routes.GroupBy(x => x.ProductionInfo).Select(x => new RoutesQueueInfo { ProductionInfo = x.Key, CustomerInfos = x.Select(x => x.CustomerInfo).ToList() }).ToList();
     }
 
     private ProductionPlanInfo ConvertProductionPlan(DateTime startDateTime, ITargetFunctionCalculator<ProductionPlan> targetFunctionCalculator, ProductionPlan productionPlan)
@@ -238,7 +262,7 @@ public class ProductionPlanner : IProductionPlanner
 
             var duration = TimeSpan.FromMinutes(_orderExcecutionTimeCalculator.Calculate(order));
 
-            var orderPosition = new OrderPositionInfo()
+            var orderPosition = new OrderPositionInfo
             {
                 OrderNumber = order.Number,
                 OrderProductionStartDateTime = currentDateTime,

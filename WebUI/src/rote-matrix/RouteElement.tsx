@@ -14,6 +14,7 @@ import L from "leaflet";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import { styled, Typography } from "@mui/material";
 import 'leaflet/dist/leaflet.css';
+import { removeMapFlag } from "../common/mapHelpers";
 
 const validatePrice = (price: string) => {
 	const number = convertToNumber(price);
@@ -26,17 +27,6 @@ const validatePrice = (price: string) => {
 
 	return undefined;
 }
-
-const removeMapFlag = () => {
-	const link = document.querySelector('a[title="A JavaScript library for interactive maps"]');
-
-	if (link) {
-		const svgElement = link.querySelector('svg');
-
-		if (svgElement)
-			svgElement.remove();
-	}
-};
 
 const DistanceLabel = styled(Typography)({
 	alignContent: 'center',
@@ -135,7 +125,17 @@ export const RouteElement = ({ id, item, apiPath }: RouteElementProps) => {
 	useEffect(() => {
 		removeMapFlag();
 	}, [routeCoordinates]);
-    
+
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			removeMapFlag();
+		}, 500);
+	
+		return () => {
+			clearInterval(intervalId);
+		};
+	}, []);
+
 	useEffect(() => {
 		delete(L.Icon.Default.prototype as any)._getIconUrl;
 		L.Icon.Default.mergeOptions({

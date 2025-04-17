@@ -5,20 +5,10 @@ import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
 import { Box } from '@mui/material';
 import { InputField } from './inputs';
+import { removeMapFlag } from '../mapHelpers';
 
 const defaultZoom = 13;
 const defaultPosition: [number, number] = [59.57, 30.19];
-
-const removeMapFlag = () => {
-	const link = document.querySelector('a[title="A JavaScript library for interactive maps"]');
-
-	if (link) {
-		const svgElement = link.querySelector('svg');
-
-		if (svgElement)
-			svgElement.remove();
-	}
-};
 
 export interface LocationPickerProps {
     initialLatitude?: number;

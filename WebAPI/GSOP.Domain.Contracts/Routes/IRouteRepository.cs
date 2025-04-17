@@ -40,4 +40,12 @@ public interface IRouteRepository
     /// <param name="id">Route id</param>
     /// <param name="route">Route</param>
     Task Update(ID id, IRoute route);
+
+    /// <summary>
+    /// Gets routes between productions and customers
+    /// </summary>
+    /// <param name="productionIds">Productions</param>
+    /// <param name="customerIds">Customers</param>
+    /// <returns>Sutable routes</returns>
+    Task<IReadOnlyCollection<RouteReadDTO>> GetRoutesBetweenProductionsAndCustomers(IReadOnlyCollection<ID> productionIds, IReadOnlyCollection<ID> customerIds);
 }

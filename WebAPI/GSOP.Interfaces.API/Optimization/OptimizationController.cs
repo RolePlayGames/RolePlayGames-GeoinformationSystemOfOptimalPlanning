@@ -1,4 +1,5 @@
-﻿using GSOP.Domain.Contracts.Optimization;
+﻿using GSOP.Application.Contracts.Optimization.Models;
+using GSOP.Domain.Contracts.Optimization;
 using GSOP.Domain.Contracts.Optimization.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,14 +20,14 @@ public class OptimizationController
 
     [HttpPost]
     [Route("genetic")]
-    public Task<IReadOnlyCollection<ProductionPlanInfo>> OptimizeByGeneticAlgorithm(GeneticAlgorithmPlanningData planningData)
+    public Task<PlanningInfo> OptimizeByGeneticAlgorithm(GeneticAlgorithmPlanningData planningData)
     {
         return _productionPlanner.CreateOptimizedProductionPlanByGeneticAlgorithm(planningData);
     }
 
     [HttpPost]
     [Route("bruteforce")]
-    public Task<IReadOnlyCollection<ProductionPlanInfo>> OptimizeByBruteforceAlgorithm(BruteforceAlgorithmPlanningData planningData)
+    public Task<PlanningInfo> OptimizeByBruteforceAlgorithm(BruteforceAlgorithmPlanningData planningData)
     {
         return _productionPlanner.CreateOptimizedProductionPlanByBruteforceAlgorithm(planningData);
     }

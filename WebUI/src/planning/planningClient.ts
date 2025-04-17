@@ -2,6 +2,7 @@ import axios, { AxiosError } from "axios";
 import { ClientError } from "../common/clients/clientError";
 import { handleError } from "../common/clients/clients";
 import { nameof } from "../utils/nameof/nameof";
+import { EntityLocationInfo } from "../rote-matrix/routesClient";
 
 const API_ROOT = `${document.location.protocol}//${document.location.host}/api/`;
 const API_URL = 'optimization';
@@ -54,15 +55,25 @@ export interface ProductionLineQueueInfo {
     orderPositions: OrderPositionInfo[],
 }
 
+export interface RoutesQueueInfo {
+    productionInfo: EntityLocationInfo,
+    customerInfos: EntityLocationInfo[],
+}
+
 export interface ProductionPlanInfo {
     startDateTime: Date,
     productionLineQueues: ProductionLineQueueInfo[],
     targetFunctionValue: number,
 }
 
+export interface PlanningInfo {
+    productionPlans: ProductionPlanInfo[],
+    routesQueues: RoutesQueueInfo[],
+}
+
 export const planningByBruteforce = async (task: BruteforcePlanningTask) => {
 	try {
-		const { data } = await axios.post<ProductionPlanInfo[]>(`${API_ROOT}${API_URL}/bruteforce`, task);
+		const { data } = await axios.post<PlanningInfo>(`${API_ROOT}${API_URL}/bruteforce`, task);
 		return data;
 	} catch (error: unknown) {
 		handleError(nameof({planningByBruteforce}), error as AxiosError);
@@ -72,7 +83,7 @@ export const planningByBruteforce = async (task: BruteforcePlanningTask) => {
 
 export const planningByGenetic = async (task: GeneticforcePlanningTask) => {
 	try {
-		const { data } = await axios.post<ProductionPlanInfo[]>(`${API_ROOT}${API_URL}/genetic`, task);
+		const { data } = await axios.post<PlanningInfo>(`${API_ROOT}${API_URL}/genetic`, task);
 		return data;
 	} catch (error: unknown) {
 		handleError(nameof({planningByGenetic}), error as AxiosError);
