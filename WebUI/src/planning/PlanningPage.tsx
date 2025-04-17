@@ -175,12 +175,11 @@ export const RouteMap = ({ routesQueueInfos, routeCoordinates, markerPosition }:
 
 	useEffect(() => {
 		const intervalId = setInterval(() => {
-			removeMapFlag(); // Обновляем состояние
+			removeMapFlag();
 		}, 500);
 	
-		// Функция очистки (cleanup)
 		return () => {
-			clearInterval(intervalId); // Очищаем интервал при размонтировании компонента
+			clearInterval(intervalId);
 		};
 	}, []);
 
