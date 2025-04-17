@@ -8,18 +8,8 @@ export interface TabPanelProps {
     value: number;
 }
   
-export const TabPanel = ({ children, value, index, ...other }: TabPanelProps) => {
-    useEffect(() => {
-        removeMapFlag();
-    }, [value]);
-
-    useEffect(() => {
-        removeMapFlag();
-    }, []);
-
-    return (
-        <Box role="tabpanel" hidden={value !== index} {...other}>
-            {value === index && <>{children}</>}
-        </Box>
-    );
-}
+export const TabPanel = ({ children, value, index, ...other }: TabPanelProps) => (
+	<Box role="tabpanel" hidden={value !== index} {...other}>
+		{value === index && <>{children}</>}
+	</Box>
+)

@@ -163,6 +163,90 @@ export const ListBlock = styled(Box)({
 	paddingRight: '10px',
 });
 
+export interface RouteMapProps {
+	routesQueueInfos: RoutesQueueInfo[],
+	routeCoordinates: RouteCoordinates[] | undefined,
+	markerPosition: [number, number] | null,
+}
+
+export const RouteMap = ({ routesQueueInfos, routeCoordinates, markerPosition }: RouteMapProps) => {
+		
+	const mapRef = useRef<L.Map | null>(null);
+
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			removeMapFlag(); // Обновляем состояние
+		}, 500);
+	
+		// Функция очистки (cleanup)
+		return () => {
+			clearInterval(intervalId); // Очищаем интервал при размонтировании компонента
+		};
+	}, []);
+
+	useEffect(() => {
+		removeMapFlag();
+	}, []);
+
+	useEffect(() => {
+		removeMapFlag();
+	}, [routesQueueInfos, routeCoordinates, markerPosition]);
+		
+	useEffect(() => {
+		delete(L.Icon.Default.prototype as any)._getIconUrl;
+		L.Icon.Default.mergeOptions({
+			iconRetinaUrl:require('leaflet/dist/images/marker-icon-2x.png'),
+			iconUrl:require('leaflet/dist/images/marker-icon.png'),
+			shadowUrl:require('leaflet/dist/images/marker-shadow.png'),
+		});
+	}, []);
+
+	return (
+		<MapContainer center={ markerPosition || defaultPosition } zoom={6} style={{ height: '700px', width: '100%' }} ref={mapRef}>
+			<TileLayer
+				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+				attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+			/>
+			{ routesQueueInfos.map(item => {
+				removeMapFlag();
+				return (
+					<>
+						{ item.productionInfo.entityCoordinates && (
+							<Marker position={[item.productionInfo.entityCoordinates.latitude, item.productionInfo.entityCoordinates.longitude]}>
+								<Popup>{item.productionInfo.entityName}</Popup>
+							</Marker>
+						)}
+					</>
+				)
+			})}
+			{ routesQueueInfos.map(item => (
+				<>
+					{ item.customerInfos.map(item => (
+						<>
+							{ item.entityCoordinates && (
+								<Marker position={[item.entityCoordinates.latitude, item.entityCoordinates.longitude]}>
+									<Popup>{item.entityName}</Popup>
+								</Marker>
+							)}
+						</>
+					)) }
+				</>
+			))}
+			{ routeCoordinates && (
+				<>
+					{ routeCoordinates.map(item => (
+						<>
+							{ item.coordinates.length > 0 && (
+								<Polyline positions={item.coordinates} color="blue" />
+							)}
+						</>
+					))}
+				</>
+			)}
+		</MapContainer>
+	);
+}
+
 export const PlanningPage = () => {
 	const [activeStep, setActiveStep] = useState(0)
 	const [isNextStepDisabled, setIsNextStepDisabled] = useState(false)
@@ -211,8 +295,6 @@ export const PlanningPage = () => {
 
 	const [routeCoordinates, setRouteCoordinates] = useState<RouteCoordinates[]>();
 	const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null);
-	
-	const mapRef = useRef<L.Map | null>(null);
 	
 	const handleNext = async () => {
 		setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -593,7 +675,6 @@ export const PlanningPage = () => {
 			loadRoutesCoordinates();
 		}
 	}, [routesQueueInfos]);
-	
 		
 	useEffect(() => {
 		delete(L.Icon.Default.prototype as any)._getIconUrl;
@@ -662,65 +743,24 @@ export const PlanningPage = () => {
 											<ListBlock>
 												<List>
 													{ routesQueueInfos.map(item => (
-															<>
-																<ListItemButton>
-																	<ListItemText primary={item.productionInfo.entityName}/>
-																</ListItemButton>
-																<Collapse in={true} timeout="auto" unmountOnExit>
-																	<List component="div" disablePadding>
-																		{ item.customerInfos.map(item => (
-																			<ListItemButton sx={{ pl: 4 }}>
-																				<ListItemText primary={item.entityName} />
-																			</ListItemButton>
-																		))}
-																	</List>
-																</Collapse>
-															</>
+														<>
+															<ListItemButton>
+																<ListItemText primary={item.productionInfo.entityName}/>
+															</ListItemButton>
+															<Collapse in={true} timeout="auto" unmountOnExit>
+																<List component="div" disablePadding>
+																	{ item.customerInfos.map(item => (
+																		<ListItemButton sx={{ pl: 4 }}>
+																			<ListItemText primary={item.entityName} />
+																		</ListItemButton>
+																	))}
+																</List>
+															</Collapse>
+														</>
 													)) }
 												</List>
 											</ListBlock>
-											<MapContainer center={ markerPosition || defaultPosition} zoom={6} style={{ height: '700px', width: '100%' }} ref={mapRef}>
-												<TileLayer
-													url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-													attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-												/>
-												{ routesQueueInfos.map(item => {
-													removeMapFlag();
-													return (
-														<>
-															{ item.productionInfo.entityCoordinates && (
-																<Marker position={[item.productionInfo.entityCoordinates.latitude, item.productionInfo.entityCoordinates.longitude]}>
-																	<Popup>{item.productionInfo.entityName}</Popup>
-																</Marker>
-															) }
-														</>
-													)
-												})}
-												{ routesQueueInfos.map(item => (
-													<>
-														{ item.customerInfos.map(item => (
-															<>
-																{ item.entityCoordinates && (
-																	<Marker position={[item.entityCoordinates.latitude, item.entityCoordinates.longitude]}>
-																		<Popup>{item.entityName}</Popup>
-																	</Marker>
-																)}
-															</>
-														)) }
-													</>
-												))}
-												{ routeCoordinates && (
-													<>
-														{ routeCoordinates.map(item => (
-															<>
-																{ item.coordinates.length > 0 && (
-																	<Polyline positions={item.coordinates} color="blue" />
-																)}
-															</>
-														))}
-													</>
-												)}
-											</MapContainer>
+											<RouteMap routeCoordinates={routeCoordinates} routesQueueInfos={routesQueueInfos} markerPosition={markerPosition}/>
 										</Box>
 									</TabPanel>
 								)}

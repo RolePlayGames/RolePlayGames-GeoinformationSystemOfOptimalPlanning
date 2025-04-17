@@ -125,7 +125,17 @@ export const RouteElement = ({ id, item, apiPath }: RouteElementProps) => {
 	useEffect(() => {
 		removeMapFlag();
 	}, [routeCoordinates]);
-    
+
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			removeMapFlag();
+		}, 500);
+	
+		return () => {
+			clearInterval(intervalId);
+		};
+	}, []);
+
 	useEffect(() => {
 		delete(L.Icon.Default.prototype as any)._getIconUrl;
 		L.Icon.Default.mergeOptions({
